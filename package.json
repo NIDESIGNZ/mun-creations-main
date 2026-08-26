@@ -1,0 +1,10 @@
+{
+  "name": "mun-creations-root",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix Mun-Creations-main/mun-saree-elegance-main/mun-saree-elegance-main run dev",
+    "build": "npm --prefix Mun-Creations-main/mun-saree-elegance-main/mun-saree-elegance-main run build",
+    "start": "npm --prefix Mun-Creations-main/mun-saree-elegance-main/mun-saree-elegance-main run start",
+    "preview": "npm --prefix Mun-Creations-main/mun-saree-elegance-main/mun-saree-elegance-main run preview"
+  }
+}

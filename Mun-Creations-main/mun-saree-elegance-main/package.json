@@ -1,0 +1,10 @@
+{
+  "name": "mun-saree-elegance-wrapper",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix mun-saree-elegance-main run dev",
+    "build": "npm --prefix mun-saree-elegance-main run build",
+    "start": "npm --prefix mun-saree-elegance-main run start",
+    "preview": "npm --prefix mun-saree-elegance-main run preview"
+  }
+}

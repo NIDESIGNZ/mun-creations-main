@@ -1,0 +1,449 @@
+/* Product Showcase Section Styling */
+
+.product-showcase {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(175deg, #18080f 0%, #260a17 45%, #14070d 100%);
+  color: var(--ivory, #faf7f2);
+  border-top: 1px solid rgba(212, 175, 55, 0.18);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.18);
+  padding: 3.5rem 0 4.5rem 0;
+}
+
+@media (min-width: 768px) {
+  .product-showcase {
+    padding: 5.5rem 0 6.5rem 0;
+  }
+}
+
+@media (min-width: 1280px) {
+  .product-showcase {
+    padding: 6.5rem 0 7.5rem 0;
+  }
+}
+
+/* Background Atmosphere & Radial Glow */
+.product-showcase__bg-glow {
+  position: absolute;
+  top: 50%;
+  right: 25%;
+  transform: translate(50%, -50%);
+  width: min(600px, 90vw);
+  height: min(600px, 90vw);
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, rgba(183, 110, 121, 0.08) 45%, transparent 70%);
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.product-showcase__bg-pattern {
+  position: absolute;
+  inset: 0;
+  opacity: 0.035;
+  background-image: 
+    radial-gradient(circle at 25% 25%, #d4af37 1px, transparent 1px),
+    radial-gradient(circle at 75% 75%, #d4af37 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+}
+
+/* Category Filter Tabs */
+.product-showcase__filters {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  overflow-x: auto;
+  gap: 0.4rem;
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 10;
+  padding-bottom: 0.5rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (min-width: 768px) {
+  .product-showcase__filters {
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 2.75rem;
+    padding-bottom: 0;
+  }
+}
+
+.product-showcase__filter-btn {
+  padding: 0.45rem 0.95rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 600;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(250, 247, 242, 0.7);
+  transition: all 0.25s ease;
+  cursor: pointer;
+  white-space: nowrap;
+  shrink: 0;
+}
+
+@media (min-width: 640px) {
+  .product-showcase__filter-btn {
+    padding: 0.5rem 1.1rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+  }
+}
+
+.product-showcase__filter-btn:hover {
+  background: rgba(212, 175, 55, 0.12);
+  border-color: rgba(212, 175, 55, 0.4);
+  color: #faf7f2;
+}
+
+.product-showcase__filter-btn.is-active {
+  background: var(--gold, #d4af37);
+  border-color: var(--gold, #d4af37);
+  color: #1a0812;
+  box-shadow: 0 0 16px rgba(212, 175, 55, 0.35);
+}
+
+/* Main Grid Layout */
+.product-showcase__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  align-items: center;
+  position: relative;
+  z-index: 5;
+}
+
+@media (min-width: 1024px) {
+  .product-showcase__grid {
+    grid-template-columns: 1fr 1.15fr;
+    gap: 3.5rem;
+  }
+}
+
+/* Product Info Card */
+.product-showcase__info-card {
+  position: relative;
+  background: rgba(18, 10, 15, 0.75);
+  border: 1px solid rgba(212, 175, 55, 0.22);
+  border-radius: 12px;
+  padding: 1.5rem 1.25rem;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.55);
+}
+
+@media (min-width: 640px) {
+  .product-showcase__info-card {
+    padding: 2rem 1.75rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .product-showcase__info-card {
+    padding: 2.5rem 2.25rem;
+  }
+}
+
+/* Top Meta Row */
+.product-showcase__meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.product-showcase__category-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--gold, #d4af37);
+  background: rgba(212, 175, 55, 0.12);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+}
+
+.product-showcase__sku-tag {
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  color: rgba(250, 247, 242, 0.45);
+  font-family: monospace;
+}
+
+/* Product Title & Sub-attributes */
+.product-showcase__title {
+  font-family: var(--font-serif, "Cinzel", "Playfair Display", Georgia, serif);
+  font-size: clamp(1.35rem, 2.5vw + 0.5rem, 2.25rem);
+  line-height: 1.25;
+  color: #fff;
+  margin-bottom: 0.75rem;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+.product-showcase__attributes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.85rem;
+}
+
+.product-showcase__attr-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.68rem;
+  color: rgba(250, 247, 242, 0.85);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+}
+
+.product-showcase__attr-pill strong {
+  color: var(--gold, #d4af37);
+  font-weight: 600;
+}
+
+/* Description Text */
+.product-showcase__desc {
+  font-size: clamp(0.78rem, 0.2vw + 0.72rem, 0.9rem);
+  line-height: 1.6;
+  color: rgba(250, 247, 242, 0.75);
+  font-weight: 300;
+  margin-bottom: 1rem;
+}
+
+/* Color Harmony Swatches */
+.product-showcase__swatches-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.1rem;
+}
+
+.product-showcase__swatch-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(250, 247, 242, 0.55);
+}
+
+.product-showcase__swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* Price Box */
+.product-showcase__price-box {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  padding: 0.85rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 1.25rem;
+}
+
+.product-showcase__price-current {
+  font-family: var(--font-serif, "Cinzel", Georgia, serif);
+  font-size: clamp(1.4rem, 2vw + 0.8rem, 2rem);
+  font-weight: 700;
+  color: var(--gold, #d4af37);
+  text-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+}
+
+.product-showcase__price-original {
+  font-size: 0.9rem;
+  color: rgba(250, 247, 242, 0.4);
+  text-decoration: line-through;
+}
+
+.product-showcase__discount-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #4ade80;
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Action Buttons CTA */
+.product-showcase__actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.6rem;
+}
+
+@media (min-width: 480px) {
+  .product-showcase__actions {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .product-showcase__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+  }
+}
+
+.product-showcase__btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  background: var(--gold, #d4af37);
+  color: #1a0812;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 0.8rem 1.4rem;
+  border-radius: 2px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 14px rgba(212, 175, 55, 0.3);
+  min-height: 44px;
+}
+
+.product-showcase__btn-primary:hover {
+  background: #faf7f2;
+  color: #14070d;
+  box-shadow: 0 6px 20px rgba(250, 247, 242, 0.35);
+  transform: translateY(-1px);
+}
+
+.product-showcase__btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  background: rgba(255, 255, 255, 0.08);
+  color: #faf7f2;
+  font-weight: 600;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 0.8rem 1.25rem;
+  border-radius: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  min-height: 44px;
+}
+
+.product-showcase__btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(212, 175, 55, 0.5);
+  color: var(--gold, #d4af37);
+}
+
+/* Carousel Container Pane */
+.product-showcase__carousel-pane {
+  position: relative;
+  width: 100%;
+  height: clamp(340px, 55vw, 500px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Inside-Card Badge for Carousel Slides */
+.product-showcase__card-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+  background: rgba(20, 7, 13, 0.82);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  color: var(--gold, #d4af37);
+  font-size: 0.58rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+.product-showcase__card-price-tag {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  z-index: 10;
+  background: rgba(20, 7, 13, 0.88);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #faf7f2;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 0.25rem 0.55rem;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+/* Interactive Navigation / Counter Strip */
+.product-showcase__counter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.product-showcase__counter-text {
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(250, 247, 242, 0.5);
+  font-family: monospace;
+}
+
+.product-showcase__counter-text span {
+  color: var(--gold, #d4af37);
+  font-weight: 700;
+}
+
+.product-showcase__drag-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(250, 247, 242, 0.45);
+}
+
+.product-showcase__drag-hint svg {
+  color: var(--gold, #d4af37);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product-showcase__btn-primary,
+  .product-showcase__btn-secondary,
+  .product-showcase__filter-btn {
+    transition: none;
+  }
+}
