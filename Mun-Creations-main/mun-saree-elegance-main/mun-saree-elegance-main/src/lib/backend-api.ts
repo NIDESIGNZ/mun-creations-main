@@ -250,22 +250,35 @@ class BackendDatabase {
     return this.orders.find((o) => o.id === id);
   }
 
-  createOrder(orderData: Omit<Order, "id" | "status" | "createdAt" | "paymentMethod"> & { paymentMethod?: Order["paymentMethod"] }): Order {
+  getOrderByPaymentId(paymentId: string): Order | undefined {
+    return this.orders.find((o) => o.paymentId === paymentId);
+  }
+
+  createOrder(orderData: Omit<Order, "id" | "status" | "createdAt" | "paymentMethod"> & { paymentMethod?: Order["paymentMethod"]; paymentId?: string; status?: OrderStatus }): Order {
+    // Idempotency: If order with this paymentId already exists, return it without duplicate stock deduction
+    if (orderData.paymentId) {
+      const existing = this.getOrderByPaymentId(orderData.paymentId);
+      if (existing) {
+        return existing;
+      }
+    }
+
     const newOrder: Order = {
       ...orderData,
       id: `ORD-2026-${Math.floor(1000 + Math.random() * 9000)}`,
-      status: "Confirmed",
+      status: orderData.status || "Confirmed",
       paymentMethod: orderData.paymentMethod || "card",
-      paymentId: `pay_${Date.now()}`,
+      paymentId: orderData.paymentId || `pay_${Date.now()}`,
       awbNumber: `SR${Math.floor(100000000 + Math.random() * 900000000)}IN`,
       courierPartner: "Shiprocket Express Air",
       createdAt: new Date().toISOString(),
     };
     this.orders.unshift(newOrder);
 
+    // Deduct stock inventory authoritatively
     orderData.items.forEach((item) => {
       const prod = this.getProductById(item.productId);
-      if (prod && prod.stockQuantity) {
+      if (prod && prod.stockQuantity !== undefined) {
         const newStock = Math.max(0, prod.stockQuantity - item.quantity);
         this.updateProduct(prod.id, {
           stockQuantity: newStock,
@@ -281,6 +294,13 @@ class BackendDatabase {
     const order = this.getOrderById(orderId);
     if (!order) return undefined;
     order.status = status;
+    return order;
+  }
+
+  updateOrderByPaymentId(paymentId: string, updates: Partial<Order>): Order | undefined {
+    const order = this.getOrderByPaymentId(paymentId);
+    if (!order) return undefined;
+    Object.assign(order, updates);
     return order;
   }
 

@@ -1,4 +1,4 @@
-import { r as __toESM } from "../_runtime.mjs";
+import { o as __toESM } from "../_runtime.mjs";
 import { r as require_react } from "./react+tanstack__react-query.mjs";
 //#region node_modules/lucide-react/dist/esm/shared/src/utils/mergeClasses.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
@@ -961,74 +961,6 @@ var Printer = createLucideIcon("printer", [
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-var QrCode = createLucideIcon("qr-code", [
-	["rect", {
-		width: "5",
-		height: "5",
-		x: "3",
-		y: "3",
-		rx: "1",
-		key: "1tu5fj"
-	}],
-	["rect", {
-		width: "5",
-		height: "5",
-		x: "16",
-		y: "3",
-		rx: "1",
-		key: "1v8r4q"
-	}],
-	["rect", {
-		width: "5",
-		height: "5",
-		x: "3",
-		y: "16",
-		rx: "1",
-		key: "1x03jg"
-	}],
-	["path", {
-		d: "M21 16h-3a2 2 0 0 0-2 2v3",
-		key: "177gqh"
-	}],
-	["path", {
-		d: "M21 21v.01",
-		key: "ents32"
-	}],
-	["path", {
-		d: "M12 7v3a2 2 0 0 1-2 2H7",
-		key: "8crl2c"
-	}],
-	["path", {
-		d: "M3 12h.01",
-		key: "nlz23k"
-	}],
-	["path", {
-		d: "M12 3h.01",
-		key: "n36tog"
-	}],
-	["path", {
-		d: "M12 16v.01",
-		key: "133mhm"
-	}],
-	["path", {
-		d: "M16 12h1",
-		key: "1slzba"
-	}],
-	["path", {
-		d: "M21 12v.01",
-		key: "1lwtk9"
-	}],
-	["path", {
-		d: "M12 21v-1",
-		key: "1880an"
-	}]
-]);
-/**
-* @license lucide-react v0.575.0 - ISC
-*
-* This source code is licensed under the ISC license.
-* See the LICENSE file in the root directory of this source tree.
-*/
 var RefreshCw = createLucideIcon("refresh-cw", [
 	["path", {
 		d: "M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8",
@@ -1465,4 +1397,4 @@ var Youtube = createLucideIcon("youtube", [["path", {
 	key: "1jp15x"
 }]]);
 //#endregion
-export { CreditCard as $, Minus as A, Instagram as B, QrCode as C, Palette as D, Plane as E, Lock as F, Globe as G, Image as H, LoaderCircle as I, Facebook as J, Gem as K, LayoutDashboard as L, MapPin as M, Mail as N, Package as O, LogOut as P, DollarSign as Q, Layers as R, RefreshCw as S, Plus as T, Heart as U, Info as V, Grid3x3 as W, ExternalLink as X, Eye as Y, Download as Z, ShoppingBag as _, UserCheck as a, ChevronRight as at, Search as b, TriangleAlert as c, Check as ct, SwitchCamera as d, Bot as dt, CloudUpload as et, Star as f, Award as ft, SlidersHorizontal as g, Smartphone as h, Activity as ht, User as i, CircleAlert as it, Menu as j, MousePointer2 as k, Trash2 as l, Camera as lt, Sparkle as m, ArrowLeft as mt, X as n, CircleCheck as nt, Upload as o, ChevronLeft as ot, Sparkles as p, ArrowRight as pt, Funnel as q, Users as r, CircleCheckBig as rt, Truck as s, ChevronDown as st, Youtube as t, Clock as tt, Tag as u, Building2 as ut, ShieldCheck as v, Printer as w, RotateCcw as x, Send as y, Key as z };
+export { CloudUpload as $, Menu as A, Info as B, Printer as C, Package as D, Palette as E, LoaderCircle as F, Gem as G, Heart as H, LayoutDashboard as I, Eye as J, Funnel as K, Layers as L, Mail as M, LogOut as N, MousePointer2 as O, Lock as P, CreditCard as Q, Key as R, RefreshCw as S, Plane as T, Grid3x3 as U, Image as V, Globe as W, Download as X, ExternalLink as Y, DollarSign as Z, ShoppingBag as _, UserCheck as a, ChevronLeft as at, Search as b, TriangleAlert as c, Camera as ct, SwitchCamera as d, Award as dt, Clock as et, Star as f, ArrowRight as ft, SlidersHorizontal as g, Smartphone as h, User as i, ChevronRight as it, MapPin as j, Minus as k, Trash2 as l, Building2 as lt, Sparkle as m, Activity as mt, X as n, CircleCheckBig as nt, Upload as o, ChevronDown as ot, Sparkles as p, ArrowLeft as pt, Facebook as q, Users as r, CircleAlert as rt, Truck as s, Check as st, Youtube as t, CircleCheck as tt, Tag as u, Bot as ut, ShieldCheck as v, Plus as w, RotateCcw as x, Send as y, Instagram as z };

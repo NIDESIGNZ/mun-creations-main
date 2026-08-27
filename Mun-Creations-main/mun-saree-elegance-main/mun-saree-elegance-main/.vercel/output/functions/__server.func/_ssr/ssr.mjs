@@ -1,5 +1,9 @@
-import { t as backendDB } from "./backend-api-DaSHvViK.mjs";
+import { o as __toESM } from "../_runtime.mjs";
+import { t as backendDB } from "./backend-api-Cogfb3J-.mjs";
+import { t as require_razorpay } from "../_libs/razorpay.mjs";
+import crypto from "crypto";
 //#region node_modules/.nitro/vite/services/ssr/index.js
+var import_razorpay = /* @__PURE__ */ __toESM(require_razorpay());
 var lastCapturedError;
 var TTL_MS = 5e3;
 function record(error) {
@@ -289,9 +293,224 @@ var AITryOnService = class {
 	}
 };
 var aiTryOnService = new AITryOnService();
+function getRazorpayInstance() {
+	const key_id = process.env.RAZORPAY_KEY_ID;
+	const key_secret = process.env.RAZORPAY_KEY_SECRET;
+	if (!key_id || !key_secret) throw new Error("Razorpay credentials (RAZORPAY_KEY_ID or RAZORPAY_KEY_SECRET) are missing.");
+	return new import_razorpay.default({
+		key_id,
+		key_secret
+	});
+}
+var RazorpayService = class {
+	processedWebhookEvents = /* @__PURE__ */ new Set();
+	/**
+	* Authoritative Server-Side Price Calculation
+	* Never trust frontend prices, discounts, or totals.
+	*/
+	calculateAuthoritativePrice(items, promoCode, shippingMethod = "standard", currency = "INR") {
+		if (!items || !Array.isArray(items) || items.length === 0) {
+			const err = /* @__PURE__ */ new Error("No cart items provided for order calculation.");
+			err.status = 400;
+			throw err;
+		}
+		const calculatedItems = items.map((item) => {
+			if (!item.productId || typeof item.quantity !== "number" || item.quantity <= 0) {
+				const err = /* @__PURE__ */ new Error(`Invalid item quantity for product ID: ${item.productId}`);
+				err.status = 400;
+				throw err;
+			}
+			const product = backendDB.getProductById(item.productId);
+			if (!product) {
+				const err = /* @__PURE__ */ new Error(`Product with ID "${item.productId}" was not found in catalog.`);
+				err.status = 404;
+				throw err;
+			}
+			if (product.availability === "Out of Stock" || product.stockQuantity !== void 0 && product.stockQuantity < item.quantity) {
+				const err = /* @__PURE__ */ new Error(`Product "${product.name}" does not have enough stock available.`);
+				err.status = 400;
+				throw err;
+			}
+			return {
+				productId: product.id,
+				productName: product.name,
+				quantity: Math.floor(item.quantity),
+				priceUsd: product.priceUsd
+			};
+		});
+		const subtotalUsd = calculatedItems.reduce((sum, item) => sum + item.priceUsd * item.quantity, 0);
+		let discountUsd = 0;
+		if (promoCode && typeof promoCode === "string" && promoCode.trim()) {
+			const validation = backendDB.validateCoupon(promoCode, subtotalUsd);
+			if (validation.valid) discountUsd = validation.discountAmountUsd;
+		}
+		const shippingFeeUsd = subtotalUsd >= 500 ? 0 : shippingMethod === "express" ? 45 : 25;
+		const finalTotalUsd = Math.max(0, subtotalUsd - discountUsd + shippingFeeUsd);
+		const effectiveInr = currency.toUpperCase() === "INR" ? finalTotalUsd * 83.5 : finalTotalUsd * 83.5;
+		const amountPaise = Math.max(100, Math.round(effectiveInr * 100));
+		return {
+			items: calculatedItems,
+			subtotalUsd,
+			discountUsd,
+			shippingFeeUsd,
+			finalTotalUsd,
+			amountPaise,
+			currency: "INR"
+		};
+	}
+	/**
+	* Create a Razorpay Order server-side
+	* If items are provided, calculates authoritative amount from DB.
+	* Minimum amount: 100 paise (₹1.00)
+	*/
+	async createOrder(params) {
+		const { items, promoCode, shippingMethod, currency = "INR", receipt, notes } = params;
+		let targetAmountPaise;
+		let calculation;
+		if (items && Array.isArray(items) && items.length > 0) {
+			calculation = this.calculateAuthoritativePrice(items, promoCode, shippingMethod, currency);
+			targetAmountPaise = calculation.amountPaise;
+		} else if (typeof params.amount === "number" && !isNaN(params.amount)) targetAmountPaise = Math.round(params.amount);
+		else {
+			const err = /* @__PURE__ */ new Error("Invalid request: items array or valid amount is required.");
+			err.status = 400;
+			throw err;
+		}
+		if (targetAmountPaise < 100) {
+			const err = /* @__PURE__ */ new Error("Amount must be at least 100 paise (₹1.00)");
+			err.status = 400;
+			throw err;
+		}
+		try {
+			const instance = getRazorpayInstance();
+			const generatedReceipt = receipt || `rcpt_${Date.now()}_${Math.floor(Math.random() * 1e3)}`;
+			const order = await instance.orders.create({
+				amount: targetAmountPaise,
+				currency: currency.toUpperCase(),
+				receipt: generatedReceipt,
+				notes: {
+					...notes || {},
+					...calculation ? {
+						subtotal_usd: calculation.subtotalUsd.toString(),
+						discount_usd: calculation.discountUsd.toString(),
+						shipping_usd: calculation.shippingFeeUsd.toString(),
+						final_usd: calculation.finalTotalUsd.toString()
+					} : {}
+				}
+			});
+			return {
+				order_id: order.id,
+				amount: order.amount,
+				currency: order.currency,
+				receipt: order.receipt || generatedReceipt,
+				calculation
+			};
+		} catch (err) {
+			if (err?.statusCode === 401 || err?.error?.code === "BAD_REQUEST_ERROR" && err?.error?.description?.includes("authenticate")) {
+				const authErr = /* @__PURE__ */ new Error("Razorpay authentication failed. Please check your credentials.");
+				authErr.status = 401;
+				throw authErr;
+			}
+			if (err?.status) throw err;
+			const apiErr = new Error(err?.error?.description || err?.message || "Failed to create Razorpay order");
+			apiErr.status = err?.statusCode || 500;
+			throw apiErr;
+		}
+	}
+	/**
+	* Verify Razorpay Payment Signature
+	* Algorithm: HMAC-SHA256(order_id + "|" + payment_id, KEY_SECRET)
+	*/
+	verifyPaymentSignature(params) {
+		const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = params;
+		if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) return {
+			isValid: false,
+			error: "Missing required verification fields (razorpay_order_id, razorpay_payment_id, razorpay_signature)"
+		};
+		const secret = process.env.RAZORPAY_KEY_SECRET;
+		if (!secret) return {
+			isValid: false,
+			error: "Server configuration error: RAZORPAY_KEY_SECRET is not defined."
+		};
+		try {
+			const payload = `${razorpay_order_id}|${razorpay_payment_id}`;
+			const expectedSignature = crypto.createHmac("sha256", secret).update(payload).digest("hex");
+			const expectedBuffer = Buffer.from(expectedSignature, "utf-8");
+			const receivedBuffer = Buffer.from(razorpay_signature, "utf-8");
+			if (expectedBuffer.length !== receivedBuffer.length) return {
+				isValid: false,
+				error: "Payment signature mismatch"
+			};
+			if (!crypto.timingSafeEqual(expectedBuffer, receivedBuffer)) return {
+				isValid: false,
+				error: "Payment signature mismatch"
+			};
+			return { isValid: true };
+		} catch (err) {
+			return {
+				isValid: false,
+				error: err?.message || "Signature verification failed"
+			};
+		}
+	}
+	/**
+	* Verify Razorpay Webhook Signature
+	* Algorithm: HMAC-SHA256(rawBody, WEBHOOK_SECRET)
+	*/
+	verifyWebhookSignature(rawBody, signature, webhookSecret) {
+		const secret = webhookSecret || process.env.RAZORPAY_WEBHOOK_SECRET;
+		if (!secret) return {
+			isValid: false,
+			error: "RAZORPAY_WEBHOOK_SECRET is not configured on the server."
+		};
+		if (!rawBody || !signature) return {
+			isValid: false,
+			error: "Missing webhook body or X-Razorpay-Signature header."
+		};
+		try {
+			const expectedSignature = crypto.createHmac("sha256", secret).update(rawBody).digest("hex");
+			const expectedBuffer = Buffer.from(expectedSignature, "utf-8");
+			const receivedBuffer = Buffer.from(signature, "utf-8");
+			if (expectedBuffer.length !== receivedBuffer.length) return {
+				isValid: false,
+				error: "Webhook signature mismatch."
+			};
+			return { isValid: crypto.timingSafeEqual(expectedBuffer, receivedBuffer) };
+		} catch (err) {
+			return {
+				isValid: false,
+				error: err?.message || "Webhook verification failed."
+			};
+		}
+	}
+	/**
+	* Webhook Idempotency Store
+	*/
+	isEventProcessed(eventId) {
+		return this.processedWebhookEvents.has(eventId);
+	}
+	markEventProcessed(eventId) {
+		this.processedWebhookEvents.add(eventId);
+		if (this.processedWebhookEvents.size > 1e4) {
+			const first = this.processedWebhookEvents.values().next().value;
+			if (first) this.processedWebhookEvents.delete(first);
+		}
+	}
+	/**
+	* Issue Server-Side Refund
+	*/
+	async refundPayment(paymentId, amountPaise, notes) {
+		if (!paymentId) throw new Error("Payment ID is required for processing refund.");
+		const instance = getRazorpayInstance();
+		const refundPayload = { notes: notes || {} };
+		if (amountPaise && amountPaise > 0) refundPayload.amount = Math.round(amountPaise);
+		return await instance.payments.refund(paymentId, refundPayload);
+	}
+};
+var razorpayService = new RazorpayService();
 var serverEntryPromise;
 async function getServerEntry() {
-	if (!serverEntryPromise) serverEntryPromise = import("./server-BdPP9TC0.mjs").then((m) => m.default ?? m);
+	if (!serverEntryPromise) serverEntryPromise = import("./server-BYfNJP4-.mjs").then((m) => m.default ?? m);
 	return serverEntryPromise;
 }
 async function handleApiRequests(request) {
@@ -307,6 +526,192 @@ async function handleApiRequests(request) {
 	if (request.method === "OPTIONS") return new Response(null, { headers });
 	try {
 		if (path === "/api/health") return new Response(JSON.stringify(backendDB.getHealthStatus()), { headers });
+		if (path === "/api/create-order") {
+			if (request.method !== "POST") return new Response(JSON.stringify({ error: "Method not allowed. Use POST." }), {
+				status: 405,
+				headers
+			});
+			const { items, promoCode, shippingMethod, currency = "INR", receipt, notes, amount } = await request.json() || {};
+			try {
+				const order = await razorpayService.createOrder({
+					items,
+					promoCode,
+					shippingMethod,
+					currency,
+					receipt,
+					notes,
+					amount
+				});
+				return new Response(JSON.stringify({
+					order_id: order.order_id,
+					amount: order.amount,
+					currency: order.currency,
+					receipt: order.receipt,
+					key_id: process.env.RAZORPAY_KEY_ID,
+					calculation: order.calculation
+				}), {
+					status: 200,
+					headers
+				});
+			} catch (err) {
+				const statusCode = err?.status || (err?.statusCode === 401 ? 401 : 500);
+				return new Response(JSON.stringify({
+					success: false,
+					error: err?.message || "Failed to create Razorpay order"
+				}), {
+					status: statusCode,
+					headers
+				});
+			}
+		}
+		if (path === "/api/verify-payment") {
+			if (request.method !== "POST") return new Response(JSON.stringify({ error: "Method not allowed. Use POST." }), {
+				status: 405,
+				headers
+			});
+			const { razorpay_order_id, razorpay_payment_id, razorpay_signature, orderDetails } = await request.json() || {};
+			if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) return new Response(JSON.stringify({
+				success: false,
+				error: "Missing required fields: razorpay_order_id, razorpay_payment_id, and razorpay_signature are required."
+			}), {
+				status: 400,
+				headers
+			});
+			const verification = razorpayService.verifyPaymentSignature({
+				razorpay_order_id,
+				razorpay_payment_id,
+				razorpay_signature
+			});
+			if (!verification.isValid) return new Response(JSON.stringify({
+				success: false,
+				error: verification.error || "Payment signature verification failed. Transaction cannot be confirmed."
+			}), {
+				status: 400,
+				headers
+			});
+			let confirmedOrder = backendDB.getOrderByPaymentId(razorpay_payment_id);
+			if (!confirmedOrder && orderDetails) confirmedOrder = backendDB.createOrder({
+				...orderDetails,
+				paymentMethod: "razorpay",
+				paymentId: razorpay_payment_id,
+				status: "Confirmed"
+			});
+			else if (confirmedOrder && confirmedOrder.status !== "Paid" && confirmedOrder.status !== "Confirmed") confirmedOrder = backendDB.updateOrderStatus(confirmedOrder.id, "Confirmed");
+			return new Response(JSON.stringify({
+				success: true,
+				message: "Payment signature verified successfully.",
+				razorpay_order_id,
+				razorpay_payment_id,
+				order: confirmedOrder
+			}), {
+				status: 200,
+				headers
+			});
+		}
+		if (path === "/api/webhooks/razorpay") {
+			if (request.method !== "POST") return new Response(JSON.stringify({ error: "Method not allowed. Use POST." }), {
+				status: 405,
+				headers
+			});
+			const rawBody = await request.text();
+			const signature = request.headers.get("x-razorpay-signature") || "";
+			const verification = razorpayService.verifyWebhookSignature(rawBody, signature);
+			if (!verification.isValid) return new Response(JSON.stringify({
+				success: false,
+				error: verification.error || "Invalid webhook signature."
+			}), {
+				status: 400,
+				headers
+			});
+			try {
+				const event = JSON.parse(rawBody);
+				const eventId = event?.id || `${event?.event}_${event?.created_at}`;
+				if (razorpayService.isEventProcessed(eventId)) return new Response(JSON.stringify({
+					status: "already_processed",
+					eventId
+				}), {
+					status: 200,
+					headers
+				});
+				const eventType = event?.event;
+				const payload = event?.payload;
+				if (eventType === "payment.captured" || eventType === "order.paid") {
+					const paymentEntity = payload?.payment?.entity;
+					const paymentId = paymentEntity?.id;
+					paymentEntity?.order_id || payload?.order?.entity?.id;
+					if (paymentId) {
+						const existingOrder = backendDB.getOrderByPaymentId(paymentId);
+						if (existingOrder) backendDB.updateOrderStatus(existingOrder.id, "Paid");
+					}
+				} else if (eventType === "payment.failed") {
+					const paymentId = (payload?.payment?.entity)?.id;
+					if (paymentId) {
+						const existingOrder = backendDB.getOrderByPaymentId(paymentId);
+						if (existingOrder) backendDB.updateOrderStatus(existingOrder.id, "Failed");
+					}
+				} else if (eventType === "refund.processed" || eventType === "refund.created") {
+					const paymentId = (payload?.refund?.entity)?.payment_id;
+					if (paymentId) {
+						const existingOrder = backendDB.getOrderByPaymentId(paymentId);
+						if (existingOrder) backendDB.updateOrderStatus(existingOrder.id, "Refunded");
+					}
+				}
+				razorpayService.markEventProcessed(eventId);
+				return new Response(JSON.stringify({
+					status: "ok",
+					receivedEvent: eventType
+				}), {
+					status: 200,
+					headers
+				});
+			} catch (err) {
+				return new Response(JSON.stringify({
+					success: false,
+					error: "Failed to process webhook event."
+				}), {
+					status: 500,
+					headers
+				});
+			}
+		}
+		if (path === "/api/refund-order") {
+			if (request.method !== "POST") return new Response(JSON.stringify({ error: "Method not allowed. Use POST." }), {
+				status: 405,
+				headers
+			});
+			const { paymentId, amount, reason, orderId } = await request.json() || {};
+			if (!paymentId) return new Response(JSON.stringify({
+				success: false,
+				error: "Payment ID is required to issue a refund."
+			}), {
+				status: 400,
+				headers
+			});
+			try {
+				const refund = await razorpayService.refundPayment(paymentId, amount ? Math.round(amount) : void 0, { reason: reason || "Customer request / return" });
+				if (orderId) backendDB.updateOrderStatus(orderId, "Refunded");
+				else {
+					const order = backendDB.getOrderByPaymentId(paymentId);
+					if (order) backendDB.updateOrderStatus(order.id, "Refunded");
+				}
+				return new Response(JSON.stringify({
+					success: true,
+					message: "Refund initiated successfully.",
+					refund
+				}), {
+					status: 200,
+					headers
+				});
+			} catch (err) {
+				return new Response(JSON.stringify({
+					success: false,
+					error: err?.message || "Failed to process refund."
+				}), {
+					status: err?.status || 500,
+					headers
+				});
+			}
+		}
 		if (path === "/api/products") {
 			if (request.method === "GET") {
 				const cat = url.searchParams.get("category") || void 0;

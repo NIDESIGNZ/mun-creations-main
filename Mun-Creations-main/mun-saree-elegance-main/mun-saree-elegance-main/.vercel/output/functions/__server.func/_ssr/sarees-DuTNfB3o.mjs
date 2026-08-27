@@ -1,7 +1,7 @@
 import { a as EXPANDED_SAREE_TAXONOMY } from "./catalog-iLO1lIu8.mjs";
 import { n as require_jsx_runtime } from "../_libs/react+tanstack__react-query.mjs";
 import { g as Link } from "../_libs/@tanstack/react-router+[...].mjs";
-import { R as Layers } from "../_libs/lucide-react.mjs";
+import { L as Layers } from "../_libs/lucide-react.mjs";
 import { a as I18nProvider, i as Header, n as CartProvider, r as Footer, t as CartDrawer } from "./cart-drawer-D9uioa6i.mjs";
 import { i as PRODUCTS } from "./products-BQLhYZdU.mjs";
 import { n as ProductCard } from "./product-Bglph-xe.mjs";

@@ -25,6 +25,7 @@ import {
   Key,
   Globe,
   ExternalLink,
+  AlertCircle,
 } from "lucide-react";
 
 export const Route = createFileRoute("/checkout")({
@@ -34,6 +35,12 @@ export const Route = createFileRoute("/checkout")({
       {
         name: "description",
         content: "Secure worldwide checkout with interactive Razorpay, Stripe, PayPal, and Credit/Debit Card payment gateways.",
+      },
+    ],
+    scripts: [
+      {
+        src: "https://checkout.razorpay.com/v1/checkout.js",
+        async: true,
       },
     ],
   }),
@@ -108,10 +115,12 @@ function CheckoutContent() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [otpCode, setOtpCode] = useState("123456");
   const [completedOrder, setCompletedOrder] = useState<any>(null);
+  const [paymentError, setPaymentError] = useState<string>("");
+  const [paymentStatusMessage, setPaymentStatusMessage] = useState<string>("");
 
   // Optional API Keys Config (Environment or Live Overrides)
   const apiKeysConfig = {
-    razorpayKeyId: (import.meta as any).env?.VITE_RAZORPAY_KEY_ID || "rzp_test_MunCreations2026",
+    razorpayKeyId: (import.meta as any).env?.VITE_RAZORPAY_KEY_ID || "",
     stripePublishableKey: (import.meta as any).env?.VITE_STRIPE_PUBLISHABLE_KEY || "pk_test_MunCreations2026",
     paypalClientId: (import.meta as any).env?.VITE_PAYPAL_CLIENT_ID || "sb_MunCreations2026",
   };
@@ -162,71 +171,220 @@ function CheckoutContent() {
     }
   };
 
-  const handleOpenGatewayModal = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // If Razorpay SDK is available or requested, attempt live SDK call
-    if (selectedGateway === "razorpay" && typeof window !== "undefined") {
-      const existingScript = document.querySelector('script[src="https://checkout.razorpay.com/v1/checkout.js"]');
-      if (!existingScript) {
-        const script = document.createElement("script");
-        script.src = "https://checkout.razorpay.com/v1/checkout.js";
-        script.async = true;
-        script.onload = () => triggerRazorpaySDK();
-        script.onerror = () => setGatewayModalOpen(true);
-        document.body.appendChild(script);
-        return;
-      } else {
-        triggerRazorpaySDK();
+  const loadRazorpayScript = (): Promise<boolean> => {
+    return new Promise((resolve) => {
+      if (typeof window === "undefined") {
+        resolve(false);
         return;
       }
+      if ((window as any).Razorpay) {
+        resolve(true);
+        return;
+      }
+      const existingScript = document.querySelector('script[src="https://checkout.razorpay.com/v1/checkout.js"]');
+      if (existingScript) {
+        existingScript.addEventListener("load", () => resolve(true));
+        existingScript.addEventListener("error", () => resolve(false));
+        return;
+      }
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.async = true;
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
+  const handleRazorpayCheckout = async () => {
+    setPaymentError("");
+    setPaymentStatusMessage("Connecting to secure payment gateway...");
+    setIsProcessing(true);
+
+    try {
+      // 1. Ensure Razorpay SDK script is loaded
+      const loaded = await loadRazorpayScript();
+      if (!loaded || !(window as any).Razorpay) {
+        throw new Error("Unable to load Razorpay Checkout SDK. Please check your network connection.");
+      }
+
+      setPaymentStatusMessage("Generating secure order token...");
+
+      // 2. STEP 1: Call Backend to authoritatively create Razorpay Order
+      const orderRes = await fetch("/api/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: items.map((i) => ({
+            productId: i.product.id,
+            quantity: i.qty,
+          })),
+          promoCode: promoCode ? promoCode.trim() : undefined,
+          shippingMethod: shippingForm.shippingMethod,
+          currency: "INR",
+          receipt: `rcpt_${Date.now()}`,
+          notes: {
+            customer_name: `${shippingForm.firstName} ${shippingForm.lastName}`,
+            customer_email: shippingForm.email,
+            shipping_pincode: shippingForm.zip,
+          },
+        }),
+      });
+
+      const orderData = await orderRes.json();
+
+      if (!orderRes.ok || !orderData.order_id) {
+        throw new Error(orderData.error || "Failed to create Razorpay order on server.");
+      }
+
+      const activeKeyId = orderData.key_id || apiKeysConfig.razorpayKeyId;
+
+      if (!activeKeyId) {
+        throw new Error("Razorpay Key ID is not configured on the server.");
+      }
+
+      setPaymentStatusMessage("Opening secure payment window...");
+
+      // 3. STEP 2: Open Razorpay Standard Checkout Modal
+      const options = {
+        key: activeKeyId,
+        amount: orderData.amount,
+        currency: orderData.currency || "INR",
+        name: "Mun Creations",
+        description: "Luxury Handloom Saree Order",
+        image: "https://picsum.photos/seed/munlogo/200/200",
+        order_id: orderData.order_id,
+        prefill: {
+          name: `${shippingForm.firstName} ${shippingForm.lastName}`,
+          email: shippingForm.email,
+          contact: shippingForm.phone,
+        },
+        notes: {
+          shipping_address: `${shippingForm.address}, ${shippingForm.city}, ${shippingForm.state} ${shippingForm.zip}`,
+        },
+        theme: {
+          color: "#58111A",
+        },
+        handler: async function (response: {
+          razorpay_payment_id: string;
+          razorpay_order_id: string;
+          razorpay_signature: string;
+        }) {
+          // 4. STEP 3: Call Backend to verify signature
+          try {
+            setIsProcessing(true);
+            setPaymentError("");
+            setPaymentStatusMessage("Verifying payment signature with bank server...");
+
+            const verifyRes = await fetch("/api/verify-payment", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                orderDetails: {
+                  customerName: `${shippingForm.firstName} ${shippingForm.lastName}`,
+                  email: shippingForm.email,
+                  phone: shippingForm.phone,
+                  shippingAddress: `${shippingForm.address}, ${shippingForm.city}, ${shippingForm.state} ${shippingForm.zip}, ${shippingForm.country}`,
+                  pincode: shippingForm.zip,
+                  items: items.map((i) => ({
+                    productId: i.product.id,
+                    productName: i.product.name,
+                    quantity: i.qty,
+                    priceUsd: i.product.priceUsd,
+                  })),
+                  subtotalUsd: finalTotalUsd,
+                },
+              }),
+            });
+
+            const verifyData = await verifyRes.json();
+
+            if (!verifyRes.ok || !verifyData.success) {
+              throw new Error(
+                verifyData.error || "Payment signature verification failed. Transaction was not confirmed."
+              );
+            }
+
+            setPaymentStatusMessage("Payment confirmed! Preparing your receipt...");
+
+            // Successfully verified and created in DB
+            setCompletedOrder(verifyData.order || {
+              id: `ORD-2026-${Math.floor(1000 + Math.random() * 9000)}`,
+              customerName: `${shippingForm.firstName} ${shippingForm.lastName}`,
+              email: shippingForm.email,
+              phone: shippingForm.phone,
+              shippingAddress: `${shippingForm.address}, ${shippingForm.city}, ${shippingForm.state} ${shippingForm.zip}, ${shippingForm.country}`,
+              items: items.map((i) => ({
+                productId: i.product.id,
+                productName: i.product.name,
+                quantity: i.qty,
+                priceUsd: i.product.priceUsd,
+              })),
+              subtotalUsd: finalTotalUsd,
+              status: "Confirmed",
+              paymentMethod: "razorpay",
+              paymentId: response.razorpay_payment_id,
+              createdAt: new Date().toISOString(),
+            });
+
+            clearCart();
+            setIsProcessing(false);
+            setGatewayModalOpen(false);
+            setStep("success");
+            if (typeof window !== "undefined") {
+              window.scrollTo({ top: 150, behavior: "smooth" });
+            }
+          } catch (verifyErr: any) {
+            setIsProcessing(false);
+            setPaymentError(verifyErr?.message || "Payment signature verification failed.");
+          }
+        },
+        modal: {
+          ondismiss: function () {
+            setIsProcessing(false);
+            setPaymentStatusMessage("");
+            setPaymentError("Payment was cancelled or the checkout window was dismissed.");
+          },
+        },
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+
+      rzp.on("payment.failed", function (response: any) {
+        setIsProcessing(false);
+        setPaymentStatusMessage("");
+        const reason = response.error?.description || response.error?.reason || "Payment was declined or failed.";
+        setPaymentError(`Payment failed: ${reason}`);
+      });
+
+      rzp.open();
+    } catch (err: any) {
+      setIsProcessing(false);
+      setPaymentStatusMessage("");
+      setPaymentError(err?.message || "Failed to initialize Razorpay checkout.");
+    }
+  };
+
+  const handleOpenGatewayModal = (e: React.FormEvent) => {
+    e.preventDefault();
+    setPaymentError("");
+
+    if (selectedGateway === "razorpay") {
+      handleRazorpayCheckout();
+      return;
     }
 
     setGatewayModalOpen(true);
-  };
-
-  const triggerRazorpaySDK = () => {
-    if (typeof window !== "undefined" && (window as any).Razorpay) {
-      try {
-        const rzp = new (window as any).Razorpay({
-          key: apiKeysConfig.razorpayKeyId,
-          amount: Math.round(finalTotalUsd * 83.5 * 100),
-          currency: "INR",
-          name: "Mun Creations",
-          description: "Luxury Handloom Saree Order",
-          image: "https://picsum.photos/seed/munlogo/200/200",
-          prefill: {
-            name: `${shippingForm.firstName} ${shippingForm.lastName}`,
-            email: shippingForm.email,
-            contact: shippingForm.phone,
-          },
-          theme: { color: "#58111A" },
-          handler: function () {
-            handleConfirmGatewayPayment();
-          },
-          modal: {
-            ondismiss: function () {
-              // Open modal fallback on dismiss
-              setGatewayModalOpen(true);
-            },
-          },
-        });
-        rzp.open();
-        return;
-      } catch {
-        // Fallback to interactive modal simulator
-        setGatewayModalOpen(true);
-      }
-    } else {
-      setGatewayModalOpen(true);
-    }
   };
 
   const handleConfirmGatewayPayment = () => {
     setIsProcessing(true);
 
     setTimeout(() => {
-      // Create backend order in DB
+      // Create backend order in DB for other simulated gateways
       const newOrder = backendDB.createOrder({
         customerName: `${shippingForm.firstName} ${shippingForm.lastName}`,
         email: shippingForm.email,
@@ -239,6 +397,7 @@ function CheckoutContent() {
           priceUsd: i.product.priceUsd,
         })),
         subtotalUsd: finalTotalUsd,
+        paymentMethod: selectedGateway,
       });
 
       setCompletedOrder(newOrder);
@@ -648,71 +807,44 @@ function CheckoutContent() {
                 {/* GATEWAY 1: Razorpay Terminal */}
                 {selectedGateway === "razorpay" && (
                   <div className="p-5 rounded-sm border border-blue-200 bg-blue-50/40 space-y-4 text-xs animate-in fade-in">
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="font-bold text-blue-900 flex items-center gap-2">
                         <Smartphone className="h-4 w-4 text-blue-700" />
-                        <span>Razorpay Payment Gateway</span>
+                        <span>Razorpay Standard Web Checkout</span>
                       </div>
-                      <span className="text-[10px] bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-mono font-bold">Key: {apiKeysConfig.razorpayKeyId}</span>
+                      <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-mono font-bold flex items-center gap-1">
+                        <ShieldCheck className="h-3 w-3 text-emerald-700" />
+                        <span>256-Bit SSL Encrypted</span>
+                      </span>
                     </div>
 
-                    <div className="flex border-b border-blue-200 text-xs font-semibold gap-3 pb-2">
-                      <button
-                        type="button"
-                        onClick={() => setRazorpaySubMethod("upi")}
-                        className={`pb-1 ${razorpaySubMethod === "upi" ? "border-b-2 border-blue-700 text-blue-900 font-bold" : "text-muted-foreground"}`}
-                      >
-                        UPI (GPay / PhonePe / Paytm)
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setRazorpaySubMethod("qr")}
-                        className={`pb-1 ${razorpaySubMethod === "qr" ? "border-b-2 border-blue-700 text-blue-900 font-bold" : "text-muted-foreground"}`}
-                      >
-                        Razorpay Instant QR
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setRazorpaySubMethod("netbanking")}
-                        className={`pb-1 ${razorpaySubMethod === "netbanking" ? "border-b-2 border-blue-700 text-blue-900 font-bold" : "text-muted-foreground"}`}
-                      >
-                        NetBanking
-                      </button>
+                    <div className="p-3 bg-white rounded border border-blue-200 space-y-2">
+                      <div className="text-xs text-foreground font-medium">
+                        Instant Standard Checkout with 100+ payment methods:
+                      </div>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-[11px]">
+                        <div className="p-2 bg-blue-50/60 rounded border border-blue-100 flex items-center gap-1.5 font-medium text-blue-900">
+                          <Smartphone className="h-3.5 w-3.5 text-blue-600" />
+                          <span>UPI & QR</span>
+                        </div>
+                        <div className="p-2 bg-blue-50/60 rounded border border-blue-100 flex items-center gap-1.5 font-medium text-blue-900">
+                          <CreditCard className="h-3.5 w-3.5 text-blue-600" />
+                          <span>All Cards</span>
+                        </div>
+                        <div className="p-2 bg-blue-50/60 rounded border border-blue-100 flex items-center gap-1.5 font-medium text-blue-900">
+                          <ShieldCheck className="h-3.5 w-3.5 text-blue-600" />
+                          <span>NetBanking</span>
+                        </div>
+                        <div className="p-2 bg-blue-50/60 rounded border border-blue-100 flex items-center gap-1.5 font-medium text-blue-900">
+                          <Sparkles className="h-3.5 w-3.5 text-blue-600" />
+                          <span>Wallets & EMI</span>
+                        </div>
+                      </div>
+                      <div className="text-[10px] text-muted-foreground pt-1 flex items-center gap-1">
+                        <Lock className="h-3 w-3 text-emerald-600" />
+                        <span>Backend Order Verification + HMAC-SHA256 signature validation active.</span>
+                      </div>
                     </div>
-
-                    {razorpaySubMethod === "upi" && (
-                      <div className="space-y-2">
-                        <label className="font-bold block text-foreground">VPA / UPI ID</label>
-                        <input
-                          type="text"
-                          required
-                          value={upiId}
-                          onChange={(e) => setUpiId(e.target.value)}
-                          placeholder="e.g. username@okaxis"
-                          className="w-full p-2.5 bg-white border border-border rounded-sm focus:outline-none focus:border-blue-600 font-mono text-xs"
-                        />
-                      </div>
-                    )}
-
-                    {razorpaySubMethod === "qr" && (
-                      <div className="text-center py-3 space-y-2 bg-white rounded border border-blue-200 p-4">
-                        <QrCode className="h-20 w-20 mx-auto text-blue-900" />
-                        <div className="font-bold text-xs">Scan with Google Pay, PhonePe, or Paytm</div>
-                      </div>
-                    )}
-
-                    {razorpaySubMethod === "netbanking" && (
-                      <div className="space-y-2">
-                        <label className="font-bold block text-foreground">Select NetBanking Partner</label>
-                        <select className="w-full p-2.5 bg-white border border-border rounded-sm text-xs">
-                          <option>HDFC Bank</option>
-                          <option>ICICI Bank</option>
-                          <option>State Bank of India (SBI)</option>
-                          <option>Axis Bank</option>
-                          <option>Kotak Mahindra Bank</option>
-                        </select>
-                      </div>
-                    )}
                   </div>
                 )}
 
@@ -832,14 +964,50 @@ function CheckoutContent() {
                   </div>
                 )}
 
+                {/* Payment Status Message */}
+                {isProcessing && paymentStatusMessage && (
+                  <div className="p-3 bg-blue-50 border border-blue-200 text-blue-800 rounded-sm text-xs flex items-center gap-2 animate-in fade-in">
+                    <span className="h-3.5 w-3.5 border-2 border-blue-700 border-t-transparent rounded-full animate-spin shrink-0" />
+                    <span>{paymentStatusMessage}</span>
+                  </div>
+                )}
+
+                {/* Payment Error Banner */}
+                {paymentError && (
+                  <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-sm text-xs flex items-center gap-2 animate-in fade-in">
+                    <AlertCircle className="h-4 w-4 shrink-0 text-red-600" />
+                    <span>{paymentError}</span>
+                  </div>
+                )}
+
                 {/* Main Action Trigger Button */}
                 <button
                   type="submit"
-                  className="w-full mt-4 bg-[var(--gold)] text-[var(--wine-deep)] py-4 text-xs font-bold uppercase tracking-[0.2em] rounded-sm hover:bg-white transition-all shadow-xl flex items-center justify-center gap-2 border border-[var(--wine-deep)]/20"
+                  disabled={isProcessing}
+                  className={`w-full mt-4 py-4 text-xs font-bold uppercase tracking-[0.2em] rounded-sm transition-all shadow-xl flex items-center justify-center gap-2 border border-[var(--wine-deep)]/20 ${
+                    isProcessing
+                      ? "bg-secondary text-muted-foreground cursor-not-allowed opacity-80"
+                      : selectedGateway === "razorpay"
+                      ? "bg-blue-700 text-white hover:bg-blue-800"
+                      : "bg-[var(--gold)] text-[var(--wine-deep)] hover:bg-white"
+                  }`}
                 >
-                  <Lock className="h-4 w-4 text-[var(--wine-deep)]" />
-                  <span>Launch {selectedGateway.toUpperCase()} Gateway ({formatPrice(finalTotalUsd)})</span>
-                  <ArrowRight className="h-4 w-4" />
+                  {isProcessing ? (
+                    <>
+                      <span className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                      <span>{paymentStatusMessage || "Processing Secure Checkout..."}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Lock className="h-4 w-4" />
+                      <span>
+                        {selectedGateway === "razorpay"
+                          ? `Pay with Razorpay (${formatPrice(finalTotalUsd)})`
+                          : `Launch ${selectedGateway.toUpperCase()} Gateway (${formatPrice(finalTotalUsd)})`}
+                      </span>
+                      <ArrowRight className="h-4 w-4" />
+                    </>
+                  )}
                 </button>
               </form>
             </div>

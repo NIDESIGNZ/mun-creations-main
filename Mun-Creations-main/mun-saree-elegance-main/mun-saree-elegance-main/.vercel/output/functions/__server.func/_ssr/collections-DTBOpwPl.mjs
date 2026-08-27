@@ -1,7 +1,7 @@
 import { r as COLLECTION_HIERARCHY } from "./catalog-iLO1lIu8.mjs";
 import { n as require_jsx_runtime } from "../_libs/react+tanstack__react-query.mjs";
 import { g as Link } from "../_libs/@tanstack/react-router+[...].mjs";
-import { p as Sparkles, pt as ArrowRight } from "../_libs/lucide-react.mjs";
+import { ft as ArrowRight, p as Sparkles } from "../_libs/lucide-react.mjs";
 import { a as I18nProvider, i as Header, n as CartProvider, r as Footer, t as CartDrawer } from "./cart-drawer-D9uioa6i.mjs";
 //#region node_modules/.nitro/vite/services/ssr/assets/collections-DTBOpwPl.js
 var import_jsx_runtime = require_jsx_runtime();
