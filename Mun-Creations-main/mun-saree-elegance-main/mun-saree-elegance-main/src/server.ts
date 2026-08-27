@@ -372,10 +372,11 @@ async function handleApiRequests(request: Request): Promise<Response | null> {
   }
 }
 
-export default {
-  async fetch(request: Request) {
+export default async function handler(req: any, res: any) {
+  // If invoked with Web Standard Request
+  if (req instanceof Request || (req?.url && typeof req?.headers?.get === "function")) {
     try {
-      const apiResponse = await handleApiRequests(request);
+      const apiResponse = await handleApiRequests(req);
       if (apiResponse) return apiResponse;
 
       return new Response(JSON.stringify({ error: "Endpoint not found" }), {
@@ -389,5 +390,70 @@ export default {
         headers: { "content-type": "application/json" },
       });
     }
-  },
-};
+  }
+
+  // If invoked with Node.js req / res
+  try {
+    const host = req.headers?.host || "localhost";
+    const protocol = req.headers?.["x-forwarded-proto"] || "https";
+    const fullUrl = new URL(req.url, `${protocol}://${host}`);
+
+    let rawBody: string | undefined;
+    if (req.method !== "GET" && req.method !== "HEAD") {
+      if (req.body && typeof req.body === "object") {
+        rawBody = JSON.stringify(req.body);
+      } else if (typeof req.body === "string") {
+        rawBody = req.body;
+      } else {
+        const chunks: Buffer[] = [];
+        for await (const chunk of req) {
+          chunks.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk);
+        }
+        if (chunks.length > 0) {
+          rawBody = Buffer.concat(chunks).toString("utf-8");
+        }
+      }
+    }
+
+    const headersInit: Record<string, string> = {};
+    if (req.headers) {
+      for (const [key, value] of Object.entries(req.headers)) {
+        if (typeof value === "string") {
+          headersInit[key] = value;
+        } else if (Array.isArray(value)) {
+          headersInit[key] = value.join(", ");
+        }
+      }
+    }
+
+    const webReq = new Request(fullUrl.toString(), {
+      method: req.method,
+      headers: headersInit,
+      body: rawBody,
+    });
+
+    const response = await handleApiRequests(webReq);
+
+    if (!response) {
+      res.statusCode = 404;
+      res.setHeader("Content-Type", "application/json");
+      res.end(JSON.stringify({ error: "Endpoint not found" }));
+      return;
+    }
+
+    res.statusCode = response.status;
+    response.headers.forEach((val, key) => {
+      res.setHeader(key, val);
+    });
+
+    const responseText = await response.text();
+    res.end(responseText);
+  } catch (err: any) {
+    console.error("Serverless handler error:", err);
+    if (res && !res.headersSent) {
+      res.statusCode = 500;
+      res.setHeader("Content-Type", "application/json");
+      res.end(JSON.stringify({ error: err?.message || "Internal server error" }));
+    }
+  }
+}

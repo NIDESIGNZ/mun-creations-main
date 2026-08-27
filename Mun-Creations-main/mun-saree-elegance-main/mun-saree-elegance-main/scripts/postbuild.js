@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { execSync } from "child_process";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -8,58 +9,46 @@ const appDir = path.resolve(__dirname, "..");
 const repoRootDir = path.resolve(appDir, "../../..");
 
 function runPostBuild() {
-  console.log("=== RUNNING POST-BUILD SPA & VERCEL OUTPUT OPTIMIZATION ===");
+  console.log("=== RUNNING COMPLETE POST-BUILD SPA & SERVERLESS API PIPELINE ===");
 
+  const distDir = path.join(appDir, "dist");
   const staticDir = path.join(appDir, ".vercel", "output", "static");
-  const assetsDir = path.join(staticDir, "assets");
+  const functionsDir = path.join(appDir, ".vercel", "output", "functions", "__server.func");
 
-  if (!fs.existsSync(staticDir)) {
-    fs.mkdirSync(staticDir, { recursive: true });
+  // 1. Ensure directories exist
+  if (!fs.existsSync(staticDir)) fs.mkdirSync(staticDir, { recursive: true });
+  if (!fs.existsSync(functionsDir)) fs.mkdirSync(functionsDir, { recursive: true });
+
+  // 2. Sync Vite dist/ -> .vercel/output/static
+  if (fs.existsSync(distDir)) {
+    fs.cpSync(distDir, staticDir, { recursive: true });
+    console.log(`[Static] Synced Vite dist/ -> ${staticDir}`);
   }
 
-  let jsFile = "assets/index.js";
-  let cssLinks = "";
+  // 3. Compile serverless API handler with esbuild
+  const serverEntry = path.join(appDir, "src", "server.ts");
+  const serverOutput = path.join(functionsDir, "index.mjs");
+  console.log(`[API] Compiling ${serverEntry} -> ${serverOutput}...`);
+  execSync(
+    `npx esbuild "${serverEntry}" --bundle --platform=node --format=esm --loader:.jpg=empty --loader:.png=empty --loader:.svg=empty --loader:.mp4=empty --loader:.webp=empty --outfile="${serverOutput}"`,
+    { stdio: "inherit", cwd: appDir }
+  );
 
-  if (fs.existsSync(assetsDir)) {
-    const files = fs.readdirSync(assetsDir);
-    const mainJs = files.find((f) => f.startsWith("index-") && f.endsWith(".js"));
-    if (mainJs) jsFile = `/assets/${mainJs}`;
+  // 4. Write function .vc-config.json
+  const vcConfig = {
+    runtime: "nodejs20.x",
+    handler: "index.mjs",
+    launcherType: "Nodejs",
+    shouldAddHelpers: false,
+    supportsResponseStreaming: true
+  };
+  fs.writeFileSync(path.join(functionsDir, ".vc-config.json"), JSON.stringify(vcConfig, null, 2), "utf-8");
+  console.log(`[API] Wrote ${path.join(functionsDir, ".vc-config.json")}`);
 
-    const cssFiles = files.filter((f) => f.endsWith(".css"));
-    cssLinks = cssFiles
-      .map((c) => `    <link rel="stylesheet" href="/assets/${c}" />`)
-      .join("\n");
-  }
-
-  const html = `<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mun Creations | Luxury Handloom Sarees</title>
-    <meta name="description" content="Discover exquisite handwoven Banarasi, Kanjivaram, and Tussar silk sarees crafted by master weavers. Mun Creations — Where Heritage Meets Haute Couture." />
-    <link rel="icon" type="image/png" href="/favicon.png" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-${cssLinks}
-  </head>
-  <body class="bg-background text-foreground antialiased selection:bg-[#c5a880]/30 min-h-screen">
-    <div id="root"></div>
-    <script type="module" src="${jsFile}"></script>
-  </body>
-</html>`;
-
-  // 1. Write index.html to .vercel/output/static
-  const staticIndex = path.join(staticDir, "index.html");
-  fs.writeFileSync(staticIndex, html, "utf-8");
-  console.log(`Generated ${staticIndex}`);
-
-  // 2. Configure clean Build Output API v3 config.json
+  // 5. Write .vercel/output/config.json with explicit SPA + API routing
   const config = {
     version: 3,
-    framework: { name: "nitro", version: "3.0.260603-beta" },
+    framework: { name: "vite", version: "8.1.5" },
     routes: [
       { headers: { "cache-control": "public, max-age=31536000, immutable" }, "src": "/assets/(.*)" },
       { handle: "filesystem" },
@@ -69,20 +58,14 @@ ${cssLinks}
   };
   const appConfigFile = path.join(appDir, ".vercel", "output", "config.json");
   fs.writeFileSync(appConfigFile, JSON.stringify(config, null, 2), "utf-8");
-  console.log(`Configured clean Vercel routing in ${appConfigFile}`);
+  console.log(`[Routing] Wrote clean Vercel routing to ${appConfigFile}`);
 
-  // 3. Sync to dist/
-  const distDir = path.join(appDir, "dist");
-  if (!fs.existsSync(distDir)) fs.mkdirSync(distDir, { recursive: true });
-  fs.cpSync(staticDir, distDir, { recursive: true });
-  console.log(`Synced static files to ${distDir}`);
-
-  // 4. Sync .vercel/output to repo root
+  // 6. Sync .vercel/output to repo root
   const rootVercelOutput = path.join(repoRootDir, ".vercel", "output");
   const appVercelOutput = path.join(appDir, ".vercel", "output");
   if (fs.existsSync(appVercelOutput)) {
     fs.cpSync(appVercelOutput, rootVercelOutput, { recursive: true });
-    console.log(`Synced .vercel/output to repo root: ${rootVercelOutput}`);
+    console.log(`[Sync] Synced .vercel/output to repo root: ${rootVercelOutput}`);
   }
 
   console.log("=== POST-BUILD COMPLETE ===");
