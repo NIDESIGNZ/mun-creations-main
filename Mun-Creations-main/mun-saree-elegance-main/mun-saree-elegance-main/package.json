@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build && node -e \"const fs=require('fs'); if(fs.existsSync('.vercel/output/static')){fs.cpSync('.vercel/output/static','dist',{recursive:true});}\"",
+    "build": "vite build && node scripts/postbuild.js",
     "build:dev": "vite build --mode development",
     "preview": "nitro preview",
     "start": "nitro preview",

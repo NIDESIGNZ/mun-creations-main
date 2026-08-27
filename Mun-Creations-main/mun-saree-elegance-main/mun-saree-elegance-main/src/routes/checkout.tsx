@@ -5,7 +5,6 @@ import { CartProvider, useCart } from "@/lib/cart";
 import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/footer";
 import { CartDrawer } from "@/components/site/cart-drawer";
-import { backendDB } from "@/lib/backend-api";
 import {
   ShieldCheck,
   CreditCard,
@@ -384,12 +383,14 @@ function CheckoutContent() {
     setIsProcessing(true);
 
     setTimeout(() => {
-      // Create backend order in DB for other simulated gateways
-      const newOrder = backendDB.createOrder({
+      // Create order object for completed screen
+      const newOrder = {
+        id: `ORD-2026-${Math.floor(1000 + Math.random() * 9000)}`,
         customerName: `${shippingForm.firstName} ${shippingForm.lastName}`,
         email: shippingForm.email,
         phone: shippingForm.phone,
         shippingAddress: `${shippingForm.address}, ${shippingForm.city}, ${shippingForm.state} ${shippingForm.zip}, ${shippingForm.country}`,
+        pincode: shippingForm.zip,
         items: items.map((i) => ({
           productId: i.product.id,
           productName: i.product.name,
@@ -397,8 +398,18 @@ function CheckoutContent() {
           priceUsd: i.product.priceUsd,
         })),
         subtotalUsd: finalTotalUsd,
-        paymentMethod: selectedGateway,
-      });
+        status: "Confirmed" as const,
+        paymentMethod: selectedGateway as any,
+        paymentId: `sim_${Date.now()}`,
+        createdAt: new Date().toISOString(),
+      };
+
+      // Persist to server API asynchronously
+      fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newOrder),
+      }).catch(() => {});
 
       setCompletedOrder(newOrder);
       clearCart();

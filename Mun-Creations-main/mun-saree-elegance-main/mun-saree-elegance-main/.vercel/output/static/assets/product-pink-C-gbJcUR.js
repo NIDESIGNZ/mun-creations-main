@@ -1,1 +1,0 @@
-var e=`/assets/product-pink-CSPlHlcH.jpg`;export{e as t};

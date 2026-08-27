@@ -1,5 +1,4 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "cd mun-saree-elegance-main && npm install && npm run build",
-  "outputDirectory": "mun-saree-elegance-main/.vercel/output"
+  "buildCommand": "npm run build"
 }

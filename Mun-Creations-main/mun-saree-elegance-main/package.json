@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "dev": "npm --prefix mun-saree-elegance-main run dev",
-    "build": "npm --prefix mun-saree-elegance-main run build",
+    "build": "npm --prefix mun-saree-elegance-main run build && node -e \"const fs=require('fs'); const src='mun-saree-elegance-main/.vercel/output'; if(fs.existsSync(src)){fs.cpSync(src,'.vercel/output',{recursive:true});}\"",
     "start": "npm --prefix mun-saree-elegance-main run start",
     "preview": "npm --prefix mun-saree-elegance-main run preview"
   }

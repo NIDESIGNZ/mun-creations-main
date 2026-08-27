@@ -1,24 +1,6 @@
-import "./lib/error-capture";
-import { consumeLastCapturedError } from "./lib/error-capture";
-import { renderErrorPage } from "./lib/error-page";
 import { backendDB } from "./lib/backend-api";
 import { aiTryOnService } from "./services/aiTryOnService";
 import { razorpayService } from "./services/razorpayService";
-
-type ServerEntry = {
-  fetch: (request: Request, env: unknown, ctx: unknown) => Promise<Response> | Response;
-};
-
-let serverEntryPromise: Promise<ServerEntry> | undefined;
-
-async function getServerEntry(): Promise<ServerEntry> {
-  if (!serverEntryPromise) {
-    serverEntryPromise = import("@tanstack/react-start/server-entry").then(
-      (m) => (m.default ?? m) as ServerEntry,
-    );
-  }
-  return serverEntryPromise;
-}
 
 // API router for backend REST endpoints
 async function handleApiRequests(request: Request): Promise<Response | null> {
@@ -40,10 +22,19 @@ async function handleApiRequests(request: Request): Promise<Response | null> {
 
   try {
     if (path === "/api/health") {
-      return new Response(JSON.stringify(backendDB.getHealthStatus()), { headers });
+      const dbStatus = backendDB.getHealthStatus();
+      return new Response(
+        JSON.stringify({
+          service: "Mun Creations API",
+          ...dbStatus,
+          status: "ok",
+          timestamp: new Date().toISOString(),
+        }),
+        { headers }
+      );
     }
 
-    if (path === "/api/create-order") {
+    if (path === "/api/create-order" || path === "/api/payments/razorpay/create-order") {
       if (request.method !== "POST") {
         return new Response(JSON.stringify({ error: "Method not allowed. Use POST." }), {
           status: 405,
@@ -88,7 +79,7 @@ async function handleApiRequests(request: Request): Promise<Response | null> {
       }
     }
 
-    if (path === "/api/verify-payment") {
+    if (path === "/api/verify-payment" || path === "/api/payments/razorpay/verify") {
       if (request.method !== "POST") {
         return new Response(JSON.stringify({ error: "Method not allowed. Use POST." }), {
           status: 405,
@@ -151,6 +142,16 @@ async function handleApiRequests(request: Request): Promise<Response | null> {
     }
 
     if (path === "/api/webhooks/razorpay") {
+      if (request.method === "GET") {
+        return new Response(
+          JSON.stringify({
+            status: "ok",
+            message: "Razorpay Webhook endpoint is active. POST requests with x-razorpay-signature header are required.",
+          }),
+          { status: 200, headers }
+        );
+      }
+
       if (request.method !== "POST") {
         return new Response(JSON.stringify({ error: "Method not allowed. Use POST." }), {
           status: 405,
@@ -371,45 +372,21 @@ async function handleApiRequests(request: Request): Promise<Response | null> {
   }
 }
 
-async function normalizeCatastrophicSsrResponse(response: Response): Promise<Response> {
-  if (response.status < 500) return response;
-  const contentType = response.headers.get("content-type") ?? "";
-  if (!contentType.includes("application/json")) return response;
-
-  const body = await response.clone().text();
-  if (!isH3SwallowedErrorBody(body)) return response;
-
-  console.error(consumeLastCapturedError() ?? new Error(`h3 swallowed SSR error: ${body}`));
-  return new Response(renderErrorPage(), {
-    status: 500,
-    headers: { "content-type": "text/html; charset=utf-8" },
-  });
-}
-
-function isH3SwallowedErrorBody(body: string): boolean {
-  try {
-    const payload = JSON.parse(body) as { unhandled?: unknown; message?: unknown };
-    return payload.unhandled === true && payload.message === "HTTPError";
-  } catch {
-    return false;
-  }
-}
-
 export default {
-  async fetch(request: Request, env: unknown, ctx: unknown) {
+  async fetch(request: Request) {
     try {
-      // Check API router first
       const apiResponse = await handleApiRequests(request);
       if (apiResponse) return apiResponse;
 
-      const handler = await getServerEntry();
-      const response = await handler.fetch(request, env, ctx);
-      return await normalizeCatastrophicSsrResponse(response);
-    } catch (error) {
-      console.error(error);
-      return new Response(renderErrorPage(), {
+      return new Response(JSON.stringify({ error: "Endpoint not found" }), {
+        status: 404,
+        headers: { "content-type": "application/json" },
+      });
+    } catch (error: any) {
+      console.error("API error:", error);
+      return new Response(JSON.stringify({ error: error?.message || "Internal server error" }), {
         status: 500,
-        headers: { "content-type": "text/html; charset=utf-8" },
+        headers: { "content-type": "application/json" },
       });
     }
   },
