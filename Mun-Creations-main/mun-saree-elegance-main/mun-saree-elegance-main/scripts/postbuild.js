@@ -30,7 +30,7 @@ function runPostBuild() {
   const serverOutput = path.join(functionsDir, "index.mjs");
   console.log(`[API] Compiling ${serverEntry} -> ${serverOutput}...`);
   execSync(
-    `npx esbuild "${serverEntry}" --bundle --platform=node --format=esm --loader:.jpg=empty --loader:.png=empty --loader:.svg=empty --loader:.mp4=empty --loader:.webp=empty --outfile="${serverOutput}"`,
+    `npx esbuild "${serverEntry}" --bundle --platform=node --format=esm --banner:js="import { createRequire } from 'module'; const require = createRequire(import.meta.url);" --loader:.jpg=empty --loader:.png=empty --loader:.svg=empty --loader:.mp4=empty --loader:.webp=empty --outfile="${serverOutput}"`,
     { stdio: "inherit", cwd: appDir }
   );
 

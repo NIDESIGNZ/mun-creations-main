@@ -73,21 +73,23 @@ export class RazorpayService {
       throw err;
     }
 
-    const calculatedItems = items.map((item) => {
-      if (!item.productId || typeof item.quantity !== "number" || item.quantity <= 0) {
-        const err: any = new Error(`Invalid item quantity for product ID: ${item.productId}`);
+    const calculatedItems = items.map((item: any) => {
+      const pId = item.productId || item.id;
+      const qty = typeof item.quantity === "number" ? item.quantity : (typeof item.qty === "number" ? item.qty : 1);
+      if (!pId || typeof qty !== "number" || qty <= 0) {
+        const err: any = new Error(`Invalid item quantity for product ID: ${pId}`);
         err.status = 400;
         throw err;
       }
 
-      const product = backendDB.getProductById(item.productId);
+      const product = backendDB.getProductById(pId);
       if (!product) {
-        const err: any = new Error(`Product with ID "${item.productId}" was not found in catalog.`);
+        const err: any = new Error(`Product with ID "${pId}" was not found in catalog.`);
         err.status = 404;
         throw err;
       }
 
-      if (product.availability === "Out of Stock" || (product.stockQuantity !== undefined && product.stockQuantity < item.quantity)) {
+      if (product.availability === "Out of Stock" || (product.stockQuantity !== undefined && product.stockQuantity < qty)) {
         const err: any = new Error(`Product "${product.name}" does not have enough stock available.`);
         err.status = 400;
         throw err;
@@ -96,7 +98,7 @@ export class RazorpayService {
       return {
         productId: product.id,
         productName: product.name,
-        quantity: Math.floor(item.quantity),
+        quantity: Math.floor(qty),
         priceUsd: product.priceUsd,
       };
     });
