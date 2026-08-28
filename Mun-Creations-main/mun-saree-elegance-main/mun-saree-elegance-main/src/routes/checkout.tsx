@@ -117,13 +117,6 @@ function CheckoutContent() {
   const [paymentError, setPaymentError] = useState<string>("");
   const [paymentStatusMessage, setPaymentStatusMessage] = useState<string>("");
 
-  // Optional API Keys Config (Environment or Live Overrides)
-  const apiKeysConfig = {
-    razorpayKeyId: (import.meta as any).env?.VITE_RAZORPAY_KEY_ID || "",
-    stripePublishableKey: (import.meta as any).env?.VITE_STRIPE_PUBLISHABLE_KEY || "pk_test_MunCreations2026",
-    paypalClientId: (import.meta as any).env?.VITE_PAYPAL_CLIENT_ID || "sb_MunCreations2026",
-  };
-
   // Price Computations
   const isFreeShipping = subtotalUsd >= 500 || (currency === "INR" && subtotalUsd * 83.5 >= 40000);
   const shippingFeeUsd = isFreeShipping
@@ -236,7 +229,7 @@ function CheckoutContent() {
         throw new Error(orderData.error || "Failed to create Razorpay order on server.");
       }
 
-      const activeKeyId = orderData.key_id || apiKeysConfig.razorpayKeyId;
+      const activeKeyId = orderData.key_id;
 
       if (!activeKeyId) {
         throw new Error("Razorpay Key ID is not configured on the server.");

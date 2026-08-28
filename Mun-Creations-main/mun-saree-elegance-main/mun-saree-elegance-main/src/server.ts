@@ -23,11 +23,15 @@ async function handleApiRequests(request: Request): Promise<Response | null> {
   try {
     if (path === "/api/health") {
       const dbStatus = backendDB.getHealthStatus();
+      const hasKeyId = Boolean(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_ID.trim());
+      const hasKeySecret = Boolean(process.env.RAZORPAY_KEY_SECRET && process.env.RAZORPAY_KEY_SECRET.trim());
       return new Response(
         JSON.stringify({
           service: "Mun Creations API",
           ...dbStatus,
           status: "ok",
+          razorpay_key_id_present: hasKeyId,
+          razorpay_key_secret_present: hasKeySecret,
           timestamp: new Date().toISOString(),
         }),
         { headers }
