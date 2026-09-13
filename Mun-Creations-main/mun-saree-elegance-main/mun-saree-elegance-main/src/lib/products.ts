@@ -18,6 +18,26 @@ import tussarTribalFusion5 from "@/assets/tussar-tribal-fusion-5.jpg";
 import tussarTribalFusion6 from "@/assets/tussar-tribal-fusion-6.jpg";
 import kanjeevaramImperialRose1 from "@/assets/kanjeevaram-imperial-rose-1.jpg";
 import kanjeevaramImperialRose2 from "@/assets/kanjeevaram-imperial-rose-2.jpg";
+import kanjeevaram2gRichBorder1 from "@/assets/kanjeevaram-2g-rich-border-1.jpg";
+import kanjeevaram2gRichBorder2 from "@/assets/kanjeevaram-2g-rich-border-2.jpg";
+import kanjeevaram2gRichBorder3 from "@/assets/kanjeevaram-2g-rich-border-3.jpg";
+import kanjeevaram2gRichBorder4 from "@/assets/kanjeevaram-2g-rich-border-4.jpg";
+import paithaniGaumata1 from "@/assets/paithani-gaumata-pure-silk-1.jpg";
+import paithaniGaumata2 from "@/assets/paithani-gaumata-pure-silk-2.jpg";
+import paithaniGaumata3 from "@/assets/paithani-gaumata-pure-silk-3.jpg";
+import paithaniGaumata4 from "@/assets/paithani-gaumata-pure-silk-4.jpg";
+import bandhaniPaithaniMagenta from "@/assets/bandhani-paithani-magenta.jpg";
+import bandhaniPaithaniNavy from "@/assets/bandhani-paithani-navy.jpg";
+import bandhaniPaithaniSkyBlue from "@/assets/bandhani-paithani-skyblue.jpg";
+import bandhaniPaithaniRed from "@/assets/bandhani-paithani-red.jpg";
+import paithaniTripleMunia1 from "@/assets/paithani-triple-munia-1.jpg";
+import paithaniTripleMunia2 from "@/assets/paithani-triple-munia-2.jpg";
+import paithaniTripleMunia3 from "@/assets/paithani-triple-munia-3.jpg";
+import paithaniTripleMunia4 from "@/assets/paithani-triple-munia-4.jpg";
+import paithaniTripleMuniaRed1 from "@/assets/paithani-triple-munia-red-1.jpg";
+import paithaniTripleMuniaRed2 from "@/assets/paithani-triple-munia-red-2.jpg";
+import paithaniTripleMuniaRed3 from "@/assets/paithani-triple-munia-red-3.jpg";
+import paithaniTripleMuniaRed4 from "@/assets/paithani-triple-munia-red-4.jpg";
 
 export {
   heroSaree,
@@ -40,6 +60,26 @@ export {
   tussarTribalFusion6,
   kanjeevaramImperialRose1,
   kanjeevaramImperialRose2,
+  kanjeevaram2gRichBorder1,
+  kanjeevaram2gRichBorder2,
+  kanjeevaram2gRichBorder3,
+  kanjeevaram2gRichBorder4,
+  paithaniGaumata1,
+  paithaniGaumata2,
+  paithaniGaumata3,
+  paithaniGaumata4,
+  bandhaniPaithaniMagenta,
+  bandhaniPaithaniNavy,
+  bandhaniPaithaniSkyBlue,
+  bandhaniPaithaniRed,
+  paithaniTripleMunia1,
+  paithaniTripleMunia2,
+  paithaniTripleMunia3,
+  paithaniTripleMunia4,
+  paithaniTripleMuniaRed1,
+  paithaniTripleMuniaRed2,
+  paithaniTripleMuniaRed3,
+  paithaniTripleMuniaRed4,
 };
 
 export type ProductFAQ = {
@@ -690,6 +730,418 @@ export const PRODUCTS: Product[] = [
     careInstructions: "Spot clean only.",
     shippingInformation: "Dispatched within 24 hours.",
     returnExchangeInfo: "7-day exchange window.",
+  },
+
+  // 10. 2G PURE KANJIVARAM SILK SAREE (Silk Mark Certified)
+  {
+    id: "p10",
+    sku: "MC-KANJI-2G-01",
+    name: "2G Pure Kanjivaram Rich Border Silk Saree with Rich Pallu",
+    slug: "2g-pure-kanjivaram-rich-border-pallu-saree",
+    category: "Kanjivaram",
+    subcategory: "Pure Kanjivaram",
+    mainCategory: "sarees",
+    group: "Kanjivaram",
+    collection: "Kanjivaram Heritage",
+    productType: "Kanjivaram",
+    fabric: "Pure Silk",
+    color: "Rust Orange",
+    secondaryColor: "Gold & Magenta Pink",
+    occasion: ["Wedding", "Bridal", "Reception", "Grand Festive"],
+    workType: "2G Pure Zari Weave & Korvai Temple Border",
+    designPattern: "Rich Korvai Border with Gleaming Gold Tissue Pallu",
+    weave: "Authentic Korvai Handloom Weave",
+    borderType: "Rich Korvai Temple Zari Border with Magenta Pink Selvedge",
+    palluType: "Heavy Rich 2G Gold Tissue Zari Brocade Pallu",
+    blousePiece: true,
+    blouseColor: "Matching Rust Orange Silk with Zari Border",
+    sareeLength: "5.5 meters",
+    sareeWidth: "46 inches",
+    blouseLength: "0.8 meters (Unstitched)",
+    weight: "820 grams",
+    transparency: "Opaque",
+    texture: "Heavy Lustrous Pure Silk with Metallic Sheen",
+    drape: "Regal Structured Drape",
+    originRegion: "Kanchipuram, Tamil Nadu",
+    craftType: "Traditional Korvai Handloom Weaving",
+    handloomOrPowerloom: "Handloom",
+    availability: "Available",
+    inStock: true,
+    stockQuantity: 2,
+    priceUsd: 318,
+    compareAtUsd: 395,
+    priceTier: "Premium",
+    vendor: "Mun Creations",
+    badge: "new",
+    image: kanjeevaram2gRichBorder1,
+    images: [
+      kanjeevaram2gRichBorder1,
+      kanjeevaram2gRichBorder2,
+      kanjeevaram2gRichBorder3,
+      kanjeevaram2gRichBorder4,
+    ],
+    galleryImages: {
+      front: kanjeevaram2gRichBorder1,
+      pallu: kanjeevaram2gRichBorder3,
+      border: kanjeevaram2gRichBorder2,
+      closeUp: kanjeevaram2gRichBorder4,
+      model: kanjeevaram2gRichBorder1,
+    },
+    swatches: ["#d9531e", "#d4af37", "#c2185b"],
+    shortDescription:
+      "🦚 2G Pure Kanjivaram silk saree featuring rich temple korvai borders, heavy tissue gold zari pallu, and matching blouse piece. Silk Mark Certified.",
+    fullDescription:
+      "An heirloom masterpiece handwoven in the legendary temple town of Kanchipuram. This authentic 2G Pure Kanjivaram saree boasts a breathtaking dual-tone rust orange body juxtaposed with a rich magenta pink temple Korvai border and a grand, heavy gold tissue zari pallu. Accompanied by an unstitched pure silk blouse piece with matching rich borders. Silk Mark Certified for 100% pure natural mulberry silk and authentic zari.",
+    keyFeatures: [
+      "100% Pure Kanjivaram Mulberry Silk (Silk Mark Certified)",
+      "2G Pure Gold Tissue Zari Pallu with Intricate Brocade",
+      "Authentic Traditional Temple Korvai Contrast Border",
+      "Free Shipping Within India (26,500 INR)",
+      "Includes Matching Unstitched Pure Silk Blouse Piece",
+    ],
+    fabricDescription:
+      "Woven from high-denier Mulberry silk yarns twisted in the traditional 2G ply method, providing exceptional durability, body, and an unmistakable metallic glow that drapes royally.",
+    craftDescription:
+      "Korvai is the ancient art of interlocking the border and body threads using three shuttles operated by two master weavers, creating a seamless, contrast border with traditional spired temple motifs.",
+    careInstructions:
+      "Dry clean only. Do not wash or machine spin. Iron on low heat on the reverse side under a protective muslin cloth.",
+    storageInstructions:
+      "Wrap in unbleached pure cotton or muslin fabric. Change folds periodically to preserve zari luster.",
+    shippingInformation:
+      "Free Shipping within India (26,500 INR). Dispatched within 24 hours via insured express air courier.",
+    returnExchangeInfo: "7-day authentication and exchange guarantee.",
+  },
+
+  // 11. GAUMATA PAITHANI (Pure Silk by Silk Work, Silk Mark Certified)
+  {
+    id: "p11",
+    sku: "MC-PAITH-GAU-01",
+    name: "Gaumata Paithani Pure Silk Handwoven Saree",
+    slug: "gaumata-paithani-pure-silk-handwoven-saree",
+    category: "Paithani",
+    subcategory: "Pure Silk Paithani",
+    mainCategory: "sarees",
+    group: "Paithani",
+    collection: "Royal Paithani",
+    productType: "Paithani",
+    fabric: "Pure Silk",
+    color: "Cream / Off-White",
+    secondaryColor: "Yellow, Emerald Green & Magenta Pink",
+    occasion: ["Pooja", "Auspicious Occasion", "Wedding", "Festive", "Reception"],
+    workType: "100% Handwoven Tapestry Weave with Gaumata Pallu & Munia Border",
+    designPattern: "Auspicious Gaumata with Sacred Trees & Lotus Pallu, General Round Butti Body",
+    weave: "100% Handweaving Pure Silk By Silk Work",
+    borderType: "Single Munia Border",
+    palluType: "Auspicious Gaumata Pallu with Sacred Trees & Blooming Lotus",
+    blousePiece: true,
+    blouseColor: "Matching Cream Pure Silk with Single Munia Border",
+    sareeLength: "5.5 meters",
+    sareeWidth: "46 inches",
+    blouseLength: "0.8 meters (Unstitched)",
+    weight: "790 grams",
+    transparency: "Opaque",
+    texture: "Soft, Lustrous Pure Silk Handloom Weave",
+    drape: "Regal Fluid Drape",
+    originRegion: "Yeola / Paithan, Maharashtra",
+    craftType: "Traditional Handloom Paithani Tapestry Weave",
+    handloomOrPowerloom: "Handloom",
+    availability: "Available",
+    inStock: true,
+    stockQuantity: 2,
+    priceUsd: 341.32,
+    compareAtUsd: 420,
+    priceTier: "Premium",
+    vendor: "Mun Creations",
+    badge: "new",
+    image: paithaniGaumata1,
+    images: [
+      paithaniGaumata1,
+      paithaniGaumata2,
+      paithaniGaumata3,
+      paithaniGaumata4,
+    ],
+    galleryImages: {
+      front: paithaniGaumata1,
+      pallu: paithaniGaumata2,
+      border: paithaniGaumata3,
+      closeUp: paithaniGaumata4,
+      model: paithaniGaumata1,
+    },
+    swatches: ["#fbf8f0", "#ffd700", "#1b5e20"],
+    shortDescription:
+      "⛱️ GAUMATA PAITHANI: 100% Handwoven pure silk saree with Single Munia border, auspicious Gaumata pallu, and delicate round butti. Silk Mark Certified.",
+    fullDescription:
+      "A sacred and regal heirloom masterpiece, this Gaumata Paithani saree is handwoven in 100% pure silk-by-silk craftsmanship. Featuring an auspicious Gaumata (Kamadhenu) pallu adorned with sacred kalpavriksha trees and sacred lotus blooms, complemented by the iconic Single Munia (parrot) border and classic round butti motifs across a pristine cream silk body. Note: Colour may slightly differ due to phone camera & lighting. Silk Mark Certified.",
+    keyFeatures: [
+      "100% Handweaving with Pure Silk By Silk Work",
+      "Auspicious Gaumata (Sacred Cow) Pallu with Tree & Lotus Motifs",
+      "Iconic Single Munia Border",
+      "Delicate General Round Butti Weave",
+      "Silk Mark Certified for 100% Pure Natural Silk",
+      "Pricing: 28,500/- INR (Free Shipping Within India Included)",
+      "Includes Matching Unstitched Pure Silk Blouse Piece",
+    ],
+    fabricDescription:
+      "Pure Silk By Silk Work: Woven with 100% pure natural mulberry silk in both warp and weft, giving the fabric a soft, natural handfeel, opulent sheen, and long-lasting heirloom quality.",
+    craftDescription:
+      "100% Handwoven Paithani technique utilizing traditional interlocking tapestry weft methods where each sacred Gaumata motif, Munia border, and round butti is meticulously crafted by master weavers.",
+    careInstructions:
+      "Dry clean only. Do not machine wash. Iron on low heat on the reverse side under a protective cloth. Note: Colour may slightly differ due to camera & lights.",
+    storageInstructions:
+      "Wrap in a breathable soft cotton or muslin cloth. Periodically air and change folds to maintain silk fibers and weave luster.",
+    shippingInformation:
+      "Pricing: 28,500/- INR. Free Shipping within India included. Dispatched within 24 hours via insured express courier.",
+    returnExchangeInfo: "7-day authentication and exchange guarantee.",
+  },
+
+  // 12. BANDHANI PAITHANI (Pure Silk & Jari Work, Silk Mark Certified)
+  {
+    id: "p12",
+    sku: "MC-PAITH-BAN-01",
+    name: "Bandhani Paithani Pure Silk Saree with Designer Parrot Pallu",
+    slug: "bandhani-paithani-pure-silk-saree-with-designer-parrot-pallu",
+    category: "Paithani",
+    subcategory: "Bandhani Paithani",
+    mainCategory: "sarees",
+    group: "Paithani",
+    collection: "Royal Paithani",
+    productType: "Paithani",
+    fabric: "Pure Silk",
+    color: "Royal Magenta",
+    secondaryColor: "Antique Gold Zari, Navy, Sky Blue & Red Variants",
+    occasion: ["Wedding", "Bridal", "Reception", "Grand Festive", "Pooja"],
+    workType: "Single Munia Brocade Border, Designer Parrot Pallu & All Over Bandhej Work",
+    designPattern:
+      "All Over Bandhej Work with Designer Three-Parrot Gold Tissue Pallu & Munia Brocade Border",
+    weave: "100% Handweaving Pure Silk & Jari Work",
+    borderType: "Single Munia Brocade Border",
+    palluType: "Designer Parrot Pallu on Pure Gold Tissue Ground",
+    blousePiece: true,
+    blouseColor: "Matching Pure Silk with Single Munia Brocade Border",
+    sareeLength: "5.5 meters",
+    sareeWidth: "46 inches",
+    blouseLength: "0.8 meters (Unstitched)",
+    weight: "840 grams",
+    transparency: "Opaque",
+    texture: "Rich Hand-Knotted Silk with Crinkle Texture & Metallic Jari Sheen",
+    drape: "Grand Structured Drape",
+    originRegion: "Yeola / Paithan (Weave) & Gujarat / Rajasthan (Bandhej), India",
+    craftType: "100% Handweaving Pure Silk & Jari with Hand Bandhej Work",
+    handloomOrPowerloom: "Handloom",
+    availability: "Available",
+    inStock: true,
+    stockQuantity: 4,
+    priceUsd: 526.83,
+    compareAtUsd: 640,
+    priceTier: "Luxury",
+    vendor: "Mun Creations",
+    badge: "bestseller",
+    image: bandhaniPaithaniMagenta,
+    images: [
+      bandhaniPaithaniMagenta,
+      bandhaniPaithaniNavy,
+      bandhaniPaithaniSkyBlue,
+      bandhaniPaithaniRed,
+    ],
+    galleryImages: {
+      front: bandhaniPaithaniMagenta,
+      pallu: bandhaniPaithaniNavy,
+      border: bandhaniPaithaniSkyBlue,
+      closeUp: bandhaniPaithaniRed,
+      model: bandhaniPaithaniMagenta,
+    },
+    swatches: ["#7a1863", "#0d2b6b", "#1488c8", "#b80f28"],
+    shortDescription:
+      "BANDHANI PAITHANI: Pure Silk & Jari Work handwoven saree featuring Single Munia Brocade border, exquisite Designer Parrot Pallu, and all-over Bandhej work. Silk Mark Certified. Price : Rs.43990/- (Including Roll Press & Shipping within India).",
+    fullDescription:
+      "An heirloom masterpiece uniting the majesty of royal Maharashtra Paithani weaving with the celebrated artistry of handcrafted Indian Bandhej. Woven from 100% pure silk and rich jari work, this saree features delicate all-over hand-knotted bandhej dots, the iconic Single Munia brocade border, and an exquisite Designer Parrot Pallu depicting polychromatic parrots perching upon blooming branches on pure gold tissue. Price : Rs.43990/- (Including Roll Press & Shipping within India). Silk Mark Certified. Note: Colour may slightly differ due to phone camera & lighting.",
+    keyFeatures: [
+      "100% Handweaving Pure Silk & Jari Work",
+      "Single Munia Brocade Border",
+      "Designer Parrot Pallu Woven on Radiant Gold Tissue",
+      "All Over Bandhej Work Hand-Knotted Micro Dots",
+      "Silk Mark Certified for 100% Pure Natural Silk & Authentic Jari",
+      "Price : Rs.43,990/- (Including Roll Press & Shipping within India)",
+      "Available in 4 Regal Colorways: Royal Magenta, Deep Navy, Sky Blue, and Crimson Red",
+      "Includes Matching Unstitched Pure Silk Blouse Piece",
+    ],
+    fabricDescription:
+      "Crafted with high-grade pure mulberry silk threads interlaced with authentic metallic jari. The body undergoes authentic artisan hand-tying and resist-dyeing before fine finishing and roll pressing.",
+    craftDescription:
+      "An extraordinary masterpiece uniting two GI-heritage crafts: pure Paithani handloom weaving (featuring tapestry weft parrot and munia motifs) fused with master Bandhej knotting.",
+    careInstructions:
+      "Dry clean only. Complimentary professional roll press included. Note: Colour may slightly differ due to phone camera & lights.",
+    storageInstructions:
+      "Store wrapped in pure unbleached cotton or muslin. Roll or refold periodically along fresh fold lines.",
+    shippingInformation:
+      "Price : Rs.43990/- (Including Roll Press & Shipping within India). Dispatched within 24-48 hours via insured express air courier.",
+    returnExchangeInfo: "7-day authentication and exchange guarantee.",
+  },
+
+  // 13. TRIPLE MUNIA PAITHANI (Pure Silk & Jari Work, Silk Mark Certified)
+  {
+    id: "p13",
+    sku: "MC-PAITH-TMU-01",
+    name: "Triple Munia Paithani Pure Silk Saree with Designer Parrot Pallu",
+    slug: "triple-munia-paithani-pure-silk-saree-with-designer-parrot-pallu",
+    category: "Paithani",
+    subcategory: "Triple Munia Paithani",
+    mainCategory: "sarees",
+    group: "Paithani",
+    collection: "Royal Paithani",
+    productType: "Paithani",
+    fabric: "Pure Silk",
+    color: "Rani Pink",
+    secondaryColor: "Gold Zari, Green & Multi-Color Parrots",
+    occasion: ["Wedding", "Bridal", "Reception", "Grand Festive", "Pooja"],
+    workType: "Triple Munia Brocade Border, Designer Parrot Pallu & General Butti",
+    designPattern:
+      "Delicate All-Over Gold Zari Butti with Triple Munia Brocade Border & Designer Three-Parrot Pallu",
+    weave: "100% Handweaving Pure Silk & Jari Work",
+    borderType: "Triple Munia (Three-Tier Parrot) Brocade Border with Spired Temple Selvedge",
+    palluType: "Designer Parrot Pallu on Heavy Gold Tissue Zari Ground",
+    blousePiece: true,
+    blouseColor: "Matching Rani Pink Pure Silk with Triple Munia Brocade Border",
+    sareeLength: "5.5 meters",
+    sareeWidth: "46 inches",
+    blouseLength: "0.8 meters (Unstitched)",
+    weight: "820 grams",
+    transparency: "Opaque",
+    texture: "Lustrous Smooth Pure Silk with Heavy Metallic Zari Weft",
+    drape: "Regal Structured Drape",
+    originRegion: "Yeola / Paithan, Maharashtra",
+    craftType: "100% Handweaving Pure Silk & Jari Work",
+    handloomOrPowerloom: "Handloom",
+    availability: "Available",
+    inStock: true,
+    stockQuantity: 3,
+    priceUsd: 425.15,
+    compareAtUsd: 520,
+    priceTier: "Luxury",
+    vendor: "Mun Creations",
+    badge: "new",
+    image: paithaniTripleMunia3,
+    images: [
+      paithaniTripleMunia3,
+      paithaniTripleMunia1,
+      paithaniTripleMunia2,
+      paithaniTripleMunia4,
+    ],
+    galleryImages: {
+      front: paithaniTripleMunia3,
+      pallu: paithaniTripleMunia1,
+      border: paithaniTripleMunia2,
+      closeUp: paithaniTripleMunia4,
+      model: paithaniTripleMunia3,
+    },
+    swatches: ["#e0007b", "#d4af37", "#2e7d32"],
+    shortDescription:
+      "TRIPLE MUNIA PAITHANI: Triple Munia Brocade Border, Designer Parrot Pallu, Pure Silk & Jari Work, 100% Handweaving, General Butti. Silk Mark Certified. Price: 35500/- INR.",
+    fullDescription:
+      "A coveted royal heirloom handwoven in Maharashtra's historic weaving cluster. This exquisite Triple Munia Paithani saree in vivid Rani Pink features the prestigious triple-tier Munia brocade border, delicate gold zari general buttis evenly scattered across the body, and the grand Designer Parrot Pallu woven with multicolored parrots on blossoming boughs upon pure gold tissue zari. 100% Handweaving Pure Silk & Jari Work. Note: Colour may Slightly Differ, Due to Phone Camera & Lights. Silk Mark Certified. Price: 35500/- INR.",
+    keyFeatures: [
+      "Triple Munia Brocade Border (Three-Tier Traditional Parrot Motifs)",
+      "Designer Parrot Pallu on Radiant Pure Gold Tissue Ground",
+      "Pure Silk & Jari Work with 100% Handweaving",
+      "General Delicate Gold Zari Butti across Saree Body",
+      "Silk Mark Certified for 100% Pure Natural Mulberry Silk",
+      "Price: 35,500/- INR (Free Shipping Within India Included)",
+      "Includes Matching Unstitched Pure Silk Blouse Piece with Triple Munia Border",
+    ],
+    fabricDescription:
+      "Pure Silk & Jari Work: Woven with high-twist pure mulberry silk warp and weft intermeshed with pure gold-toned zari for an opulent, fluid drape that withstands generations.",
+    craftDescription:
+      "The prestigious Triple Munia border requires mastery of the interlocking tapestry weave technique, meticulously detailing three parallel rows of Munia motifs with fine temple spikes.",
+    careInstructions:
+      "Dry clean only. Roll press recommended. Do not machine wash or expose to direct harsh moisture. Note: Colour may slightly differ due to phone camera & lights.",
+    storageInstructions:
+      "Store wrapped inside a soft cotton or muslin cloth. Refold periodically to safeguard silk fibers and metallic zari weave.",
+    shippingInformation:
+      "Price: 35500/- INR. Free Shipping within India included. Dispatched within 24 hours via insured express air courier.",
+    returnExchangeInfo: "7-day authentication and exchange guarantee.",
+  },
+
+  // 14. CRIMSON RED TRIPLE MUNIA PAITHANI (Pure Silk & Jari Work, Silk Mark Certified)
+  {
+    id: "p14",
+    sku: "MC-PAITH-TMU-02",
+    name: "Crimson Red Triple Munia Paithani Pure Silk Saree",
+    slug: "crimson-red-triple-munia-paithani-pure-silk-saree",
+    category: "Paithani",
+    subcategory: "Triple Munia Paithani",
+    mainCategory: "sarees",
+    group: "Paithani",
+    collection: "Royal Paithani",
+    productType: "Paithani",
+    fabric: "Pure Silk",
+    color: "Crimson Red",
+    secondaryColor: "Rich Gold Zari, Emerald Green & Multi-Color Parrots",
+    occasion: ["Wedding", "Bridal", "Reception", "Grand Festive", "Pooja"],
+    workType: "Triple Munia Brocade Border, Designer Parrot Pallu & General Butti",
+    designPattern:
+      "Delicate Gold Zari General Butti with Triple Munia Brocade Border & Designer Three-Parrot Pallu",
+    weave: "100% Handweaving Pure Silk & Jari Work",
+    borderType: "Triple Munia (Three-Tier Parrot) Brocade Border with Spired Temple Selvedge",
+    palluType: "Designer Parrot Pallu on Heavy Gold Tissue Zari Ground",
+    blousePiece: true,
+    blouseColor: "Matching Crimson Red Pure Silk with Triple Munia Brocade Border",
+    sareeLength: "5.5 meters",
+    sareeWidth: "46 inches",
+    blouseLength: "0.8 meters (Unstitched)",
+    weight: "820 grams",
+    transparency: "Opaque",
+    texture: "Lustrous Smooth Pure Silk with Heavy Metallic Zari Weft",
+    drape: "Regal Structured Drape",
+    originRegion: "Yeola / Paithan, Maharashtra",
+    craftType: "100% Handweaving Pure Silk & Jari Work",
+    handloomOrPowerloom: "Handloom",
+    availability: "Available",
+    inStock: true,
+    stockQuantity: 3,
+    priceUsd: 425.15,
+    compareAtUsd: 520,
+    priceTier: "Luxury",
+    vendor: "Mun Creations",
+    badge: "new",
+    image: paithaniTripleMuniaRed1,
+    images: [
+      paithaniTripleMuniaRed1,
+      paithaniTripleMuniaRed2,
+      paithaniTripleMuniaRed3,
+      paithaniTripleMuniaRed4,
+    ],
+    galleryImages: {
+      front: paithaniTripleMuniaRed1,
+      pallu: paithaniTripleMuniaRed2,
+      border: paithaniTripleMuniaRed3,
+      closeUp: paithaniTripleMuniaRed4,
+      model: paithaniTripleMuniaRed1,
+    },
+    swatches: ["#d50000", "#d4af37", "#2e7d32"],
+    shortDescription:
+      "⛱️ TRIPLE MUNIA PAITHANI ⛱️: Triple Munia Brocade Border, Designer Parrot Pallu, Pure Silk & Jari Work, 100% Handweaving, General Butti. Silk Mark Certified. Price: 35500 INR.",
+    fullDescription:
+      "A regal bridal heirloom masterpiece handwoven in Maharashtra's historic weaving cluster. This magnificent Triple Munia Paithani saree in auspicious Crimson Red features the prestigious three-tier Munia brocade border, delicate gold zari general buttis evenly scattered across the body, and the grand Designer Parrot Pallu woven with multicolored parrots on blossoming boughs upon pure gold tissue zari. 100% Handweaving Pure Silk & Jari Work. Note: Colour may Slightly Differ, Due to Phone Camera & Lights. Silk Mark Certified. Price: 35500 INR.",
+    keyFeatures: [
+      "Triple Munia Brocade Border (Three-Tier Traditional Parrot Motifs)",
+      "Designer Parrot Pallu on Radiant Pure Gold Tissue Ground",
+      "Pure Silk & Jari Work with 100% Handweaving",
+      "General Delicate Gold Zari Butti across Crimson Red Saree Body",
+      "Silk Mark Certified for 100% Pure Natural Mulberry Silk",
+      "Price: 35,500 INR (Free Shipping Within India Included)",
+      "Includes Matching Unstitched Pure Silk Blouse Piece with Triple Munia Border",
+    ],
+    fabricDescription:
+      "Pure Silk & Jari Work: Woven with high-twist pure mulberry silk warp and weft intermeshed with pure gold-toned zari for an opulent, fluid drape that withstands generations.",
+    craftDescription:
+      "The prestigious Triple Munia border requires mastery of the interlocking tapestry weave technique, meticulously detailing three parallel rows of Munia motifs with fine temple spikes.",
+    careInstructions:
+      "Dry clean only. Roll press recommended. Do not machine wash or expose to direct harsh moisture. Note: Colour may slightly differ due to phone camera & lights.",
+    storageInstructions:
+      "Store wrapped inside a soft cotton or muslin cloth. Refold periodically to safeguard silk fibers and metallic zari weave.",
+    shippingInformation:
+      "Price: 35500 INR. Free Shipping within India included. Dispatched within 24 hours via insured express air courier.",
+    returnExchangeInfo: "7-day authentication and exchange guarantee.",
   },
 ];
 

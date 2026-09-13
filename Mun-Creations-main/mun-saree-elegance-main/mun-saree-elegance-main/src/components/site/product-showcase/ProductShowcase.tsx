@@ -33,6 +33,7 @@ const CATEGORY_TABS = [
   { id: "all", label: "All Signature Weaves" },
   { id: "banarasi", label: "Banarasi Heritage" },
   { id: "kanjivaram", label: "Pure Kanjivaram" },
+  { id: "paithani", label: "Royal Paithani" },
   { id: "tussar", label: "Award Tussar" },
   { id: "bridal", label: "Bridal & Occasion" },
 ];
@@ -69,6 +70,13 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
           p.category.toLowerCase().includes("kanjeevaram") ||
           p.category.toLowerCase().includes("kanjivaram") ||
           p.group?.toLowerCase().includes("kanjivaram"),
+      );
+    }
+    if (activeTab === "paithani") {
+      return products.filter(
+        (p) =>
+          p.category.toLowerCase().includes("paithani") ||
+          p.group?.toLowerCase().includes("paithani"),
       );
     }
     if (activeTab === "tussar") {

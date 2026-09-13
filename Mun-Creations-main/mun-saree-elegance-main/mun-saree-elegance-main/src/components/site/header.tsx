@@ -352,7 +352,7 @@ export function Header({ onSelectCategoryFilter }: HeaderProps) {
                       SAREES CATALOG (1,700+ WEAVES)
                     </h3>
                     <p className="text-xs text-white/70 italic mt-0.5">
-                      Explore Banarasi, Kanjivaram, Tussar, Jamdani, Organza, Chikankari & Bengal
+                      Explore Banarasi, Kanjivaram, Paithani, Tussar, Jamdani, Organza, Chikankari & Bengal
                       Silks
                     </p>
                   </div>

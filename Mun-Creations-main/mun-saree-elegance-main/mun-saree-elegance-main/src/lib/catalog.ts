@@ -57,6 +57,18 @@ export const EXPANDED_SAREE_TAXONOMY: CategoryFamily[] = [
     ],
   },
   {
+    title: "Paithani",
+    slug: "paithani",
+    subcategories: [
+      { name: "Triple Munia Paithani", slug: "triple-munia-paithani" },
+      { name: "Bandhani Paithani", slug: "bandhani-paithani" },
+      { name: "Pure Silk Paithani", slug: "pure-silk-paithani" },
+      { name: "Gaumata Paithani", slug: "gaumata-paithani" },
+      { name: "Munia Brocade Paithani", slug: "munia-brocade-paithani" },
+      { name: "Handloom Paithani", slug: "handloom-paithani" },
+    ],
+  },
+  {
     title: "Tussar",
     slug: "tussar",
     subcategories: [
@@ -188,6 +200,7 @@ export const HOMEPAGE_COLLECTIONS = [
 export const FEATURED_SHOP_BY_CATEGORIES = [
   { name: "Shahi Banarasi", slug: "shahi-banarasi" },
   { name: "Kanjivaram", slug: "kanjivaram" },
+  { name: "Paithani", slug: "paithani" },
   { name: "Designers", slug: "designers" },
   { name: "Tussar", slug: "tussar" },
   { name: "Zardosi", slug: "zardosi" },
@@ -216,6 +229,7 @@ export const COLLECTION_HIERARCHY = [
   { name: "Designer Collection", slug: "designer-collection" },
   { name: "Shahi Banarasi", slug: "shahi-banarasi" },
   { name: "Kanjivaram", slug: "kanjivaram" },
+  { name: "Royal Paithani", slug: "paithani" },
   { name: "Khaddi Banarasi", slug: "khaddi-banarasi" },
   { name: "Tussar Collection", slug: "tussar-collection" },
   { name: "Chikankari", slug: "chikankari" },
@@ -230,6 +244,7 @@ export const CATEGORY_FILTERS = [
   "Ajrak",
   "Anarkali",
   "Banarasi",
+  "Bandhani",
   "Batik Silk",
   "Bengal Matka Silk",
   "Bengal Silk",
@@ -254,6 +269,7 @@ export const CATEGORY_FILTERS = [
   "Mangalgiri",
   "Mashru",
   "Organza",
+  "Paithani",
   "Pochampally",
   "Resham Check",
   "Satin Zardosi",

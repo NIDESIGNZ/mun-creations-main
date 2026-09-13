@@ -80,10 +80,16 @@ function SearchContent() {
       q.includes("wedding") ||
       q.includes("bridal") ||
       q.includes("sister") ||
-      q.includes("reception")
+      q.includes("reception") ||
+      q.includes("pooja") ||
+      q.includes("paithani")
     ) {
       reco = allProducts.filter(
-        (p) => p.priceUsd > 350 || p.category === "Kanjivaram" || p.category === "Banarasi",
+        (p) =>
+          p.priceUsd > 300 ||
+          p.category === "Kanjivaram" ||
+          p.category === "Banarasi" ||
+          p.category === "Paithani",
       );
     } else if (
       q.includes("summer") ||
@@ -114,7 +120,7 @@ function SearchContent() {
       setAiResponse(response);
     } catch {
       setAiResponse(
-        `Based on your request "${aiPrompt}", I recommend our handwoven Katan Banarasi and Kanjivaram silk ensembles crafted with pure zari. Here are recommended choices:`,
+        `Based on your request "${aiPrompt}", I recommend our handwoven Katan Banarasi, Kanjivaram, and royal Paithani silk ensembles crafted with pure zari. Here are recommended choices:`,
       );
     } finally {
       setIsAiThinking(false);
@@ -123,27 +129,29 @@ function SearchContent() {
 
   return (
     <div className="container-boutique space-y-8 sm:space-y-10">
-      {/* 1. Keyword Search Bar */}
-      <div className="bg-white p-5 sm:p-8 rounded-sm border border-border shadow-md space-y-3 sm:space-y-4 text-center max-w-3xl mx-auto">
-        <div className="eyebrow text-[var(--gold)]">Full Text & Attribute Search</div>
-        <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[var(--wine-deep)]">
-          Search Master Catalog
+      {/* 1. Main Keyword Search Bar */}
+      <div className="max-w-2xl mx-auto text-center space-y-3 sm:space-y-4">
+        <h1 className="font-serif text-2xl sm:text-3xl md:text-4xl font-bold text-[var(--wine-deep)]">
+          Search the Treasury
         </h1>
+        <p className="text-xs sm:text-sm text-muted-foreground">
+          Explore by weave, artisan cluster, silk type, colour, or bridal occasion
+        </p>
 
-        <div className="relative pt-1">
+        <div className="relative">
           <input
             type="text"
-            placeholder="Search by weave, fabric, color, or style..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="w-full pl-10 sm:pl-11 pr-4 py-3 sm:py-3.5 bg-secondary/30 border border-border rounded-sm text-sm focus:outline-none focus:border-[var(--wine)] font-medium"
+            placeholder="Search by weave (e.g. Paithani, Katan Banarasi, Bandhani, Kanjivaram)..."
+            className="w-full bg-white border border-border pl-10 sm:pl-12 pr-4 py-3 sm:py-3.5 text-sm sm:text-base rounded-sm shadow-sm focus:outline-hidden focus:border-[var(--gold)] focus:ring-1 focus:ring-[var(--gold)] transition-all"
           />
           <SearchIcon className="absolute left-3.5 sm:left-4 top-4 sm:top-4.5 h-4 sm:h-5 w-4 sm:w-5 text-muted-foreground" />
         </div>
 
         <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs text-muted-foreground pt-1">
           <span>Popular:</span>
-          {["Banarasi", "Kanjivaram", "Tussar", "Organza", "Bridal Red", "Haldi Yellow"].map(
+          {["Paithani", "Bandhani", "Banarasi", "Kanjivaram", "Tussar", "Organza", "Bridal Red", "Haldi Yellow"].map(
             (term) => (
               <button
                 key={term}
