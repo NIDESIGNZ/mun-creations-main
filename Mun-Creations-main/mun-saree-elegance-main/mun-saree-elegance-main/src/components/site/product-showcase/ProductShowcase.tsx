@@ -60,7 +60,7 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
       return products.filter(
         (p) =>
           p.category.toLowerCase().includes("banarasi") ||
-          p.group?.toLowerCase().includes("banarasi")
+          p.group?.toLowerCase().includes("banarasi"),
       );
     }
     if (activeTab === "kanjivaram") {
@@ -68,14 +68,13 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
         (p) =>
           p.category.toLowerCase().includes("kanjeevaram") ||
           p.category.toLowerCase().includes("kanjivaram") ||
-          p.group?.toLowerCase().includes("kanjivaram")
+          p.group?.toLowerCase().includes("kanjivaram"),
       );
     }
     if (activeTab === "tussar") {
       return products.filter(
         (p) =>
-          p.category.toLowerCase().includes("tussar") ||
-          p.group?.toLowerCase().includes("tussar")
+          p.category.toLowerCase().includes("tussar") || p.group?.toLowerCase().includes("tussar"),
       );
     }
     if (activeTab === "bridal") {
@@ -84,7 +83,7 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
           p.occasion?.includes("Wedding") ||
           p.occasion?.includes("Bridal") ||
           p.subcategory?.toLowerCase().includes("bridal") ||
-          p.badge === "bestseller"
+          p.badge === "bestseller",
       );
     }
     return products;
@@ -96,12 +95,15 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
   // Active product index & state
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const [displayedProduct, setDisplayedProduct] = useState<Product>(
-    activeProducts[0] || products[0]
+    activeProducts[0] || products[0],
   );
 
-  // Carousel items normalized with product attached
+  // Carousel items normalized with product attached (guaranteeing uniqueness)
   const carouselItems = useMemo(() => {
-    return activeProducts.map((p) => ({
+    const unique = activeProducts.filter(
+      (p, i, self) => i === self.findIndex((x) => x.id === p.id),
+    );
+    return unique.map((p) => ({
       image: p.image,
       alt: p.name,
       product: p,
@@ -170,7 +172,7 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
         ease: "power3.out",
       });
     },
-    [activeProducts, products]
+    [activeProducts, products],
   );
 
   // Cleanup GSAP animations on unmount
@@ -194,7 +196,7 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
       ? Math.round(
           ((displayedProduct.compareAtUsd - displayedProduct.priceUsd) /
             displayedProduct.compareAtUsd) *
-            100
+            100,
         )
       : null;
 
@@ -214,11 +216,7 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
         </div>
 
         {/* Category Filter Pills */}
-        <div
-          className="product-showcase__filters"
-          role="tablist"
-          aria-label="Showcase categories"
-        >
+        <div className="product-showcase__filters" role="tablist" aria-label="Showcase categories">
           {CATEGORY_TABS.map((tab) => (
             <button
               key={tab.id}
@@ -249,34 +247,36 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
                   )}
                 </div>
                 {displayedProduct.sku && (
-                  <span className="product-showcase__sku-tag">
-                    SKU: {displayedProduct.sku}
-                  </span>
+                  <span className="product-showcase__sku-tag">SKU: {displayedProduct.sku}</span>
                 )}
               </div>
 
               {/* Product Title */}
-              <h3 className="product-showcase__title font-serif">
-                {displayedProduct.name}
-              </h3>
+              <h3 className="product-showcase__title font-serif">{displayedProduct.name}</h3>
 
               {/* Key Attributes Highlights */}
               <div className="product-showcase__attributes">
                 {displayedProduct.fabric && (
                   <div className="product-showcase__attr-pill">
                     <ShieldCheck className="h-3.5 w-3.5" />
-                    <span>Fabric: <strong>{displayedProduct.fabric}</strong></span>
+                    <span>
+                      Fabric: <strong>{displayedProduct.fabric}</strong>
+                    </span>
                   </div>
                 )}
                 {displayedProduct.weave && (
                   <div className="product-showcase__attr-pill">
                     <Sparkles className="h-3.5 w-3.5" />
-                    <span>Weave: <strong>{displayedProduct.weave}</strong></span>
+                    <span>
+                      Weave: <strong>{displayedProduct.weave}</strong>
+                    </span>
                   </div>
                 )}
                 {displayedProduct.originRegion && (
                   <div className="product-showcase__attr-pill">
-                    <span>Region: <strong>{displayedProduct.originRegion.split(",")[0]}</strong></span>
+                    <span>
+                      Region: <strong>{displayedProduct.originRegion.split(",")[0]}</strong>
+                    </span>
                   </div>
                 )}
                 {displayedProduct.stockQuantity !== undefined && (
@@ -322,9 +322,7 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
                   </span>
                 )}
                 {discountPercent !== null && (
-                  <span className="product-showcase__discount-badge">
-                    Save {discountPercent}%
-                  </span>
+                  <span className="product-showcase__discount-badge">Save {discountPercent}%</span>
                 )}
               </div>
 
@@ -432,10 +430,7 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
 
       {/* Interactive Detail Modal */}
       {modalProduct && (
-        <ProductDetailModal
-          product={modalProduct}
-          onClose={() => setModalProduct(null)}
-        />
+        <ProductDetailModal product={modalProduct} onClose={() => setModalProduct(null)} />
       )}
 
       {/* AI Virtual Try-On Modal */}

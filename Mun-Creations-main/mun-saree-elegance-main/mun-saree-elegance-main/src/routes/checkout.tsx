@@ -7,33 +7,30 @@ import { Footer } from "@/components/site/footer";
 import { CartDrawer } from "@/components/site/cart-drawer";
 import {
   ShieldCheck,
-  CreditCard,
-  QrCode,
-  Smartphone,
   Lock,
   CheckCircle2,
   Truck,
   ArrowRight,
-  Sparkles,
   ShoppingBag,
   Tag,
-  DollarSign,
   Printer,
   ChevronRight,
-  X,
-  Key,
-  Globe,
-  ExternalLink,
   AlertCircle,
+  Smartphone,
+  CreditCard,
+  Building,
+  RotateCcw,
+  Sparkles,
 } from "lucide-react";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({
     meta: [
-      { title: "Secure Checkout & Payment Gateways — Mun Creations" },
+      { title: "Secure Checkout — Mun Creations" },
       {
         name: "description",
-        content: "Secure worldwide checkout with interactive Razorpay, Stripe, PayPal, and Credit/Debit Card payment gateways.",
+        content:
+          "Secure checkout for your Mun Creations handcrafted sarees and couture with Razorpay standard checkout.",
       },
     ],
     scripts: [
@@ -63,106 +60,90 @@ function CheckoutPage() {
   );
 }
 
-type PaymentGateway = "razorpay" | "stripe" | "paypal" | "card";
-
 function CheckoutContent() {
   const { items, subtotalUsd, clearCart } = useCart();
   const { currency, formatPrice } = useI18n();
 
-  // Step Control
-  const [step, setStep] = useState<"shipping" | "payment" | "success">("shipping");
+  // Screen State
+  const [step, setStep] = useState<"checkout" | "success">("checkout");
 
-  // Shipping Form State
+  // Shipping Form State (Empty by default - no demo/fake customer data)
   const [shippingForm, setShippingForm] = useState({
-    firstName: "Priya",
-    lastName: "Sharma",
-    email: "priya.sharma@example.com",
-    phone: "+1 (555) 234-5678",
-    address: "450 Lexington Ave, Suite 1200",
-    city: "New York",
-    state: "NY",
-    zip: "10017",
-    country: "United States",
-    shippingMethod: "standard" as "standard" | "express",
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    address: "",
+    city: "",
+    state: "",
+    zip: "",
+    country: "India",
   });
+  const [shippingError, setShippingError] = useState<string>("");
 
-  // Promo Code Engine
+  // Promo Code State
   const [promoCode, setPromoCode] = useState("");
   const [appliedDiscount, setAppliedDiscount] = useState<number>(0);
   const [promoError, setPromoError] = useState("");
   const [promoSuccess, setPromoSuccess] = useState("");
 
-  // Payment Gateway Selection
-  const [selectedGateway, setSelectedGateway] = useState<PaymentGateway>("card");
-
-  // Sub-method states
-  // 1. Razorpay
-  const [razorpaySubMethod, setRazorpaySubMethod] = useState<"upi" | "netbanking" | "qr">("upi");
-  const [upiId, setUpiId] = useState("priya@okaxis");
-
-  // 2. Stripe
-  const [stripeEmail, setStripeEmail] = useState("priya.sharma@example.com");
-
-  // 3. Direct Card Terminal
-  const [cardNumber, setCardNumber] = useState("4532 1284 9012 5541");
-  const [cardExpiry, setCardExpiry] = useState("08/28");
-  const [cardCvv, setCardCvv] = useState("892");
-  const [cardName, setCardName] = useState("Priya Sharma");
-
-  // Gateway Modal Window States
-  const [gatewayModalOpen, setGatewayModalOpen] = useState(false);
+  // Payment Processing State
   const [isProcessing, setIsProcessing] = useState(false);
-  const [otpCode, setOtpCode] = useState("123456");
-  const [completedOrder, setCompletedOrder] = useState<any>(null);
   const [paymentError, setPaymentError] = useState<string>("");
   const [paymentStatusMessage, setPaymentStatusMessage] = useState<string>("");
+  const [completedOrder, setCompletedOrder] = useState<any>(null);
 
-  // Price Computations
+  // Price Computations: Free shipping if subtotal >= $500 or subtotal in INR >= ₹40,000
   const isFreeShipping = subtotalUsd >= 500 || (currency === "INR" && subtotalUsd * 83.5 >= 40000);
-  const shippingFeeUsd = isFreeShipping
-    ? 0
-    : shippingForm.shippingMethod === "express"
-    ? 45
-    : 25;
-
+  const shippingFeeUsd = isFreeShipping ? 0 : 25;
   const finalTotalUsd = Math.max(0, subtotalUsd - appliedDiscount + shippingFeeUsd);
 
-  // Card Type Detector
-  const getCardBrand = (num: string) => {
-    const clean = num.replace(/\s/g, "");
-    if (clean.startsWith("4")) return "VISA";
-    if (/^5[1-5]/.test(clean)) return "MASTERCARD";
-    if (/^3[47]/.test(clean)) return "AMEX";
-    if (/^6[0-9]/.test(clean)) return "RUPAY";
-    return "CARD";
-  };
-
-  const handleApplyPromo = (e: React.FormEvent) => {
+  // Promo Engine
+  const handleApplyPromo = async (e: React.FormEvent) => {
     e.preventDefault();
     setPromoError("");
     setPromoSuccess("");
 
     const clean = promoCode.trim().toUpperCase();
-    if (clean === "MUNHERITAGE10") {
-      const discount = Math.round(subtotalUsd * 0.1);
-      setAppliedDiscount(discount);
-      setPromoSuccess("10% Heritage discount applied successfully!");
-    } else if (clean === "ROYAL50") {
-      setAppliedDiscount(50);
-      setPromoSuccess("$50 Royal Voucher applied successfully!");
-    } else {
-      setPromoError("Invalid promo code. Try 'MUNHERITAGE10' or 'ROYAL50'.");
+    if (!clean) {
+      setPromoError("Please enter a promo code.");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/cart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: items.map((i) => ({ productId: i.product.id, quantity: i.qty })),
+          promoCode: clean,
+          shippingMethod: "standard",
+        }),
+      });
+      const data = await res.json();
+      if (data.success && data.cart && data.cart.discount > 0) {
+        setAppliedDiscount(data.cart.discount);
+        setPromoSuccess(data.cart.couponMessage || `Promo code applied: $${data.cart.discount} discount`);
+      } else {
+        setAppliedDiscount(0);
+        setPromoError(data.cart?.couponMessage || data.error || "Invalid promo code. Try 'MUNHERITAGE10' or 'ROYAL50'.");
+      }
+    } catch {
+      if (clean === "MUNHERITAGE10") {
+        const discount = Math.round(subtotalUsd * 0.1);
+        setAppliedDiscount(discount);
+        setPromoSuccess("10% Heritage discount applied successfully!");
+      } else if (clean === "ROYAL50") {
+        setAppliedDiscount(50);
+        setPromoSuccess("$50 Royal Voucher applied successfully!");
+      } else {
+        setAppliedDiscount(0);
+        setPromoError("Invalid promo code. Try 'MUNHERITAGE10' or 'ROYAL50'.");
+      }
     }
   };
 
-  const handleShippingSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setStep("payment");
-    if (typeof window !== "undefined") {
-      window.scrollTo({ top: 250, behavior: "smooth" });
-    }
-  };
-
+  // Helper to load Razorpay Standard Checkout SDK
   const loadRazorpayScript = (): Promise<boolean> => {
     return new Promise((resolve) => {
       if (typeof window === "undefined") {
@@ -173,7 +154,9 @@ function CheckoutContent() {
         resolve(true);
         return;
       }
-      const existingScript = document.querySelector('script[src="https://checkout.razorpay.com/v1/checkout.js"]');
+      const existingScript = document.querySelector(
+        'script[src="https://checkout.razorpay.com/v1/checkout.js"]',
+      );
       if (existingScript) {
         existingScript.addEventListener("load", () => resolve(true));
         existingScript.addEventListener("error", () => resolve(false));
@@ -188,21 +171,74 @@ function CheckoutContent() {
     });
   };
 
-  const handleRazorpayCheckout = async () => {
+  // Primary Payment Action: Validate Form -> Create Server Order -> Open Razorpay Checkout -> Verify Signature
+  const handlePayWithRazorpay = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setShippingError("");
     setPaymentError("");
-    setPaymentStatusMessage("Connecting to secure payment gateway...");
+
+    // 1. Client-side Form Validation
+    if (!shippingForm.firstName.trim()) {
+      setShippingError("Please enter your first name.");
+      return;
+    }
+    if (!shippingForm.lastName.trim()) {
+      setShippingError("Please enter your last name.");
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!shippingForm.email.trim() || !emailRegex.test(shippingForm.email.trim())) {
+      setShippingError("Please enter a valid email address.");
+      return;
+    }
+    if (!shippingForm.phone.trim() || shippingForm.phone.trim().length < 8) {
+      setShippingError("Please enter a valid contact phone number.");
+      return;
+    }
+    if (!shippingForm.address.trim()) {
+      setShippingError("Please enter your street address.");
+      return;
+    }
+    if (!shippingForm.city.trim()) {
+      setShippingError("Please enter your city.");
+      return;
+    }
+    if (!shippingForm.state.trim()) {
+      setShippingError("Please enter your state / province.");
+      return;
+    }
+    if (!shippingForm.zip.trim()) {
+      setShippingError("Please enter your postal / PIN code.");
+      return;
+    }
+    const isIndia =
+      !shippingForm.country ||
+      shippingForm.country.trim().toLowerCase() === "india" ||
+      shippingForm.country.trim().toLowerCase() === "in";
+    if (isIndia && !/^[1-9][0-9]{5}$/.test(shippingForm.zip.trim())) {
+      setShippingError("Please enter a valid 6-digit Indian PIN code (e.g. 700001).");
+      return;
+    }
+    if (!shippingForm.country.trim()) {
+      setShippingError("Please select your country.");
+      return;
+    }
+
+    // 2. Start Secure Payment Flow
     setIsProcessing(true);
+    setPaymentStatusMessage("Connecting to Razorpay Secure Gateway...");
 
     try {
-      // 1. Ensure Razorpay SDK script is loaded
       const loaded = await loadRazorpayScript();
       if (!loaded || !(window as any).Razorpay) {
-        throw new Error("Unable to load Razorpay Checkout SDK. Please check your network connection.");
+        throw new Error(
+          "Unable to load Razorpay Checkout SDK. Please check your internet connection and try again.",
+        );
       }
 
-      setPaymentStatusMessage("Generating secure order token...");
+      setPaymentStatusMessage("Creating verified order token on server...");
 
-      // 2. STEP 1: Call Backend to authoritatively create Razorpay Order
+      // STEP 1: Call Backend to authoritatively create Razorpay Order
       const orderRes = await fetch("/api/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -212,7 +248,7 @@ function CheckoutContent() {
             quantity: i.qty,
           })),
           promoCode: promoCode ? promoCode.trim() : undefined,
-          shippingMethod: shippingForm.shippingMethod,
+          shippingMethod: "standard",
           currency: "INR",
           receipt: `rcpt_${Date.now()}`,
           notes: {
@@ -226,25 +262,24 @@ function CheckoutContent() {
       const orderData = await orderRes.json();
 
       if (!orderRes.ok || !orderData.order_id) {
-        throw new Error(orderData.error || "Failed to create Razorpay order on server.");
+        throw new Error(orderData.error || "Failed to initialize Razorpay order on the server.");
       }
 
       const activeKeyId = orderData.key_id;
-
       if (!activeKeyId) {
         throw new Error("Razorpay Key ID is not configured on the server.");
       }
 
       setPaymentStatusMessage("Opening secure payment window...");
 
-      // 3. STEP 2: Open Razorpay Standard Checkout Modal
+      // STEP 2: Open Razorpay Standard Checkout Modal
       const options = {
         key: activeKeyId,
         amount: orderData.amount,
         currency: orderData.currency || "INR",
         name: "Mun Creations",
         description: "Luxury Handloom Saree Order",
-        image: "https://picsum.photos/seed/munlogo/200/200",
+        image: typeof window !== "undefined" ? `${window.location.origin}/logo.png` : "/logo.png",
         order_id: orderData.order_id,
         prefill: {
           name: `${shippingForm.firstName} ${shippingForm.lastName}`,
@@ -252,7 +287,7 @@ function CheckoutContent() {
           contact: shippingForm.phone,
         },
         notes: {
-          shipping_address: `${shippingForm.address}, ${shippingForm.city}, ${shippingForm.state} ${shippingForm.zip}`,
+          shipping_address: `${shippingForm.address}, ${shippingForm.city}, ${shippingForm.state} ${shippingForm.zip}, ${shippingForm.country}`,
         },
         theme: {
           color: "#58111A",
@@ -262,7 +297,7 @@ function CheckoutContent() {
           razorpay_order_id: string;
           razorpay_signature: string;
         }) {
-          // 4. STEP 3: Call Backend to verify signature
+          // STEP 3: Call Backend to verify HMAC-SHA256 signature and update inventory
           try {
             setIsProcessing(true);
             setPaymentError("");
@@ -288,6 +323,8 @@ function CheckoutContent() {
                     priceUsd: i.product.priceUsd,
                   })),
                   subtotalUsd: finalTotalUsd,
+                  shippingMethod: "standard",
+                  shippingCostUsd: shippingFeeUsd,
                 },
               }),
             });
@@ -296,49 +333,58 @@ function CheckoutContent() {
 
             if (!verifyRes.ok || !verifyData.success) {
               throw new Error(
-                verifyData.error || "Payment signature verification failed. Transaction was not confirmed."
+                verifyData.error ||
+                  "Payment signature verification failed. Transaction was not confirmed.",
               );
             }
 
             setPaymentStatusMessage("Payment confirmed! Preparing your receipt...");
 
             // Successfully verified and created in DB
-            setCompletedOrder(verifyData.order || {
-              id: `ORD-2026-${Math.floor(1000 + Math.random() * 9000)}`,
-              customerName: `${shippingForm.firstName} ${shippingForm.lastName}`,
-              email: shippingForm.email,
-              phone: shippingForm.phone,
-              shippingAddress: `${shippingForm.address}, ${shippingForm.city}, ${shippingForm.state} ${shippingForm.zip}, ${shippingForm.country}`,
-              items: items.map((i) => ({
-                productId: i.product.id,
-                productName: i.product.name,
-                quantity: i.qty,
-                priceUsd: i.product.priceUsd,
-              })),
-              subtotalUsd: finalTotalUsd,
-              status: "Confirmed",
-              paymentMethod: "razorpay",
-              paymentId: response.razorpay_payment_id,
-              createdAt: new Date().toISOString(),
-            });
+            setCompletedOrder(
+              verifyData.order || {
+                id: `ORD-2026-${Math.floor(1000 + Math.random() * 9000)}`,
+                customerName: `${shippingForm.firstName} ${shippingForm.lastName}`,
+                email: shippingForm.email,
+                phone: shippingForm.phone,
+                shippingAddress: `${shippingForm.address}, ${shippingForm.city}, ${shippingForm.state} ${shippingForm.zip}, ${shippingForm.country}`,
+                pincode: shippingForm.zip,
+                items: items.map((i) => ({
+                  productId: i.product.id,
+                  productName: i.product.name,
+                  quantity: i.qty,
+                  priceUsd: i.product.priceUsd,
+                })),
+                subtotalUsd: finalTotalUsd,
+                status: "Confirmed",
+                paymentMethod: "razorpay",
+                paymentId: response.razorpay_payment_id,
+                createdAt: new Date().toISOString(),
+              },
+            );
 
             clearCart();
             setIsProcessing(false);
-            setGatewayModalOpen(false);
             setStep("success");
             if (typeof window !== "undefined") {
               window.scrollTo({ top: 150, behavior: "smooth" });
             }
           } catch (verifyErr: any) {
             setIsProcessing(false);
-            setPaymentError(verifyErr?.message || "Payment signature verification failed.");
+            setPaymentStatusMessage("");
+            setPaymentError(
+              verifyErr?.message ||
+                "Payment verification failed. Please contact customer support if money was debited.",
+            );
           }
         },
         modal: {
           ondismiss: function () {
             setIsProcessing(false);
             setPaymentStatusMessage("");
-            setPaymentError("Payment was cancelled or the checkout window was dismissed.");
+            setPaymentError(
+              "Payment was not completed. Your cart has been saved so you can retry whenever you're ready.",
+            );
           },
         },
       };
@@ -348,81 +394,31 @@ function CheckoutContent() {
       rzp.on("payment.failed", function (response: any) {
         setIsProcessing(false);
         setPaymentStatusMessage("");
-        const reason = response.error?.description || response.error?.reason || "Payment was declined or failed.";
-        setPaymentError(`Payment failed: ${reason}`);
+        const reason =
+          response.error?.description ||
+          response.error?.reason ||
+          "Transaction was declined or failed.";
+        setPaymentError(`Payment was not completed: ${reason}`);
       });
 
       rzp.open();
     } catch (err: any) {
       setIsProcessing(false);
       setPaymentStatusMessage("");
-      setPaymentError(err?.message || "Failed to initialize Razorpay checkout.");
+      setPaymentError(err?.message || "Failed to initialize Razorpay checkout. Please try again.");
     }
   };
 
-  const handleOpenGatewayModal = (e: React.FormEvent) => {
-    e.preventDefault();
-    setPaymentError("");
-
-    if (selectedGateway === "razorpay") {
-      handleRazorpayCheckout();
-      return;
-    }
-
-    setGatewayModalOpen(true);
-  };
-
-  const handleConfirmGatewayPayment = () => {
-    setIsProcessing(true);
-
-    setTimeout(() => {
-      // Create order object for completed screen
-      const newOrder = {
-        id: `ORD-2026-${Math.floor(1000 + Math.random() * 9000)}`,
-        customerName: `${shippingForm.firstName} ${shippingForm.lastName}`,
-        email: shippingForm.email,
-        phone: shippingForm.phone,
-        shippingAddress: `${shippingForm.address}, ${shippingForm.city}, ${shippingForm.state} ${shippingForm.zip}, ${shippingForm.country}`,
-        pincode: shippingForm.zip,
-        items: items.map((i) => ({
-          productId: i.product.id,
-          productName: i.product.name,
-          quantity: i.qty,
-          priceUsd: i.product.priceUsd,
-        })),
-        subtotalUsd: finalTotalUsd,
-        status: "Confirmed" as const,
-        paymentMethod: selectedGateway as any,
-        paymentId: `sim_${Date.now()}`,
-        createdAt: new Date().toISOString(),
-      };
-
-      // Persist to server API asynchronously
-      fetch("/api/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newOrder),
-      }).catch(() => {});
-
-      setCompletedOrder(newOrder);
-      clearCart();
-      setIsProcessing(false);
-      setGatewayModalOpen(false);
-      setStep("success");
-      if (typeof window !== "undefined") {
-        window.scrollTo({ top: 150, behavior: "smooth" });
-      }
-    }, 1500);
-  };
-
-  // Empty Cart Guard (If cart empty and not on receipt screen)
+  // Empty Cart Guard
   if (items.length === 0 && step !== "success") {
     return (
       <div className="container-boutique max-w-md mx-auto py-16 text-center space-y-4">
         <div className="h-16 w-16 rounded-full bg-[var(--wine)]/10 text-[var(--wine)] flex items-center justify-center mx-auto border border-[var(--wine)]/20">
           <ShoppingBag className="h-8 w-8" />
         </div>
-        <h2 className="font-serif text-2xl font-bold text-[var(--wine-deep)]">Your Cart is Empty</h2>
+        <h2 className="font-serif text-2xl font-bold text-[var(--wine-deep)]">
+          Your Cart is Empty
+        </h2>
         <p className="text-xs text-muted-foreground">
           Explore our handcrafted sarees, kurtis, and bridal collections to start your checkout.
         </p>
@@ -437,7 +433,7 @@ function CheckoutContent() {
     );
   }
 
-  // STEP 3: Order Receipt Screen
+  // ORDER SUCCESS & RECEIPT SCREEN
   if (step === "success" && completedOrder) {
     return (
       <div className="container-boutique max-w-2xl mx-auto space-y-6 animate-in fade-in">
@@ -447,12 +443,15 @@ function CheckoutContent() {
           </div>
 
           <div className="space-y-2">
-            <div className="eyebrow text-emerald-700 font-bold">Payment Verified & Order Confirmed</div>
+            <div className="eyebrow text-emerald-700 font-bold">
+              Payment Verified & Order Confirmed
+            </div>
             <h1 className="font-serif text-3xl md:text-4xl font-bold text-[var(--wine-deep)]">
               Thank You For Your Order!
             </h1>
             <p className="text-xs text-muted-foreground max-w-md mx-auto">
-              Your handwoven ensemble is being prepared by our master weaver artisans. A confirmation email has been sent to{" "}
+              Your handwoven ensemble is being prepared by our master weaver artisans. A
+              confirmation email has been sent to{" "}
               <strong className="text-foreground">{completedOrder.email}</strong>.
             </p>
           </div>
@@ -461,14 +460,20 @@ function CheckoutContent() {
           <div className="p-6 bg-secondary/30 rounded-sm border border-border text-left space-y-4 text-xs">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-border gap-2">
               <div>
-                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Order Reference</div>
-                <div className="font-mono font-bold text-base text-[var(--wine-deep)]">{completedOrder.id}</div>
+                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                  Order Reference
+                </div>
+                <div className="font-mono font-bold text-base text-[var(--wine-deep)]">
+                  {completedOrder.id}
+                </div>
               </div>
               <div className="sm:text-right">
-                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Payment Gateway</div>
+                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                  Payment Gateway
+                </div>
                 <span className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase">
                   <ShieldCheck className="h-3 w-3" />
-                  <span>Authorized ({selectedGateway.toUpperCase()})</span>
+                  <span>Verified (RAZORPAY)</span>
                 </span>
               </div>
             </div>
@@ -490,19 +495,31 @@ function CheckoutContent() {
 
             <div className="pt-3 border-t border-border flex justify-between items-center font-bold text-sm">
               <span>Total Paid</span>
-              <span className="text-[var(--wine-deep)] font-serif text-lg">{formatPrice(completedOrder.subtotalUsd)}</span>
+              <span className="text-[var(--wine-deep)] font-serif text-lg">
+                {formatPrice(completedOrder.subtotalUsd)}
+              </span>
             </div>
 
             <div className="pt-2 text-[11px] text-muted-foreground space-y-1">
-              <div>Shipping Address: <span className="text-foreground font-medium">{completedOrder.shippingAddress}</span></div>
-              <div>Delivery Timeline: <span className="text-foreground font-medium">3–5 Business Days (Insured Handloom Air Dispatch)</span></div>
+              <div>
+                Shipping Address:{" "}
+                <span className="text-foreground font-medium">
+                  {completedOrder.shippingAddress}
+                </span>
+              </div>
+              <div>
+                Delivery Timeline:{" "}
+                <span className="text-foreground font-medium">
+                  3–5 Business Days (Insured Handloom Air Dispatch)
+                </span>
+              </div>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
             <button
               onClick={() => window.print()}
-              className="inline-flex items-center gap-2 bg-secondary text-foreground text-xs uppercase tracking-wider px-5 py-3 rounded-sm font-bold border border-border hover:bg-border transition-colors"
+              className="inline-flex items-center gap-2 bg-secondary text-foreground text-xs uppercase tracking-wider px-5 py-3 rounded-sm font-bold border border-border hover:bg-border transition-colors cursor-pointer"
             >
               <Printer className="h-4 w-4" />
               <span>Print Order Receipt</span>
@@ -520,531 +537,331 @@ function CheckoutContent() {
     );
   }
 
+  // MAIN CHECKOUT SCREEN
   return (
     <div className="container-boutique space-y-8">
       {/* Steps Header */}
       <div className="bg-white p-4 rounded-sm border border-border shadow-xs flex items-center justify-between text-xs font-semibold uppercase tracking-wider">
-        <button
-          onClick={() => setStep("shipping")}
-          className={`flex items-center gap-2 ${
-            step === "shipping" ? "text-[var(--wine)] font-bold" : "text-muted-foreground"
-          }`}
-        >
+        <div className="flex items-center gap-2 text-[var(--wine)] font-bold">
           <span className="h-6 w-6 rounded-full bg-[var(--wine)] text-white text-[11px] flex items-center justify-center font-mono">
             1
           </span>
-          <span>Shipping Address</span>
-        </button>
+          <span>Delivery Details</span>
+        </div>
 
         <ChevronRight className="h-4 w-4 text-muted-foreground" />
 
-        <button
-          onClick={() => {
-            setStep("payment");
-            if (typeof window !== "undefined") window.scrollTo({ top: 250, behavior: "smooth" });
-          }}
-          className={`flex items-center gap-2 ${step === "payment" ? "text-[var(--wine)] font-bold" : "text-muted-foreground"}`}
-        >
+        <div className="flex items-center gap-2 text-[var(--wine)] font-bold">
           <span className="h-6 w-6 rounded-full bg-[var(--wine)] text-white text-[11px] flex items-center justify-center font-mono">
             2
           </span>
-          <span>Payment Gateway</span>
-        </button>
-
-        <ChevronRight className="h-4 w-4 text-muted-foreground" />
-
-        <div className="flex items-center gap-2 text-muted-foreground">
-          <span className="h-6 w-6 rounded-full bg-secondary text-muted-foreground text-[11px] flex items-center justify-center font-mono">
-            3
-          </span>
-          <span>Confirmation</span>
+          <span>Pay Securely with Razorpay</span>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Left Column: Checkout Forms */}
+      {/* Main Two-Column Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {/* Left Column: Delivery Details & Razorpay Checkout Form */}
         <div className="lg:col-span-7 space-y-6">
-          {/* STEP 1: Shipping Address Form */}
-          {step === "shipping" && (
-            <div className="bg-white p-6 md:p-8 rounded-sm border border-border shadow-md space-y-6 animate-in fade-in">
-              <div>
-                <h2 className="font-serif text-2xl font-bold text-[var(--wine-deep)]">Contact & Shipping Details</h2>
-                <p className="text-xs text-muted-foreground">Enter your international delivery information</p>
+          <form onSubmit={handlePayWithRazorpay} className="space-y-6">
+            {/* Customer Information Card */}
+            <div className="bg-white p-6 md:p-8 rounded-sm border border-border shadow-xs space-y-5">
+              <div className="border-b border-border pb-3">
+                <h2 className="font-serif text-xl font-bold text-[var(--wine-deep)]">
+                  1. Delivery Address & Contact
+                </h2>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Enter your delivery address to proceed with secure payment.
+                </p>
               </div>
 
-              <form onSubmit={handleShippingSubmit} className="space-y-4 text-xs">
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="font-bold block mb-1">First Name</label>
-                    <input
-                      type="text"
-                      required
-                      value={shippingForm.firstName}
-                      onChange={(e) => setShippingForm({ ...shippingForm, firstName: e.target.value })}
-                      className="w-full p-2.5 bg-secondary/20 border border-border rounded-sm focus:outline-none focus:border-[var(--wine)]"
-                    />
-                  </div>
-                  <div>
-                    <label className="font-bold block mb-1">Last Name</label>
-                    <input
-                      type="text"
-                      required
-                      value={shippingForm.lastName}
-                      onChange={(e) => setShippingForm({ ...shippingForm, lastName: e.target.value })}
-                      className="w-full p-2.5 bg-secondary/20 border border-border rounded-sm focus:outline-none focus:border-[var(--wine)]"
-                    />
-                  </div>
+              {shippingError && (
+                <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-sm flex items-start gap-2">
+                  <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+                  <span>{shippingError}</span>
                 </div>
+              )}
 
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="font-bold block mb-1">Email Address</label>
-                    <input
-                      type="email"
-                      required
-                      value={shippingForm.email}
-                      onChange={(e) => setShippingForm({ ...shippingForm, email: e.target.value })}
-                      className="w-full p-2.5 bg-secondary/20 border border-border rounded-sm focus:outline-none focus:border-[var(--wine)]"
-                    />
-                  </div>
-                  <div>
-                    <label className="font-bold block mb-1">Phone Number</label>
-                    <input
-                      type="tel"
-                      required
-                      value={shippingForm.phone}
-                      onChange={(e) => setShippingForm({ ...shippingForm, phone: e.target.value })}
-                      className="w-full p-2.5 bg-secondary/20 border border-border rounded-sm focus:outline-none focus:border-[var(--wine)]"
-                    />
-                  </div>
-                </div>
-
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="font-bold block mb-1">Street Address</label>
+                  <label className="text-xs font-bold text-foreground block mb-1">
+                    First Name *
+                  </label>
                   <input
                     type="text"
                     required
-                    value={shippingForm.address}
-                    onChange={(e) => setShippingForm({ ...shippingForm, address: e.target.value })}
-                    className="w-full p-2.5 bg-secondary/20 border border-border rounded-sm focus:outline-none focus:border-[var(--wine)]"
+                    value={shippingForm.firstName}
+                    onChange={(e) =>
+                      setShippingForm({ ...shippingForm, firstName: e.target.value })
+                    }
+                    placeholder="e.g. Ananya"
+                    className="w-full p-2.5 bg-secondary/10 border border-border rounded-sm text-xs focus:outline-none focus:border-[var(--wine)]"
                   />
                 </div>
-
-                <div className="grid grid-cols-3 gap-3">
-                  <div>
-                    <label className="font-bold block mb-1">City</label>
-                    <input
-                      type="text"
-                      required
-                      value={shippingForm.city}
-                      onChange={(e) => setShippingForm({ ...shippingForm, city: e.target.value })}
-                      className="w-full p-2.5 bg-secondary/20 border border-border rounded-sm focus:outline-none focus:border-[var(--wine)]"
-                    />
-                  </div>
-                  <div>
-                    <label className="font-bold block mb-1">State / Province</label>
-                    <input
-                      type="text"
-                      required
-                      value={shippingForm.state}
-                      onChange={(e) => setShippingForm({ ...shippingForm, state: e.target.value })}
-                      className="w-full p-2.5 bg-secondary/20 border border-border rounded-sm focus:outline-none focus:border-[var(--wine)]"
-                    />
-                  </div>
-                  <div>
-                    <label className="font-bold block mb-1">ZIP / Postal Code</label>
-                    <input
-                      type="text"
-                      required
-                      value={shippingForm.zip}
-                      onChange={(e) => setShippingForm({ ...shippingForm, zip: e.target.value })}
-                      className="w-full p-2.5 bg-secondary/20 border border-border rounded-sm focus:outline-none focus:border-[var(--wine)]"
-                    />
-                  </div>
-                </div>
-
                 <div>
-                  <label className="font-bold block mb-1">Country</label>
-                  <select
-                    value={shippingForm.country}
-                    onChange={(e) => setShippingForm({ ...shippingForm, country: e.target.value })}
-                    className="w-full p-2.5 bg-secondary/20 border border-border rounded-sm focus:outline-none focus:border-[var(--wine)] font-medium"
-                  >
-                    <option value="United States">United States</option>
-                    <option value="United Kingdom">United Kingdom</option>
-                    <option value="India">India</option>
-                    <option value="Canada">Canada</option>
-                    <option value="Australia">Australia</option>
-                    <option value="United Arab Emirates">United Arab Emirates</option>
-                    <option value="Singapore">Singapore</option>
-                  </select>
+                  <label className="text-xs font-bold text-foreground block mb-1">
+                    Last Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={shippingForm.lastName}
+                    onChange={(e) =>
+                      setShippingForm({ ...shippingForm, lastName: e.target.value })
+                    }
+                    placeholder="e.g. Mukherjee"
+                    className="w-full p-2.5 bg-secondary/10 border border-border rounded-sm text-xs focus:outline-none focus:border-[var(--wine)]"
+                  />
                 </div>
-
-                {/* Delivery Speed Selector */}
-                <div className="pt-3 border-t border-border space-y-2">
-                  <label className="font-bold block text-xs">Select Delivery Speed</label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <label
-                      onClick={() => setShippingForm({ ...shippingForm, shippingMethod: "standard" })}
-                      className={`p-3 rounded-sm border cursor-pointer flex flex-col justify-between transition-colors ${
-                        shippingForm.shippingMethod === "standard"
-                          ? "border-[var(--wine)] bg-[var(--wine)]/5 font-bold"
-                          : "border-border bg-secondary/20"
-                      }`}
-                    >
-                      <div className="flex items-center gap-2">
-                        <Truck className="h-4 w-4 text-[var(--wine)]" />
-                        <span>Standard Handloom Air</span>
-                      </div>
-                      <div className="text-[10px] text-muted-foreground mt-1">
-                        {isFreeShipping ? "FREE (Complimentary)" : formatPrice(25)} · 5-7 days
-                      </div>
-                    </label>
-
-                    <label
-                      onClick={() => setShippingForm({ ...shippingForm, shippingMethod: "express" })}
-                      className={`p-3 rounded-sm border cursor-pointer flex flex-col justify-between transition-colors ${
-                        shippingForm.shippingMethod === "express"
-                          ? "border-[var(--wine)] bg-[var(--wine)]/5 font-bold"
-                          : "border-border bg-secondary/20"
-                      }`}
-                    >
-                      <div className="flex items-center gap-2">
-                        <Sparkles className="h-4 w-4 text-[var(--gold)]" />
-                        <span>Priority Express Courier</span>
-                      </div>
-                      <div className="text-[10px] text-muted-foreground mt-1">
-                        {formatPrice(45)} · 2-3 days insured
-                      </div>
-                    </label>
-                  </div>
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full mt-4 bg-[var(--wine)] text-white py-3.5 text-xs font-bold uppercase tracking-[0.2em] rounded-sm hover:bg-[var(--wine-deep)] transition-all shadow-md flex items-center justify-center gap-2"
-                >
-                  <span>Proceed to Select Payment Gateway</span>
-                  <ArrowRight className="h-4 w-4" />
-                </button>
-              </form>
-            </div>
-          )}
-
-          {/* STEP 2: Payment Gateway Selection */}
-          {step === "payment" && (
-            <div className="bg-white p-6 md:p-8 rounded-sm border border-border shadow-md space-y-6 animate-in fade-in">
-              <div className="flex items-center justify-between border-b border-border pb-4">
-                <div>
-                  <h2 className="font-serif text-2xl font-bold text-[var(--wine-deep)]">Choose Payment Gateway</h2>
-                  <p className="text-xs text-muted-foreground">Select your preferred payment processor below</p>
-                </div>
-                <button
-                  onClick={() => setStep("shipping")}
-                  className="text-xs font-semibold text-[var(--wine)] hover:underline"
-                >
-                  Edit Address
-                </button>
               </div>
 
-              {/* 4 Gateway Switchers */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                <button
-                  type="button"
-                  onClick={() => setSelectedGateway("razorpay")}
-                  className={`p-3 rounded-sm border text-center transition-all flex flex-col items-center justify-center gap-1.5 ${
-                    selectedGateway === "razorpay"
-                      ? "border-[var(--wine)] bg-[var(--wine)]/10 font-bold shadow-xs text-[var(--wine-deep)]"
-                      : "border-border bg-secondary/20 hover:bg-secondary/50 text-foreground"
-                  }`}
-                >
-                  <Smartphone className="h-5 w-5 text-blue-600" />
-                  <span className="text-xs font-bold">1. Razorpay</span>
-                  <span className="text-[9px] uppercase tracking-wider text-muted-foreground font-mono">UPI / NetBank</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setSelectedGateway("stripe")}
-                  className={`p-3 rounded-sm border text-center transition-all flex flex-col items-center justify-center gap-1.5 ${
-                    selectedGateway === "stripe"
-                      ? "border-[var(--wine)] bg-[var(--wine)]/10 font-bold shadow-xs text-[var(--wine-deep)]"
-                      : "border-border bg-secondary/20 hover:bg-secondary/50 text-foreground"
-                  }`}
-                >
-                  <CreditCard className="h-5 w-5 text-indigo-600" />
-                  <span className="text-xs font-bold">2. Stripe</span>
-                  <span className="text-[9px] uppercase tracking-wider text-muted-foreground font-mono">Global Cards</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setSelectedGateway("paypal")}
-                  className={`p-3 rounded-sm border text-center transition-all flex flex-col items-center justify-center gap-1.5 ${
-                    selectedGateway === "paypal"
-                      ? "border-[var(--wine)] bg-[var(--wine)]/10 font-bold shadow-xs text-[var(--wine-deep)]"
-                      : "border-border bg-secondary/20 hover:bg-secondary/50 text-foreground"
-                  }`}
-                >
-                  <DollarSign className="h-5 w-5 text-amber-600" />
-                  <span className="text-xs font-bold">3. PayPal</span>
-                  <span className="text-[9px] uppercase tracking-wider text-muted-foreground font-mono">Pay in 4</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setSelectedGateway("card")}
-                  className={`p-3 rounded-sm border text-center transition-all flex flex-col items-center justify-center gap-1.5 ${
-                    selectedGateway === "card"
-                      ? "border-[var(--wine)] bg-[var(--wine)]/10 font-bold shadow-xs text-[var(--wine-deep)]"
-                      : "border-border bg-secondary/20 hover:bg-secondary/50 text-foreground"
-                  }`}
-                >
-                  <ShieldCheck className="h-5 w-5 text-emerald-600" />
-                  <span className="text-xs font-bold">4. Credit / Debit</span>
-                  <span className="text-[9px] uppercase tracking-wider text-muted-foreground font-mono">Direct Terminal</span>
-                </button>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-bold text-foreground block mb-1">
+                    Email Address (for order receipt) *
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={shippingForm.email}
+                    onChange={(e) => setShippingForm({ ...shippingForm, email: e.target.value })}
+                    placeholder="e.g. ananya@example.com"
+                    className="w-full p-2.5 bg-secondary/10 border border-border rounded-sm text-xs focus:outline-none focus:border-[var(--wine)]"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-foreground block mb-1">
+                    Phone Number (for courier updates) *
+                  </label>
+                  <input
+                    type="tel"
+                    required
+                    value={shippingForm.phone}
+                    onChange={(e) => setShippingForm({ ...shippingForm, phone: e.target.value })}
+                    placeholder="e.g. +91 98765 43210"
+                    className="w-full p-2.5 bg-secondary/10 border border-border rounded-sm text-xs focus:outline-none focus:border-[var(--wine)]"
+                  />
+                </div>
               </div>
 
-              {/* Dynamic Gateway Form & Trigger */}
-              <form onSubmit={handleOpenGatewayModal} className="space-y-4 pt-2">
-                {/* GATEWAY 1: Razorpay Terminal */}
-                {selectedGateway === "razorpay" && (
-                  <div className="p-5 rounded-sm border border-blue-200 bg-blue-50/40 space-y-4 text-xs animate-in fade-in">
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <div className="font-bold text-blue-900 flex items-center gap-2">
-                        <Smartphone className="h-4 w-4 text-blue-700" />
-                        <span>Razorpay Standard Web Checkout</span>
-                      </div>
-                      <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-mono font-bold flex items-center gap-1">
-                        <ShieldCheck className="h-3 w-3 text-emerald-700" />
-                        <span>256-Bit SSL Encrypted</span>
-                      </span>
-                    </div>
+              <div>
+                <label className="text-xs font-bold text-foreground block mb-1">
+                  Street Address *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={shippingForm.address}
+                  onChange={(e) => setShippingForm({ ...shippingForm, address: e.target.value })}
+                  placeholder="Apartment, building, suite, and street"
+                  className="w-full p-2.5 bg-secondary/10 border border-border rounded-sm text-xs focus:outline-none focus:border-[var(--wine)]"
+                />
+              </div>
 
-                    <div className="p-3 bg-white rounded border border-blue-200 space-y-2">
-                      <div className="text-xs text-foreground font-medium">
-                        Instant Standard Checkout with 100+ payment methods:
-                      </div>
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-[11px]">
-                        <div className="p-2 bg-blue-50/60 rounded border border-blue-100 flex items-center gap-1.5 font-medium text-blue-900">
-                          <Smartphone className="h-3.5 w-3.5 text-blue-600" />
-                          <span>UPI & QR</span>
-                        </div>
-                        <div className="p-2 bg-blue-50/60 rounded border border-blue-100 flex items-center gap-1.5 font-medium text-blue-900">
-                          <CreditCard className="h-3.5 w-3.5 text-blue-600" />
-                          <span>All Cards</span>
-                        </div>
-                        <div className="p-2 bg-blue-50/60 rounded border border-blue-100 flex items-center gap-1.5 font-medium text-blue-900">
-                          <ShieldCheck className="h-3.5 w-3.5 text-blue-600" />
-                          <span>NetBanking</span>
-                        </div>
-                        <div className="p-2 bg-blue-50/60 rounded border border-blue-100 flex items-center gap-1.5 font-medium text-blue-900">
-                          <Sparkles className="h-3.5 w-3.5 text-blue-600" />
-                          <span>Wallets & EMI</span>
-                        </div>
-                      </div>
-                      <div className="text-[10px] text-muted-foreground pt-1 flex items-center gap-1">
-                        <Lock className="h-3 w-3 text-emerald-600" />
-                        <span>Backend Order Verification + HMAC-SHA256 signature validation active.</span>
-                      </div>
-                    </div>
-                  </div>
-                )}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                  <label className="text-xs font-bold text-foreground block mb-1">City *</label>
+                  <input
+                    type="text"
+                    required
+                    value={shippingForm.city}
+                    onChange={(e) => setShippingForm({ ...shippingForm, city: e.target.value })}
+                    placeholder="e.g. Kolkata"
+                    className="w-full p-2.5 bg-secondary/10 border border-border rounded-sm text-xs focus:outline-none focus:border-[var(--wine)]"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-foreground block mb-1">
+                    State / Province *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={shippingForm.state}
+                    onChange={(e) => setShippingForm({ ...shippingForm, state: e.target.value })}
+                    placeholder="e.g. West Bengal"
+                    className="w-full p-2.5 bg-secondary/10 border border-border rounded-sm text-xs focus:outline-none focus:border-[var(--wine)]"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-foreground block mb-1">
+                    PIN / Postal Code *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    maxLength={10}
+                    value={shippingForm.zip}
+                    onChange={(e) => setShippingForm({ ...shippingForm, zip: e.target.value })}
+                    placeholder="e.g. 700001"
+                    className="w-full p-2.5 bg-secondary/10 border border-border rounded-sm text-xs font-mono focus:outline-none focus:border-[var(--wine)]"
+                  />
+                </div>
+              </div>
 
-                {/* GATEWAY 2: Stripe Terminal */}
-                {selectedGateway === "stripe" && (
-                  <div className="p-5 rounded-sm border border-indigo-200 bg-indigo-50/30 space-y-4 text-xs animate-in fade-in">
-                    <div className="flex items-center justify-between">
-                      <div className="font-bold text-indigo-900 flex items-center gap-2">
-                        <CreditCard className="h-4 w-4 text-indigo-700" />
-                        <span>Stripe Global Gateway</span>
-                      </div>
-                      <span className="text-[10px] bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded font-mono font-bold">Key: {apiKeysConfig.stripePublishableKey}</span>
-                    </div>
-
-                    <div className="p-3 bg-white rounded border border-indigo-200 space-y-3">
-                      <div>
-                        <label className="font-bold block mb-1">Receipt Email</label>
-                        <input
-                          type="email"
-                          required
-                          value={stripeEmail}
-                          onChange={(e) => setStripeEmail(e.target.value)}
-                          className="w-full p-2 bg-secondary/20 border border-border rounded-sm"
-                        />
-                      </div>
-                      <div className="p-3 bg-secondary/30 rounded border border-border font-mono text-[11px] flex justify-between items-center text-muted-foreground">
-                        <span>•••• •••• •••• 4242 (Stripe Elements Test Mode)</span>
-                        <span className="text-indigo-700 font-bold">Ready</span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* GATEWAY 3: PayPal Terminal */}
-                {selectedGateway === "paypal" && (
-                  <div className="p-5 rounded-sm border border-amber-200 bg-amber-50/40 space-y-4 text-xs animate-in fade-in">
-                    <div className="flex items-center justify-between">
-                      <div className="font-bold text-amber-900 flex items-center gap-2">
-                        <DollarSign className="h-4 w-4 text-amber-700" />
-                        <span>PayPal Express Gateway</span>
-                      </div>
-                      <span className="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-mono font-bold">Client ID: {apiKeysConfig.paypalClientId}</span>
-                    </div>
-
-                    <div className="p-4 bg-white rounded border border-amber-200 text-center space-y-2">
-                      <div className="font-serif font-bold text-lg text-amber-900">PayPal Express Checkout</div>
-                      <p className="text-[11px] text-muted-foreground">
-                        Pay in 4 interest-free installments of <strong className="text-foreground">{formatPrice(finalTotalUsd / 4)}</strong>.
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* GATEWAY 4: Direct Credit Card Terminal */}
-                {selectedGateway === "card" && (
-                  <div className="p-5 rounded-sm border border-emerald-200 bg-emerald-50/30 space-y-4 text-xs animate-in fade-in">
-                    <div className="flex items-center justify-between">
-                      <div className="font-bold text-emerald-900 flex items-center gap-2">
-                        <ShieldCheck className="h-4 w-4 text-emerald-700" />
-                        <span>Direct Card Terminal</span>
-                      </div>
-                      <span className="px-2 py-0.5 bg-emerald-100 text-emerald-900 rounded font-mono font-bold text-[10px]">
-                        {getCardBrand(cardNumber)} DETECTED
-                      </span>
-                    </div>
-
-                    <div className="space-y-3">
-                      <div>
-                        <label className="font-bold block mb-1">Cardholder Name</label>
-                        <input
-                          type="text"
-                          required
-                          value={cardName}
-                          onChange={(e) => setCardName(e.target.value)}
-                          className="w-full p-2.5 bg-white border border-border rounded-sm focus:outline-none focus:border-emerald-600"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="font-bold block mb-1">Card Number</label>
-                        <input
-                          type="text"
-                          required
-                          value={cardNumber}
-                          onChange={(e) => setCardNumber(e.target.value)}
-                          placeholder="4532 1284 9012 5541"
-                          className="w-full p-2.5 bg-white border border-border rounded-sm focus:outline-none focus:border-emerald-600 font-mono text-sm"
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <label className="font-bold block mb-1">Expiry Date (MM/YY)</label>
-                          <input
-                            type="text"
-                            required
-                            value={cardExpiry}
-                            onChange={(e) => setCardExpiry(e.target.value)}
-                            placeholder="MM/YY"
-                            className="w-full p-2.5 bg-white border border-border rounded-sm focus:outline-none focus:border-emerald-600 font-mono text-xs"
-                          />
-                        </div>
-                        <div>
-                          <label className="font-bold block mb-1">CVV / Security Code</label>
-                          <input
-                            type="password"
-                            required
-                            maxLength={4}
-                            value={cardCvv}
-                            onChange={(e) => setCardCvv(e.target.value)}
-                            placeholder="123"
-                            className="w-full p-2.5 bg-white border border-border rounded-sm focus:outline-none focus:border-emerald-600 font-mono text-xs"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Payment Status Message */}
-                {isProcessing && paymentStatusMessage && (
-                  <div className="p-3 bg-blue-50 border border-blue-200 text-blue-800 rounded-sm text-xs flex items-center gap-2 animate-in fade-in">
-                    <span className="h-3.5 w-3.5 border-2 border-blue-700 border-t-transparent rounded-full animate-spin shrink-0" />
-                    <span>{paymentStatusMessage}</span>
-                  </div>
-                )}
-
-                {/* Payment Error Banner */}
-                {paymentError && (
-                  <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-sm text-xs flex items-center gap-2 animate-in fade-in">
-                    <AlertCircle className="h-4 w-4 shrink-0 text-red-600" />
-                    <span>{paymentError}</span>
-                  </div>
-                )}
-
-                {/* Main Action Trigger Button */}
-                <button
-                  type="submit"
-                  disabled={isProcessing}
-                  className={`w-full mt-4 py-4 text-xs font-bold uppercase tracking-[0.2em] rounded-sm transition-all shadow-xl flex items-center justify-center gap-2 border border-[var(--wine-deep)]/20 ${
-                    isProcessing
-                      ? "bg-secondary text-muted-foreground cursor-not-allowed opacity-80"
-                      : selectedGateway === "razorpay"
-                      ? "bg-blue-700 text-white hover:bg-blue-800"
-                      : "bg-[var(--gold)] text-[var(--wine-deep)] hover:bg-white"
-                  }`}
+              <div>
+                <label className="text-xs font-bold text-foreground block mb-1">Country *</label>
+                <select
+                  value={shippingForm.country}
+                  onChange={(e) => setShippingForm({ ...shippingForm, country: e.target.value })}
+                  className="w-full p-2.5 bg-secondary/10 border border-border rounded-sm text-xs focus:outline-none focus:border-[var(--wine)]"
                 >
-                  {isProcessing ? (
-                    <>
-                      <span className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                      <span>{paymentStatusMessage || "Processing Secure Checkout..."}</span>
-                    </>
-                  ) : (
-                    <>
-                      <Lock className="h-4 w-4" />
-                      <span>
-                        {selectedGateway === "razorpay"
-                          ? `Pay with Razorpay (${formatPrice(finalTotalUsd)})`
-                          : `Launch ${selectedGateway.toUpperCase()} Gateway (${formatPrice(finalTotalUsd)})`}
-                      </span>
-                      <ArrowRight className="h-4 w-4" />
-                    </>
-                  )}
-                </button>
-              </form>
+                  <option value="India">India</option>
+                  <option value="United States">United States</option>
+                  <option value="United Kingdom">United Kingdom</option>
+                  <option value="United Arab Emirates">United Arab Emirates</option>
+                  <option value="Canada">Canada</option>
+                  <option value="Australia">Australia</option>
+                  <option value="Singapore">Singapore</option>
+                  <option value="Germany">Germany</option>
+                  <option value="France">France</option>
+                  <option value="Malaysia">Malaysia</option>
+                  <option value="New Zealand">New Zealand</option>
+                  <option value="Switzerland">Switzerland</option>
+                  <option value="Netherlands">Netherlands</option>
+                </select>
+              </div>
             </div>
-          )}
+
+            {/* Payment Method Card: Razorpay Only */}
+            <div className="bg-white p-6 md:p-8 rounded-sm border border-border shadow-xs space-y-5">
+              <div className="border-b border-border pb-3 flex items-center justify-between">
+                <div>
+                  <h2 className="font-serif text-xl font-bold text-[var(--wine-deep)]">
+                    2. Payment Method
+                  </h2>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Fast, secure, and encrypted checkout via Razorpay.
+                  </p>
+                </div>
+                <div className="flex items-center gap-1.5 bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-1 rounded-sm text-[11px] font-semibold">
+                  <ShieldCheck className="h-4 w-4 text-emerald-600" />
+                  <span>256-Bit SSL Encrypted</span>
+                </div>
+              </div>
+
+              {paymentError && (
+                <div className="p-3.5 bg-red-50 border border-red-200 text-red-700 text-xs rounded-sm flex items-start gap-2 animate-in fade-in">
+                  <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="font-semibold">{paymentError}</p>
+                    <p className="text-[11px] text-red-600 mt-1">
+                      You can verify your details above and click the payment button again to retry.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Razorpay Gateway Display Box */}
+              <div className="p-4 rounded-sm border-2 border-[var(--wine)] bg-[var(--wine)]/5 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="h-4 w-4 rounded-full border-4 border-[var(--wine)] bg-white" />
+                    <span className="font-bold text-xs uppercase tracking-wider text-[var(--wine-deep)]">
+                      Razorpay Standard Checkout
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-mono font-semibold bg-white border border-border px-2 py-0.5 rounded text-muted-foreground">
+                    All Payment Modes Accepted
+                  </span>
+                </div>
+
+                <p className="text-xs text-muted-foreground pl-6">
+                  Pay securely using any Indian or International payment method:
+                </p>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pl-6 pt-1">
+                  <div className="p-2 bg-white rounded border border-border/80 text-center space-y-1">
+                    <Smartphone className="h-4 w-4 mx-auto text-[var(--wine)]" />
+                    <div className="text-[10px] font-bold">UPI</div>
+                    <div className="text-[9px] text-muted-foreground">GPay, PhonePe, Paytm</div>
+                  </div>
+                  <div className="p-2 bg-white rounded border border-border/80 text-center space-y-1">
+                    <CreditCard className="h-4 w-4 mx-auto text-[var(--wine)]" />
+                    <div className="text-[10px] font-bold">Cards</div>
+                    <div className="text-[9px] text-muted-foreground">Visa, Master, RuPay, Amex</div>
+                  </div>
+                  <div className="p-2 bg-white rounded border border-border/80 text-center space-y-1">
+                    <Building className="h-4 w-4 mx-auto text-[var(--wine)]" />
+                    <div className="text-[10px] font-bold">NetBanking</div>
+                    <div className="text-[9px] text-muted-foreground">50+ Indian Banks</div>
+                  </div>
+                  <div className="p-2 bg-white rounded border border-border/80 text-center space-y-1">
+                    <Lock className="h-4 w-4 mx-auto text-[var(--gold)]" />
+                    <div className="text-[10px] font-bold">Wallets & EMI</div>
+                    <div className="text-[9px] text-muted-foreground">Cred, Mobikwik & EMI</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Pay Now Button */}
+              <button
+                type="submit"
+                disabled={isProcessing}
+                className="w-full bg-[var(--wine)] text-white py-4 text-xs font-bold uppercase tracking-[0.2em] rounded-sm hover:bg-[var(--wine-deep)] transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {isProcessing ? (
+                  <span className="flex items-center gap-2">
+                    <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>{paymentStatusMessage || "Processing Payment..."}</span>
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <Lock className="h-4 w-4 text-[var(--gold)]" />
+                    <span>Pay Securely with Razorpay — {formatPrice(finalTotalUsd)}</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </span>
+                )}
+              </button>
+
+              <div className="flex items-center justify-center gap-4 text-[11px] text-muted-foreground pt-1">
+                <span className="flex items-center gap-1">
+                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
+                  <span>Authorized Razorpay Gateway</span>
+                </span>
+                <span>•</span>
+                <span className="flex items-center gap-1">
+                  <Truck className="h-3.5 w-3.5 text-[var(--wine)]" />
+                  <span>Insured Handloom Dispatch</span>
+                </span>
+              </div>
+            </div>
+          </form>
         </div>
 
-        {/* Right Column: Order Summary & Promo Code Engine */}
+        {/* Right Column: Order Summary */}
         <div className="lg:col-span-5 space-y-6">
-          <div className="bg-white p-6 rounded-sm border border-border shadow-md space-y-5">
-            <h3 className="font-serif text-xl font-bold text-[var(--wine-deep)] border-b border-border pb-3">
-              Order Summary ({items.length} Items)
-            </h3>
+          <div className="bg-white p-6 rounded-sm border border-border shadow-xs space-y-5 sticky top-28">
+            <h2 className="font-serif text-lg font-bold text-[var(--wine-deep)] pb-3 border-b border-border">
+              Order Summary ({items.length} {items.length === 1 ? "Item" : "Items"})
+            </h2>
 
-            {/* Items List */}
-            <div className="max-h-64 overflow-y-auto space-y-3 pr-1">
-              {items.map((i) => (
-                <div key={i.product.id} className="flex gap-3 text-xs border-b border-border/50 pb-3">
+            {/* Cart Items List */}
+            <div className="space-y-3 max-h-72 overflow-y-auto pr-1 divide-y divide-border/60">
+              {items.map((item) => (
+                <div key={item.product.id} className="pt-3 first:pt-0 flex gap-3 items-center">
                   <img
-                    src={i.product.image}
-                    alt={i.product.name}
-                    className="h-16 w-14 object-cover rounded-xs shrink-0 border border-border"
+                    src={item.product.images?.[0] || item.product.image}
+                    alt={item.product.name}
+                    className="w-14 h-18 object-cover rounded-xs border border-border/60 shrink-0"
                   />
                   <div className="flex-1 min-w-0">
-                    <div className="font-serif font-bold text-xs truncate">{i.product.name}</div>
-                    <div className="text-[10px] text-muted-foreground">{i.product.fabric} · Qty: {i.qty}</div>
-                    <div className="font-bold text-[var(--wine-deep)] mt-1">{formatPrice(i.product.priceUsd * i.qty)}</div>
+                    <h3 className="font-serif font-bold text-xs truncate text-foreground">
+                      {item.product.name}
+                    </h3>
+                    <div className="text-[10px] text-muted-foreground">
+                      Qty: {item.qty} · {item.product.category}
+                    </div>
+                    <div className="text-xs font-bold text-[var(--wine-deep)] mt-0.5">
+                      {formatPrice(item.product.priceUsd * item.qty)}
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
 
-            {/* Promo Code Engine */}
-            <form onSubmit={handleApplyPromo} className="space-y-2 pt-2 border-t border-border">
+            {/* Promo Voucher Form */}
+            <form onSubmit={handleApplyPromo} className="space-y-2 pt-3 border-t border-border">
               <label className="font-bold block text-xs flex items-center gap-1.5">
                 <Tag className="h-3.5 w-3.5 text-[var(--gold)]" />
                 <span>Promo Code or Gift Voucher</span>
@@ -1059,18 +876,22 @@ function CheckoutContent() {
                 />
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-secondary text-foreground text-xs font-bold rounded-sm border border-border hover:bg-border transition-colors"
+                  className="px-4 py-2 bg-secondary text-foreground text-xs font-bold rounded-sm border border-border hover:bg-border transition-colors cursor-pointer"
                 >
                   Apply
                 </button>
               </div>
 
-              {promoSuccess && <div className="text-[11px] text-emerald-700 font-semibold">{promoSuccess}</div>}
-              {promoError && <div className="text-[11px] text-red-600 font-semibold">{promoError}</div>}
+              {promoSuccess && (
+                <div className="text-[11px] text-emerald-700 font-semibold">{promoSuccess}</div>
+              )}
+              {promoError && (
+                <div className="text-[11px] text-red-600 font-semibold">{promoError}</div>
+              )}
             </form>
 
-            {/* Pricing Summary */}
-            <div className="space-y-2 text-xs pt-3 border-t border-border">
+            {/* Price Calculations */}
+            <div className="space-y-2.5 text-xs pt-3 border-t border-border">
               <div className="flex justify-between text-muted-foreground">
                 <span>Subtotal</span>
                 <span className="font-semibold text-foreground">{formatPrice(subtotalUsd)}</span>
@@ -1086,7 +907,7 @@ function CheckoutContent() {
               <div className="flex justify-between text-muted-foreground">
                 <span>Insured Handloom Air Dispatch</span>
                 <span className="font-semibold text-foreground">
-                  {shippingFeeUsd === 0 ? "FREE" : formatPrice(shippingFeeUsd)}
+                  {isFreeShipping ? "FREE (Complimentary)" : formatPrice(shippingFeeUsd)}
                 </span>
               </div>
 
@@ -1100,172 +921,30 @@ function CheckoutContent() {
                 <span className="font-serif text-xl">{formatPrice(finalTotalUsd)}</span>
               </div>
               {currency !== "USD" && (
-                <div className="text-[11px] text-muted-foreground text-right mt-1">
-                  Settlement base: ${(finalTotalUsd).toFixed(2)} USD
+                <div className="text-[10px] text-muted-foreground text-right">
+                  Base USD: ${finalTotalUsd.toFixed(2)}
                 </div>
               )}
+            </div>
+
+            {/* Mun Creations Heritage Assurances */}
+            <div className="pt-4 border-t border-border space-y-2 text-[11px] text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-3.5 w-3.5 text-[var(--gold)] shrink-0" />
+                <span>100% Certified Authentic Handloom Craftsmanship</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <RotateCcw className="h-3.5 w-3.5 text-[var(--wine)] shrink-0" />
+                <span>7-Day Hassle-Free Returns & Exchanges</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Lock className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                <span>Zero Storage of Card/Bank Credentials</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
-
-      {/* INTERACTIVE GATEWAY MODAL WINDOW SIMULATOR */}
-      {gatewayModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-sm max-w-md w-full p-6 shadow-2xl space-y-4 animate-in fade-in relative border border-border">
-            <button
-              onClick={() => setGatewayModalOpen(false)}
-              className="absolute top-4 right-4 text-muted-foreground hover:text-black"
-            >
-              <X className="h-4 w-4" />
-            </button>
-
-            {/* Razorpay Modal Window */}
-            {selectedGateway === "razorpay" && (
-              <div className="space-y-4 text-center">
-                <div className="bg-blue-900 text-white p-4 rounded-sm flex items-center justify-between">
-                  <div className="flex items-center gap-2 font-bold text-sm">
-                    <Smartphone className="h-5 w-5 text-blue-300" />
-                    <span>RAZORPAY SECURE PAY</span>
-                  </div>
-                  <div className="font-mono text-xs font-bold">₹{Math.round(finalTotalUsd * 83.5).toLocaleString()}</div>
-                </div>
-
-                <div className="p-4 bg-secondary/30 rounded border border-border text-left space-y-2 text-xs">
-                  <div className="font-bold text-foreground">Order: Mun Creations Luxury Handloom</div>
-                  <div className="text-muted-foreground">VPA Handle: <code className="font-mono text-blue-700">{upiId}</code></div>
-                  <div className="text-muted-foreground">Customer: {shippingForm.firstName} {shippingForm.lastName}</div>
-                </div>
-
-                <button
-                  onClick={handleConfirmGatewayPayment}
-                  disabled={isProcessing}
-                  className="w-full bg-blue-700 text-white py-3.5 text-xs font-bold uppercase tracking-wider rounded shadow-md hover:bg-blue-800 transition-colors flex items-center justify-center gap-2"
-                >
-                  {isProcessing ? (
-                    <span className="flex items-center gap-2">
-                      <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      <span>Verifying Razorpay Authorization...</span>
-                    </span>
-                  ) : (
-                    <span>Authorize Razorpay UPI / Payment</span>
-                  )}
-                </button>
-              </div>
-            )}
-
-            {/* Stripe Modal Window */}
-            {selectedGateway === "stripe" && (
-              <div className="space-y-4 text-center">
-                <div className="bg-indigo-900 text-white p-4 rounded-sm flex items-center justify-between">
-                  <div className="flex items-center gap-2 font-bold text-sm">
-                    <CreditCard className="h-5 w-5 text-indigo-300" />
-                    <span>STRIPE SECURE CHECKOUT</span>
-                  </div>
-                  <div className="font-serif font-bold text-sm">{formatPrice(finalTotalUsd)}</div>
-                </div>
-
-                <div className="p-4 bg-secondary/30 rounded border border-border text-left space-y-2 text-xs font-mono">
-                  <div>Status: 256-Bit TLS Stripe Key Ready</div>
-                  <div>Account: {stripeEmail}</div>
-                </div>
-
-                <button
-                  onClick={handleConfirmGatewayPayment}
-                  disabled={isProcessing}
-                  className="w-full bg-indigo-700 text-white py-3.5 text-xs font-bold uppercase tracking-wider rounded shadow-md hover:bg-indigo-800 transition-colors flex items-center justify-center gap-2"
-                >
-                  {isProcessing ? (
-                    <span className="flex items-center gap-2">
-                      <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      <span>Confirming Stripe Charge...</span>
-                    </span>
-                  ) : (
-                    <span>Pay with Stripe</span>
-                  )}
-                </button>
-              </div>
-            )}
-
-            {/* PayPal Modal Window */}
-            {selectedGateway === "paypal" && (
-              <div className="space-y-4 text-center">
-                <div className="bg-amber-500 text-white p-4 rounded-sm flex items-center justify-between">
-                  <div className="flex items-center gap-2 font-bold text-sm">
-                    <DollarSign className="h-5 w-5 text-white" />
-                    <span>PAYPAL EXPRESS</span>
-                  </div>
-                  <div className="font-serif font-bold text-sm">{formatPrice(finalTotalUsd)}</div>
-                </div>
-
-                <div className="p-4 bg-secondary/30 rounded border border-border text-left space-y-2 text-xs">
-                  <div>PayPal Account: <strong>{shippingForm.email}</strong></div>
-                  <div>Selected Option: Pay in Full ({formatPrice(finalTotalUsd)})</div>
-                </div>
-
-                <button
-                  onClick={handleConfirmGatewayPayment}
-                  disabled={isProcessing}
-                  className="w-full bg-amber-600 text-white py-3.5 text-xs font-bold uppercase tracking-wider rounded shadow-md hover:bg-amber-700 transition-colors flex items-center justify-center gap-2"
-                >
-                  {isProcessing ? (
-                    <span className="flex items-center gap-2">
-                      <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      <span>Connecting PayPal Express...</span>
-                    </span>
-                  ) : (
-                    <span>Confirm & Pay with PayPal</span>
-                  )}
-                </button>
-              </div>
-            )}
-
-            {/* Credit Card 3D-Secure OTP Window */}
-            {selectedGateway === "card" && (
-              <div className="space-y-4 text-center">
-                <div className="bg-[var(--wine-deep)] text-white p-4 rounded-sm flex items-center justify-between">
-                  <div className="flex items-center gap-2 font-bold text-sm">
-                    <ShieldCheck className="h-5 w-5 text-[var(--gold)]" />
-                    <span>BANK 3D-SECURE VERIFICATION</span>
-                  </div>
-                  <span className="text-xs font-mono font-bold text-[var(--gold)]">{getCardBrand(cardNumber)}</span>
-                </div>
-
-                <div className="p-4 bg-secondary/30 rounded border border-border text-left space-y-3 text-xs">
-                  <div className="text-muted-foreground">
-                    An SMS One-Time Password (OTP) has been sent to your registered mobile number linked to card <strong className="text-foreground">•••• {cardNumber.slice(-4)}</strong>.
-                  </div>
-                  <div>
-                    <label className="font-bold block mb-1">Enter 6-Digit SMS OTP Code</label>
-                    <input
-                      type="text"
-                      maxLength={6}
-                      value={otpCode}
-                      onChange={(e) => setOtpCode(e.target.value)}
-                      className="w-full p-2.5 bg-white border border-border rounded-sm text-center font-mono font-bold tracking-[0.3em] text-lg focus:outline-none focus:border-[var(--wine)]"
-                    />
-                  </div>
-                </div>
-
-                <button
-                  onClick={handleConfirmGatewayPayment}
-                  disabled={isProcessing}
-                  className="w-full bg-[var(--wine)] text-white py-3.5 text-xs font-bold uppercase tracking-wider rounded shadow-md hover:bg-[var(--wine-deep)] transition-colors flex items-center justify-center gap-2"
-                >
-                  {isProcessing ? (
-                    <span className="flex items-center gap-2">
-                      <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      <span>Authorizing Bank Transaction...</span>
-                    </span>
-                  ) : (
-                    <span>Authorize Payment ({formatPrice(finalTotalUsd)})</span>
-                  )}
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -1,28 +1,23 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { I18nProvider, useI18n } from "@/lib/i18n";
+import { I18nProvider } from "@/lib/i18n";
 import { CartProvider } from "@/lib/cart";
 import { Header } from "@/components/site/header";
 import { Hero } from "@/components/site/hero";
-import { ProductCarousel, ProductCard, SectionHeading } from "@/components/site/product";
+import { ProductCard } from "@/components/site/product";
 import {
   TrustStrip,
   ShopByFeaturedBlock,
   TussarShowcaseBlock,
-  HomepageCollectionsBanner,
   PressStrip,
   StoryBanner,
   Newsletter,
-  DepthCarouselShowcase,
 } from "@/components/site/sections";
-import {
-  CatalogFilterSidebar,
-  FilterState,
-} from "@/components/site/catalog-filter-sidebar";
+import { CatalogFilterSidebar, FilterState } from "@/components/site/catalog-filter-sidebar";
 import { Footer } from "@/components/site/footer";
 import { CartDrawer } from "@/components/site/cart-drawer";
 import { WavySection } from "@/components/site/reveal";
-import { NEW_ARRIVALS, BESTSELLERS, BRIDAL, ACCESSORIES, PRODUCTS, Product } from "@/lib/products";
+import { PRODUCTS } from "@/lib/products";
 import { Sparkle, X, SlidersHorizontal } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -37,7 +32,8 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "Mun Creations — Handwoven Indian Sarees & Ethnic Wear" },
       {
         property: "og:description",
-        content: "Timeless sarees, handwoven heritage. Shop Banarasi, Kanjivaram, Tussar, Kurtis, Blouses, and Occasionwear.",
+        content:
+          "Timeless sarees, handwoven heritage. Shop Banarasi, Kanjivaram, Tussar, Kurtis, Blouses, and Occasionwear.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -67,8 +63,16 @@ function Home() {
     // Check if label matches known category or collection
     if (query === "budget collections" || query === "budget collection") {
       setFilters({ ...INITIAL_FILTER_STATE, maxPrice: 150, priceTier: "Budget Collection" });
-    } else if (query.includes("saree") || query.includes("banarasi") || query.includes("kanjivaram") || query.includes("tussar")) {
-      const match = PRODUCTS.find((p) => p.category.toLowerCase().includes(query) || p.group?.toLowerCase().includes(query));
+    } else if (query.includes("tussar")) {
+      setFilters({ ...INITIAL_FILTER_STATE, categories: ["Tussar"] });
+    } else if (
+      query.includes("saree") ||
+      query.includes("banarasi") ||
+      query.includes("kanjivaram")
+    ) {
+      const match = PRODUCTS.find(
+        (p) => p.category.toLowerCase().includes(query) || p.group?.toLowerCase().includes(query),
+      );
       if (match) {
         setFilters({ ...INITIAL_FILTER_STATE, categories: [match.category] });
       } else {
@@ -78,6 +82,16 @@ function Home() {
       setFilters({ ...INITIAL_FILTER_STATE, categories: ["Anarkali", "Co-Ord Set"] });
     } else if (query === "blouses") {
       setFilters({ ...INITIAL_FILTER_STATE, categories: ["Blouse"] });
+    } else {
+      const match = PRODUCTS.find(
+        (p) =>
+          p.category.toLowerCase().includes(query) ||
+          p.subcategory?.toLowerCase().includes(query) ||
+          p.collection?.toLowerCase().includes(query),
+      );
+      if (match) {
+        setFilters({ ...INITIAL_FILTER_STATE, categories: [match.category] });
+      }
     }
 
     const el = document.getElementById("collection-section");
@@ -97,7 +111,7 @@ function Home() {
         (cat) =>
           p.category.toLowerCase().includes(cat.toLowerCase()) ||
           p.group?.toLowerCase().includes(cat.toLowerCase()) ||
-          p.subcategory?.toLowerCase().includes(cat.toLowerCase())
+          p.subcategory?.toLowerCase().includes(cat.toLowerCase()),
       );
       if (!matchesCat) return false;
     }
@@ -115,8 +129,19 @@ function Home() {
     // Price check
     if (p.priceUsd > filters.maxPrice) return false;
 
+    // Price tier check
+    if (filters.priceTier) {
+      if (filters.priceTier === "Budget Collection" && p.priceUsd > 150) return false;
+      if (filters.priceTier === "Mid Range" && (p.priceUsd <= 150 || p.priceUsd > 350))
+        return false;
+      if (filters.priceTier === "Premium" && (p.priceUsd <= 350 || p.priceUsd > 600)) return false;
+      if (filters.priceTier === "Luxury" && p.priceUsd <= 600) return false;
+    }
+
     // Stock check
-    if (filters.inStockOnly && !p.inStock) return false;
+    const isProductInStock =
+      p.inStock ?? (p.availability !== "Out of Stock" && (p.stockQuantity ?? 1) > 0);
+    if (filters.inStockOnly && !isProductInStock) return false;
 
     return true;
   });
@@ -137,7 +162,10 @@ function Home() {
 
             {/* Master Catalog Section with Multi-Faceted Filters */}
             <WavySection>
-              <section id="collection-section" className="py-16 md:py-24 bg-[var(--secondary)]/20 border-b border-border">
+              <section
+                id="collection-section"
+                className="py-16 md:py-24 bg-[var(--secondary)]/20 border-b border-border"
+              >
                 <div className="container-boutique">
                   <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4 pb-4 border-b border-border">
                     <div>
@@ -199,9 +227,12 @@ function Home() {
                         </div>
                       ) : (
                         <div className="text-center py-16 px-4 bg-white rounded-sm border border-border">
-                          <p className="font-serif text-xl text-[var(--wine-deep)]">No exact matches found</p>
+                          <p className="font-serif text-xl text-[var(--wine-deep)]">
+                            No exact matches found
+                          </p>
                           <p className="text-xs text-muted-foreground mt-2 max-w-sm mx-auto">
-                            Try broadening your category choices, removing fabric or color restrictions, or resetting filters.
+                            Try broadening your category choices, removing fabric or color
+                            restrictions, or resetting filters.
                           </p>
                           <button
                             onClick={resetAllFilters}
@@ -222,29 +253,7 @@ function Home() {
             </WavySection>
 
             <WavySection>
-              <HomepageCollectionsBanner onSelectFilter={handleNavFilterSelect} />
-            </WavySection>
-
-            <WavySection>
-              <section id="new" className="py-20 md:py-28">
-                <div className="container-boutique">
-                  <SectionSubHeading kind="new" />
-                  <ProductCarousel products={NEW_ARRIVALS} />
-                </div>
-              </section>
-            </WavySection>
-
-            <WavySection>
               <TrustStrip />
-            </WavySection>
-
-            <WavySection>
-              <section className="py-20 md:py-28 bg-[var(--secondary)]/40">
-                <div className="container-boutique">
-                  <SectionSubHeading kind="best" />
-                  <ProductCarousel products={BESTSELLERS} />
-                </div>
-              </section>
             </WavySection>
 
             <WavySection>
@@ -252,20 +261,7 @@ function Home() {
             </WavySection>
 
             <WavySection>
-              <DepthCarouselShowcase />
-            </WavySection>
-
-            <WavySection>
               <StoryBanner />
-            </WavySection>
-
-            <WavySection>
-              <section id="bridal" className="py-20 md:py-28">
-                <div className="container-boutique">
-                  <SectionSubHeading kind="wedding" />
-                  <ProductCarousel products={[...BRIDAL, ...BESTSELLERS.slice(0, 2)]} />
-                </div>
-              </section>
             </WavySection>
 
             <WavySection>
@@ -280,14 +276,4 @@ function Home() {
       </CartProvider>
     </I18nProvider>
   );
-}
-
-function SectionSubHeading({ kind }: { kind: "new" | "best" | "wedding" }) {
-  const { t } = useI18n();
-  const map = {
-    new: { eyebrow: "Just In", title: t("section.new"), sub: t("section.new.sub") },
-    best: { eyebrow: "Loved by Many", title: t("section.best"), sub: t("section.best.sub") },
-    wedding: { eyebrow: "Occasion Wear", title: t("section.wedding"), sub: t("section.wedding.sub") },
-  }[kind];
-  return <SectionHeading eyebrow={map.eyebrow} title={map.title} sub={map.sub} />;
 }

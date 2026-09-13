@@ -30,7 +30,12 @@
   transform: translate(50%, -50%);
   width: min(600px, 90vw);
   height: min(600px, 90vw);
-  background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, rgba(183, 110, 121, 0.08) 45%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(212, 175, 55, 0.15) 0%,
+    rgba(183, 110, 121, 0.08) 45%,
+    transparent 70%
+  );
   filter: blur(60px);
   pointer-events: none;
   z-index: 1;
@@ -40,7 +45,7 @@
   position: absolute;
   inset: 0;
   opacity: 0.035;
-  background-image: 
+  background-image:
     radial-gradient(circle at 25% 25%, #d4af37 1px, transparent 1px),
     radial-gradient(circle at 75% 75%, #d4af37 1px, transparent 1px);
   background-size: 48px 48px;

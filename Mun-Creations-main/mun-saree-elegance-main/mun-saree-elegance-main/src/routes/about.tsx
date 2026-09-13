@@ -27,24 +27,34 @@ function AboutPage() {
                   The Story of Mun Creations
                 </h1>
                 <p className="text-xs md:text-sm text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                  Founded with a vision to connect master weaver artisans directly with saree connoisseurs around the globe, Mun Creations represents 500+ years of Indian textile legacy.
+                  Founded with a vision to connect master weaver artisans directly with saree
+                  connoisseurs around the globe, Mun Creations represents 500+ years of Indian
+                  textile legacy.
                 </p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
                 <div className="bg-white p-6 rounded border border-border space-y-2">
-                  <div className="font-serif text-3xl font-bold text-[var(--wine-deep)]">1,200+</div>
-                  <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Artisan Weavers</div>
+                  <div className="font-serif text-3xl font-bold text-[var(--wine-deep)]">
+                    1,200+
+                  </div>
+                  <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    Artisan Weavers
+                  </div>
                 </div>
 
                 <div className="bg-white p-6 rounded border border-border space-y-2">
                   <div className="font-serif text-3xl font-bold text-[var(--wine-deep)]">28</div>
-                  <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Handloom Taxonomies</div>
+                  <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    Handloom Taxonomies
+                  </div>
                 </div>
 
                 <div className="bg-white p-6 rounded border border-border space-y-2">
                   <div className="font-serif text-3xl font-bold text-[var(--wine-deep)]">100%</div>
-                  <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Silk Mark Certified</div>
+                  <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    Silk Mark Certified
+                  </div>
                 </div>
               </div>
             </div>

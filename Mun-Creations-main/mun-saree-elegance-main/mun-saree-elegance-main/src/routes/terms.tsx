@@ -22,10 +22,20 @@ function TermsPage() {
             <div className="container-boutique max-w-3xl space-y-6">
               <div className="bg-white p-8 md:p-12 rounded-sm border border-border shadow-md space-y-4">
                 <div className="eyebrow text-[var(--gold)]">Legal Agreement</div>
-                <h1 className="font-serif text-3xl md:text-4xl font-bold text-[var(--wine-deep)]">Terms & Conditions</h1>
+                <h1 className="font-serif text-3xl md:text-4xl font-bold text-[var(--wine-deep)]">
+                  Terms & Conditions
+                </h1>
                 <div className="text-xs text-muted-foreground leading-relaxed space-y-4 pt-2">
-                  <p>Welcome to Mun Creations & Ethnic Boutique. By accessing our platform, purchasing handwoven sarees, or using our services, you agree to comply with these terms.</p>
-                  <p>Handcrafted Notice: As our sarees are handwoven on pit looms, minor variations in slubs, weave texture, or motif alignments are authentic characteristics of genuine handloom art.</p>
+                  <p>
+                    Welcome to Mun Creations & Ethnic Boutique. By accessing our platform,
+                    purchasing handwoven sarees, or using our services, you agree to comply with
+                    these terms.
+                  </p>
+                  <p>
+                    Handcrafted Notice: As our sarees are handwoven on pit looms, minor variations
+                    in slubs, weave texture, or motif alignments are authentic characteristics of
+                    genuine handloom art.
+                  </p>
                 </div>
               </div>
             </div>

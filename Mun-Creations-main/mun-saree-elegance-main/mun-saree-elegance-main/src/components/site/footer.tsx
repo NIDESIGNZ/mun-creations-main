@@ -1,14 +1,41 @@
 import { useState } from "react";
-import { Instagram, Facebook, Youtube, Lock, ShieldCheck, Key, X } from "lucide-react";
-import { useI18n, CURRENCIES, LANGUAGES, type CurrencyCode, type LangCode } from "@/lib/i18n";
+import {
+  Instagram,
+  Facebook,
+  Youtube,
+  Lock,
+  ShieldCheck,
+  Key,
+  X,
+  ArrowRightLeft,
+} from "lucide-react";
+import {
+  useI18n,
+  useCurrencyModal,
+  CURRENCIES,
+  LANGUAGES,
+  type CurrencyCode,
+  type LangCode,
+} from "@/lib/i18n";
 
 const COLS = [
+  {
+    title: "Boutique",
+    links: [
+      { name: "All Handloom Sarees", href: "/products" },
+      { name: "Tussar Heritage", href: "/sarees" },
+      { name: "Curated Collections", href: "/collections" },
+      { name: "Shopping Bag", href: "/cart" },
+      { name: "Client Concierge", href: "/contact" },
+    ],
+  },
   {
     title: "About",
     links: [
       { name: "Our Story", href: "/about" },
-      { name: "Craftsmanship", href: "/sarees" },
+      { name: "Artisan Craftsmanship", href: "/sarees" },
       { name: "FAQs", href: "/faqs" },
+      { name: "Currency Converter", href: "/currency-converter" },
     ],
   },
   {
@@ -25,6 +52,7 @@ const COLS = [
 
 export function Footer() {
   const { currency, setCurrency, lang, setLang } = useI18n();
+  const { openConverter } = useCurrencyModal();
 
   // Password Protection Modal State
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -65,7 +93,11 @@ export function Footer() {
       <div className="container-boutique py-12 sm:py-16 md:py-20 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 sm:gap-10">
         <div className="sm:col-span-2 max-w-sm">
           <div className="mb-4 sm:mb-6">
-            <img src="/logo-light.png" alt="MUN Creations Logo" className="h-12 sm:h-14 md:h-16 w-auto object-contain" />
+            <img
+              src="/logo-light.png"
+              alt="MUN Creations Logo"
+              className="h-12 sm:h-14 md:h-16 w-auto object-contain"
+            />
           </div>
           <p className="text-xs sm:text-sm text-[var(--ivory)]/70 leading-relaxed mb-5 sm:mb-6">
             Handwoven sarees & festive wear, crafted in India by families of master artisans.
@@ -92,7 +124,10 @@ export function Footer() {
             <ul className="space-y-2.5 sm:space-y-3">
               {c.links.map((l) => (
                 <li key={l.name}>
-                  <a href={l.href} className="text-xs sm:text-sm text-[var(--ivory)]/75 hover:text-[var(--gold)] transition-colors">
+                  <a
+                    href={l.href}
+                    className="text-xs sm:text-sm text-[var(--ivory)]/75 hover:text-[var(--gold)] transition-colors"
+                  >
                     {l.name}
                   </a>
                 </li>
@@ -129,6 +164,14 @@ export function Footer() {
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+            <button
+              type="button"
+              onClick={() => openConverter({ from: currency, to: "INR", amount: 100 })}
+              className="inline-flex items-center gap-1.5 border border-[var(--ivory)]/25 px-2.5 py-1.5 text-xs text-[var(--gold)] hover:border-[var(--gold)] rounded-xs transition-colors cursor-pointer"
+            >
+              <ArrowRightLeft className="h-3 w-3" />
+              <span>Live Converter</span>
+            </button>
             <select
               value={lang}
               onChange={(e) => setLang(e.target.value as LangCode)}
@@ -152,7 +195,8 @@ export function Footer() {
               ))}
             </select>
             <div className="flex items-center gap-1.5 sm:gap-2 tracking-[0.14em] sm:tracking-[0.18em] uppercase text-[9px] sm:text-[10px]">
-              <span>Visa</span>·<span>Mastercard</span>·<span>Amex</span>·<span>PayPal</span>·<span>UPI</span>
+              <span>Visa</span>·<span>Mastercard</span>·<span>Amex</span>·<span>PayPal</span>·
+              <span>UPI</span>
             </div>
           </div>
         </div>

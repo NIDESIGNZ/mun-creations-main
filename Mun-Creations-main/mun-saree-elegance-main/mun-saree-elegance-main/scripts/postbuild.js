@@ -31,7 +31,7 @@ function runPostBuild() {
   console.log(`[API] Compiling ${serverEntry} -> ${serverOutput}...`);
   execSync(
     `npx esbuild "${serverEntry}" --bundle --platform=node --format=esm --banner:js="import { createRequire } from 'module'; const require = createRequire(import.meta.url);" --loader:.jpg=empty --loader:.png=empty --loader:.svg=empty --loader:.mp4=empty --loader:.webp=empty --outfile="${serverOutput}"`,
-    { stdio: "inherit", cwd: appDir }
+    { stdio: "inherit", cwd: appDir },
   );
 
   // 4. Write function .vc-config.json
@@ -40,9 +40,13 @@ function runPostBuild() {
     handler: "index.mjs",
     launcherType: "Nodejs",
     shouldAddHelpers: false,
-    supportsResponseStreaming: true
+    supportsResponseStreaming: true,
   };
-  fs.writeFileSync(path.join(functionsDir, ".vc-config.json"), JSON.stringify(vcConfig, null, 2), "utf-8");
+  fs.writeFileSync(
+    path.join(functionsDir, ".vc-config.json"),
+    JSON.stringify(vcConfig, null, 2),
+    "utf-8",
+  );
   console.log(`[API] Wrote ${path.join(functionsDir, ".vc-config.json")}`);
 
   // 5. Write .vercel/output/config.json with explicit SPA + API routing
@@ -50,11 +54,17 @@ function runPostBuild() {
     version: 3,
     framework: { name: "vite", version: "8.1.5" },
     routes: [
-      { headers: { "cache-control": "public, max-age=31536000, immutable" }, "src": "/assets/(.*)" },
+      {
+        src: "^/(.*)$",
+        has: [{ type: "host", value: "muncreation.com" }],
+        headers: { Location: "https://www.muncreation.com/$1" },
+        status: 301,
+      },
+      { headers: { "cache-control": "public, max-age=31536000, immutable" }, src: "/assets/(.*)" },
       { handle: "filesystem" },
       { src: "/api/(.*)", dest: "/__server" },
-      { src: "/(.*)", dest: "/index.html" }
-    ]
+      { src: "/(.*)", dest: "/index.html" },
+    ],
   };
   const appConfigFile = path.join(appDir, ".vercel", "output", "config.json");
   fs.writeFileSync(appConfigFile, JSON.stringify(config, null, 2), "utf-8");

@@ -11,8 +11,16 @@ import {
   ChevronRight,
   Globe,
   Sparkles,
+  ArrowRightLeft,
 } from "lucide-react";
-import { useI18n, CURRENCIES, LANGUAGES, type CurrencyCode, type LangCode } from "@/lib/i18n";
+import {
+  useI18n,
+  useCurrencyModal,
+  CURRENCIES,
+  LANGUAGES,
+  type CurrencyCode,
+  type LangCode,
+} from "@/lib/i18n";
 import { useCart } from "@/lib/cart";
 import {
   MAIN_NAV_ITEMS,
@@ -103,6 +111,7 @@ interface HeaderProps {
 
 export function Header({ onSelectCategoryFilter }: HeaderProps) {
   const { currency, setCurrency, lang, setLang, formatPrice } = useI18n();
+  const { openConverter } = useCurrencyModal();
   const { count, setOpen: setCartOpen } = useCart();
   const [hidden, setHidden] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -163,7 +172,12 @@ export function Header({ onSelectCategoryFilter }: HeaderProps) {
       window.location.href = "/sarees";
       return;
     }
-    if (cleanLabel === "COLLECTIONS" || cleanLabel === "BUDGET COLLECTIONS" || cleanLabel === "NEW ARRIVALS" || cleanLabel === "BEST SELLING") {
+    if (
+      cleanLabel === "COLLECTIONS" ||
+      cleanLabel === "BUDGET COLLECTIONS" ||
+      cleanLabel === "NEW ARRIVALS" ||
+      cleanLabel === "BEST SELLING"
+    ) {
       window.location.href = "/collections";
       return;
     }
@@ -197,6 +211,15 @@ export function Header({ onSelectCategoryFilter }: HeaderProps) {
               <span>Complimentary Shipping over {formatPrice(500)}</span>
             </div>
             <div className="flex items-center gap-5 text-white">
+              <button
+                type="button"
+                onClick={() => openConverter({ from: currency, to: "INR", amount: 100 })}
+                className="flex items-center gap-1.5 text-[11px] tracking-[0.18em] uppercase text-white hover:text-[var(--gold)] transition-colors cursor-pointer"
+                title="Live Currency Converter"
+              >
+                <ArrowRightLeft className="h-3 w-3 text-[var(--gold)]" />
+                <span>Converter</span>
+              </button>
               <Dropdown<LangCode>
                 value={lang}
                 onChange={setLang}
@@ -239,6 +262,15 @@ export function Header({ onSelectCategoryFilter }: HeaderProps) {
           </div>
 
           <div className="flex items-center justify-end gap-1.5 sm:gap-3 md:gap-5 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
+            <button
+              type="button"
+              onClick={() => openConverter({ from: currency, to: "INR", amount: 100 })}
+              aria-label="Open Currency Converter"
+              title="Currency Converter"
+              className="p-2 touch-target hover:text-[var(--gold)] transition-colors cursor-pointer"
+            >
+              <ArrowRightLeft className="h-5 w-5 md:h-[18px] md:w-[18px]" />
+            </button>
             <Link
               to="/search"
               aria-label="Search collection"
@@ -320,7 +352,8 @@ export function Header({ onSelectCategoryFilter }: HeaderProps) {
                       SAREES CATALOG (1,700+ WEAVES)
                     </h3>
                     <p className="text-xs text-white/70 italic mt-0.5">
-                      Explore Banarasi, Kanjivaram, Tussar, Jamdani, Organza, Chikankari & Bengal Silks
+                      Explore Banarasi, Kanjivaram, Tussar, Jamdani, Organza, Chikankari & Bengal
+                      Silks
                     </p>
                   </div>
                   <button
@@ -440,7 +473,11 @@ export function Header({ onSelectCategoryFilter }: HeaderProps) {
         <div className="md:hidden fixed inset-0 z-50 bg-[var(--wine-deep)] text-white flex flex-col animate-in fade-in duration-200">
           <div className="flex items-center justify-between px-4 py-3.5 border-b border-white/15 bg-black/30 shrink-0">
             <Link to="/" onClick={() => setMobileOpen(false)} className="flex items-center">
-              <img src="/logo-light.png" alt="MUN Creations Logo" className="h-9 w-auto object-contain" />
+              <img
+                src="/logo-light.png"
+                alt="MUN Creations Logo"
+                className="h-9 w-auto object-contain"
+              />
             </Link>
             <button
               onClick={() => setMobileOpen(false)}
@@ -482,7 +519,9 @@ export function Header({ onSelectCategoryFilter }: HeaderProps) {
                         className="p-2 touch-target text-[var(--gold)] cursor-pointer"
                         aria-label={`Toggle ${item.label} subcategories`}
                       >
-                        <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`} />
+                        <ChevronDown
+                          className={`h-4 w-4 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
+                        />
                       </button>
                     )}
                   </div>
@@ -561,6 +600,17 @@ export function Header({ onSelectCategoryFilter }: HeaderProps) {
 
             {/* Quick Direct User Links */}
             <div className="pt-4 space-y-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileOpen(false);
+                  openConverter({ from: currency, to: "INR", amount: 100 });
+                }}
+                className="w-full flex items-center gap-2.5 text-xs text-white/90 hover:text-[var(--gold)] py-2 font-medium uppercase tracking-wider text-left cursor-pointer"
+              >
+                <ArrowRightLeft className="h-4 w-4 text-[var(--gold)]" />
+                <span>Live Currency Converter</span>
+              </button>
               <Link
                 to="/account"
                 onClick={() => setMobileOpen(false)}

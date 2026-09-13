@@ -24,7 +24,11 @@ export function SectionHeading({
       <h2 className="font-serif text-2xl sm:text-3xl md:text-5xl text-[var(--wine-deep)] leading-tight">
         {title}
       </h2>
-      {sub && <p className="mt-2 sm:mt-3 text-xs sm:text-sm md:text-base text-muted-foreground max-w-xl mx-auto px-2 sm:px-0">{sub}</p>}
+      {sub && (
+        <p className="mt-2 sm:mt-3 text-xs sm:text-sm md:text-base text-muted-foreground max-w-xl mx-auto px-2 sm:px-0">
+          {sub}
+        </p>
+      )}
       {align === "center" && (
         <div className="mt-4 sm:mt-5 flex items-center justify-center gap-2">
           <span className="gold-divider" />
@@ -61,7 +65,7 @@ export function ProductCard({ product }: { product: Product }) {
               {product.badge === "new" ? t("product.new") : t("product.bestseller")}
             </span>
           )}
-          
+
           {/* Quick AI Try-On Action Badge */}
           <button
             type="button"
@@ -152,16 +156,10 @@ export function ProductCard({ product }: { product: Product }) {
         </div>
       </div>
 
-      {showModal && (
-        <ProductDetailModal product={product} onClose={() => setShowModal(false)} />
-      )}
+      {showModal && <ProductDetailModal product={product} onClose={() => setShowModal(false)} />}
 
       {showTryOn && (
-        <AITryOnModal
-          product={product}
-          isOpen={showTryOn}
-          onClose={() => setShowTryOn(false)}
-        />
+        <AITryOnModal product={product} isOpen={showTryOn} onClose={() => setShowTryOn(false)} />
       )}
     </>
   );
@@ -169,22 +167,27 @@ export function ProductCard({ product }: { product: Product }) {
 
 export function ProductCarousel({ products }: { products: Product[] }) {
   const ref = useRef<HTMLDivElement>(null);
+
   const scroll = (dir: 1 | -1) => {
     if (!ref.current) return;
-    const w = ref.current.clientWidth;
-    ref.current.scrollBy({ left: dir * w * 0.75, behavior: "smooth" });
+    const container = ref.current;
+    const firstChild = container.firstElementChild as HTMLElement | null;
+    const cardWidth = firstChild ? firstChild.offsetWidth + 20 : 300;
+    container.scrollBy({ left: dir * cardWidth, behavior: "smooth" });
   };
 
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <div
         ref={ref}
-        className="flex gap-3 sm:gap-4 md:gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2 -mx-3 px-3 sm:mx-0 sm:px-0 no-scrollbar"
+        className="flex gap-4 md:gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-3 px-1 no-scrollbar"
+        role="region"
+        aria-label="Product carousel"
       >
         {products.map((p, idx) => (
           <div
             key={`${p.id}-${idx}`}
-            className="snap-start shrink-0 w-[68%] sm:w-[45%] md:w-[32%] lg:w-[23%]"
+            className="snap-start shrink-0 w-[260px] sm:w-[280px] md:w-[310px]"
           >
             <ProductCard product={p} />
           </div>
@@ -192,15 +195,17 @@ export function ProductCarousel({ products }: { products: Product[] }) {
       </div>
       <div className="hidden md:flex absolute -top-14 right-0 gap-2">
         <button
+          type="button"
           onClick={() => scroll(-1)}
-          className="h-9 w-9 border border-border grid place-items-center hover:bg-[var(--wine)] hover:text-[var(--ivory)] hover:border-[var(--wine)] transition-colors cursor-pointer"
+          className="h-9 w-9 border border-border grid place-items-center hover:bg-[var(--wine)] hover:text-[var(--ivory)] hover:border-[var(--wine)] transition-colors cursor-pointer rounded-xs"
           aria-label="Previous products"
         >
           <ChevronLeft className="h-4 w-4" />
         </button>
         <button
+          type="button"
           onClick={() => scroll(1)}
-          className="h-9 w-9 border border-border grid place-items-center hover:bg-[var(--wine)] hover:text-[var(--ivory)] hover:border-[var(--wine)] transition-colors cursor-pointer"
+          className="h-9 w-9 border border-border grid place-items-center hover:bg-[var(--wine)] hover:text-[var(--ivory)] hover:border-[var(--wine)] transition-colors cursor-pointer rounded-xs"
           aria-label="Next products"
         >
           <ChevronRight className="h-4 w-4" />

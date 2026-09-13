@@ -15,7 +15,8 @@ export const Route = createFileRoute("/sarees")({
       { title: "Authentic Indian Sarees — Banarasi, Kanjivaram, Tussar | Mun Creations" },
       {
         name: "description",
-        content: "Explore 28 saree categories: Banarasi Katan, Kanjivaram, Tussar, Gadwal, Jamdani, Organza, Chikankari & Handloom Sarees.",
+        content:
+          "Explore 28 saree categories: Banarasi Katan, Kanjivaram, Tussar, Gadwal, Jamdani, Organza, Chikankari & Handloom Sarees.",
       },
     ],
   }),
@@ -51,7 +52,8 @@ function SareesContent() {
           Handwoven Indian Sarees & Heritage Craftsmanship
         </h1>
         <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl mx-auto leading-relaxed px-2 sm:px-0">
-          From the sacred looms of Varanasi to the temple workshops of Kanchipuram and artisan clusters of West Bengal, discover 28 authentic weaving taxonomies.
+          From the sacred looms of Varanasi to the temple workshops of Kanchipuram and artisan
+          clusters of West Bengal, discover 28 authentic weaving taxonomies.
         </p>
       </div>
 
@@ -72,7 +74,9 @@ function SareesContent() {
               className="bg-white p-4 sm:p-6 rounded-sm border border-border shadow-xs hover:shadow-md transition-all space-y-3 sm:space-y-4"
             >
               <div className="flex items-center justify-between">
-                <h3 className="font-serif text-lg sm:text-xl font-bold text-[var(--wine-deep)]">{fam.title}</h3>
+                <h3 className="font-serif text-lg sm:text-xl font-bold text-[var(--wine-deep)]">
+                  {fam.title}
+                </h3>
                 <span className="text-[10px] bg-[var(--wine)]/10 text-[var(--wine)] font-bold px-2 py-0.5 rounded font-mono">
                   {fam.subcategories.length} Types
                 </span>

@@ -35,7 +35,7 @@ export function CatalogFilterSidebar({
   const [priceExpanded, setPriceExpanded] = useState(true);
 
   const filteredCategoryList = CATEGORY_FILTERS.filter((c) =>
-    c.toLowerCase().includes(categorySearch.toLowerCase())
+    c.toLowerCase().includes(categorySearch.toLowerCase()),
   );
 
   const toggleCategory = (cat: string) => {
@@ -48,9 +48,7 @@ export function CatalogFilterSidebar({
 
   const toggleFabric = (fab: string) => {
     const exists = filters.fabrics.includes(fab);
-    const updated = exists
-      ? filters.fabrics.filter((f) => f !== fab)
-      : [...filters.fabrics, fab];
+    const updated = exists ? filters.fabrics.filter((f) => f !== fab) : [...filters.fabrics, fab];
     onFilterChange({ ...filters, fabrics: updated });
   };
 
@@ -126,7 +124,9 @@ export function CatalogFilterSidebar({
           className="w-full flex items-center justify-between text-xs font-bold uppercase tracking-wider text-[var(--wine-deep)] py-1"
         >
           <span>Category ({CATEGORY_FILTERS.length})</span>
-          <ChevronDown className={`h-4 w-4 transition-transform ${catExpanded ? "rotate-180" : ""}`} />
+          <ChevronDown
+            className={`h-4 w-4 transition-transform ${catExpanded ? "rotate-180" : ""}`}
+          />
         </button>
 
         {catExpanded && (
@@ -164,7 +164,9 @@ export function CatalogFilterSidebar({
                       onChange={() => toggleCategory(cat)}
                       className="rounded border-border text-[var(--wine)] focus:ring-[var(--wine)] h-3.5 w-3.5"
                     />
-                    <span className={`text-xs ${checked ? "font-bold text-[var(--wine)]" : "text-foreground/80"}`}>
+                    <span
+                      className={`text-xs ${checked ? "font-bold text-[var(--wine)]" : "text-foreground/80"}`}
+                    >
                       {cat}
                     </span>
                   </label>
@@ -182,7 +184,9 @@ export function CatalogFilterSidebar({
           className="w-full flex items-center justify-between text-xs font-bold uppercase tracking-wider text-[var(--wine-deep)] py-1"
         >
           <span>Fabric</span>
-          <ChevronDown className={`h-4 w-4 transition-transform ${fabricExpanded ? "rotate-180" : ""}`} />
+          <ChevronDown
+            className={`h-4 w-4 transition-transform ${fabricExpanded ? "rotate-180" : ""}`}
+          />
         </button>
 
         {fabricExpanded && (
@@ -214,7 +218,9 @@ export function CatalogFilterSidebar({
           className="w-full flex items-center justify-between text-xs font-bold uppercase tracking-wider text-[var(--wine-deep)] py-1"
         >
           <span>Color Swatches</span>
-          <ChevronDown className={`h-4 w-4 transition-transform ${colorExpanded ? "rotate-180" : ""}`} />
+          <ChevronDown
+            className={`h-4 w-4 transition-transform ${colorExpanded ? "rotate-180" : ""}`}
+          />
         </button>
 
         {colorExpanded && (
@@ -227,14 +233,20 @@ export function CatalogFilterSidebar({
                   onClick={() => toggleColor(c.name)}
                   title={c.name}
                   className={`group relative flex flex-col items-center gap-1 p-1.5 rounded-sm border transition-all ${
-                    selected ? "border-[var(--wine)] bg-[var(--wine)]/10" : "border-border hover:border-gray-400"
+                    selected
+                      ? "border-[var(--wine)] bg-[var(--wine)]/10"
+                      : "border-border hover:border-gray-400"
                   }`}
                 >
                   <span
                     className="h-5 w-5 rounded-full border border-black/20 shadow-xs flex items-center justify-center"
                     style={{ backgroundColor: c.hex }}
                   >
-                    {selected && <Check className={`h-3 w-3 ${c.name === "White" || c.name === "Off White" ? "text-black" : "text-white"}`} />}
+                    {selected && (
+                      <Check
+                        className={`h-3 w-3 ${c.name === "White" || c.name === "Off White" ? "text-black" : "text-white"}`}
+                      />
+                    )}
                   </span>
                   <span className="text-[9px] font-medium text-foreground/80 group-hover:text-black truncate w-full text-center">
                     {c.name}
@@ -253,7 +265,9 @@ export function CatalogFilterSidebar({
           className="w-full flex items-center justify-between text-xs font-bold uppercase tracking-wider text-[var(--wine-deep)] py-1"
         >
           <span>Price Range (Up to ${filters.maxPrice})</span>
-          <ChevronDown className={`h-4 w-4 transition-transform ${priceExpanded ? "rotate-180" : ""}`} />
+          <ChevronDown
+            className={`h-4 w-4 transition-transform ${priceExpanded ? "rotate-180" : ""}`}
+          />
         </button>
 
         {priceExpanded && (

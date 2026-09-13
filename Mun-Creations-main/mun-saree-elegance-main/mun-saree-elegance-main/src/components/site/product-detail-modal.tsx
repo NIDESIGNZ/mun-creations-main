@@ -33,9 +33,9 @@ export function ProductDetailModal({
 
   // Active Image & Tab States
   const [activeImage, setActiveImage] = useState<string>(product.image);
-  const [activeTab, setActiveTab] = useState<
-    "specs" | "craft" | "care" | "shipping" | "faq"
-  >("specs");
+  const [activeTab, setActiveTab] = useState<"specs" | "craft" | "care" | "shipping" | "faq">(
+    "specs",
+  );
   const [wishlistAdded, setWishlistAdded] = useState(false);
   const [showTryOnModal, setShowTryOnModal] = useState(false);
 
@@ -45,10 +45,18 @@ export function ProductDetailModal({
       ? product.images.map((src, idx) => ({ label: `View ${idx + 1}`, src }))
       : [
           { label: "Primary View", src: product.image },
-          ...(product.galleryImages?.pallu ? [{ label: "Pallu View", src: product.galleryImages.pallu }] : []),
-          ...(product.galleryImages?.border ? [{ label: "Border View", src: product.galleryImages.border }] : []),
-          ...(product.galleryImages?.closeUp ? [{ label: "Close Up", src: product.galleryImages.closeUp }] : []),
-          ...(product.galleryImages?.model ? [{ label: "Model View", src: product.galleryImages.model }] : []),
+          ...(product.galleryImages?.pallu
+            ? [{ label: "Pallu View", src: product.galleryImages.pallu }]
+            : []),
+          ...(product.galleryImages?.border
+            ? [{ label: "Border View", src: product.galleryImages.border }]
+            : []),
+          ...(product.galleryImages?.closeUp
+            ? [{ label: "Close Up", src: product.galleryImages.closeUp }]
+            : []),
+          ...(product.galleryImages?.model
+            ? [{ label: "Model View", src: product.galleryImages.model }]
+            : []),
         ];
 
   return (
@@ -94,7 +102,9 @@ export function ProductDetailModal({
                     key={idx}
                     onClick={() => setActiveImage(g.src)}
                     className={`h-16 w-14 rounded-xs border overflow-hidden shrink-0 transition-all ${
-                      activeImage === g.src ? "border-[var(--wine)] ring-2 ring-[var(--wine)]/30" : "border-border opacity-70 hover:opacity-100"
+                      activeImage === g.src
+                        ? "border-[var(--wine)] ring-2 ring-[var(--wine)]/30"
+                        : "border-border opacity-70 hover:opacity-100"
                     }`}
                   >
                     <img src={g.src} alt={g.label} className="w-full h-full object-cover" />
@@ -113,12 +123,16 @@ export function ProductDetailModal({
                 <span className="text-muted-foreground">Availability:</span>
                 <span className="inline-flex items-center gap-1 text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded font-bold text-[10px] uppercase">
                   <CheckCircle2 className="h-3 w-3 text-emerald-700" />
-                  <span>{product.availability} ({product.stockQuantity} available)</span>
+                  <span>
+                    {product.availability} ({product.stockQuantity} available)
+                  </span>
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Weave Craft:</span>
-                <span className="font-medium text-foreground">{product.handloomOrPowerloom} Handloom</span>
+                <span className="font-medium text-foreground">
+                  {product.handloomOrPowerloom} Handloom
+                </span>
               </div>
             </div>
           </div>
@@ -127,11 +141,15 @@ export function ProductDetailModal({
           <div className="lg:col-span-7 space-y-6 flex flex-col justify-between">
             <div className="space-y-4">
               <div>
-                <div className="eyebrow text-[var(--gold)] mb-1">{product.category} · {product.subcategory || product.productType}</div>
+                <div className="eyebrow text-[var(--gold)] mb-1">
+                  {product.category} · {product.subcategory || product.productType}
+                </div>
                 <h2 className="font-serif text-2xl md:text-3xl font-bold text-[var(--wine-deep)] leading-tight">
                   {product.name}
                 </h2>
-                <div className="text-xs text-muted-foreground mt-1">Origin: <strong className="text-foreground">{product.originRegion}</strong></div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  Origin: <strong className="text-foreground">{product.originRegion}</strong>
+                </div>
               </div>
 
               {/* Pricing Box */}
@@ -146,7 +164,11 @@ export function ProductDetailModal({
                 )}
                 {product.compareAtUsd && (
                   <span className="text-xs bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded">
-                    Save {Math.round(((product.compareAtUsd - product.priceUsd) / product.compareAtUsd) * 100)}%
+                    Save{" "}
+                    {Math.round(
+                      ((product.compareAtUsd - product.priceUsd) / product.compareAtUsd) * 100,
+                    )}
+                    %
                   </span>
                 )}
               </div>
@@ -241,20 +263,65 @@ export function ProductDetailModal({
                 {activeTab === "specs" && (
                   <div className="py-4 space-y-3 animate-in fade-in">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs border border-border rounded-sm p-3 sm:p-4 bg-secondary/20">
-                      <div className="py-1">SKU: <strong className="font-mono text-foreground">{product.sku}</strong></div>
-                      <div className="py-1">Category: <strong className="text-foreground">{product.category}</strong></div>
-                      <div className="py-1">Fabric: <strong className="text-foreground">{product.fabric}</strong></div>
-                      <div className="py-1">Colour: <strong className="text-foreground">{product.color}</strong></div>
-                      <div className="py-1">Occasion: <strong className="text-foreground">{product.occasion?.join(", ") || "Festive & Wedding"}</strong></div>
-                      <div className="py-1">Work Type: <strong className="text-foreground">{product.workType}</strong></div>
-                      <div className="py-1">Design / Pattern: <strong className="text-foreground">{product.designPattern}</strong></div>
-                      <div className="py-1">Border Type: <strong className="text-foreground">{product.borderType}</strong></div>
-                      <div className="py-1">Blouse Piece: <strong className="text-foreground">{product.blousePiece ? "With Blouse Piece" : "Without"}</strong></div>
-                      <div className="py-1">Saree Length: <strong className="text-foreground">{product.sareeLength || "5.5 meters"}</strong></div>
-                      <div className="py-1">Saree Width: <strong className="text-foreground">{product.sareeWidth || "45 inches"}</strong></div>
-                      <div className="py-1">Weight: <strong className="text-foreground">{product.weight || "650g"}</strong></div>
-                      <div className="py-1">Craft Region: <strong className="text-foreground">{product.originRegion}</strong></div>
-                      <div className="py-1">Handloom / Powerloom: <strong className="text-foreground">{product.handloomOrPowerloom}</strong></div>
+                      <div className="py-1">
+                        SKU: <strong className="font-mono text-foreground">{product.sku}</strong>
+                      </div>
+                      <div className="py-1">
+                        Category: <strong className="text-foreground">{product.category}</strong>
+                      </div>
+                      <div className="py-1">
+                        Fabric: <strong className="text-foreground">{product.fabric}</strong>
+                      </div>
+                      <div className="py-1">
+                        Colour: <strong className="text-foreground">{product.color}</strong>
+                      </div>
+                      <div className="py-1">
+                        Occasion:{" "}
+                        <strong className="text-foreground">
+                          {product.occasion?.join(", ") || "Festive & Wedding"}
+                        </strong>
+                      </div>
+                      <div className="py-1">
+                        Work Type: <strong className="text-foreground">{product.workType}</strong>
+                      </div>
+                      <div className="py-1">
+                        Design / Pattern:{" "}
+                        <strong className="text-foreground">{product.designPattern}</strong>
+                      </div>
+                      <div className="py-1">
+                        Border Type:{" "}
+                        <strong className="text-foreground">{product.borderType}</strong>
+                      </div>
+                      <div className="py-1">
+                        Blouse Piece:{" "}
+                        <strong className="text-foreground">
+                          {product.blousePiece ? "With Blouse Piece" : "Without"}
+                        </strong>
+                      </div>
+                      <div className="py-1">
+                        Saree Length:{" "}
+                        <strong className="text-foreground">
+                          {product.sareeLength || "5.5 meters"}
+                        </strong>
+                      </div>
+                      <div className="py-1">
+                        Saree Width:{" "}
+                        <strong className="text-foreground">
+                          {product.sareeWidth || "45 inches"}
+                        </strong>
+                      </div>
+                      <div className="py-1">
+                        Weight:{" "}
+                        <strong className="text-foreground">{product.weight || "650g"}</strong>
+                      </div>
+                      <div className="py-1">
+                        Craft Region:{" "}
+                        <strong className="text-foreground">{product.originRegion}</strong>
+                      </div>
+                      <div className="py-1">
+                        Handloom / Powerloom:{" "}
+                        <strong className="text-foreground">{product.handloomOrPowerloom}</strong>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -282,7 +349,9 @@ export function ProductDetailModal({
                     </div>
                     {product.storageInstructions && (
                       <div className="p-3 bg-secondary/30 rounded border border-border space-y-1 text-muted-foreground">
-                        <strong className="block font-bold text-foreground">Storage Guidance:</strong>
+                        <strong className="block font-bold text-foreground">
+                          Storage Guidance:
+                        </strong>
                         <span>{product.storageInstructions}</span>
                       </div>
                     )}
@@ -297,8 +366,13 @@ export function ProductDetailModal({
                       <span>{product.shippingInformation}</span>
                     </div>
                     <div className="p-3 bg-secondary/30 rounded border border-border space-y-1 text-muted-foreground">
-                      <strong className="block font-bold text-foreground">Final Sale Guarantee:</strong>
-                      <span>{product.returnExchangeInfo || "All sales are final. Each piece undergoes 3-tier quality inspection prior to dispatch."}</span>
+                      <strong className="block font-bold text-foreground">
+                        Final Sale Guarantee:
+                      </strong>
+                      <span>
+                        {product.returnExchangeInfo ||
+                          "All sales are final. Each piece undergoes 3-tier quality inspection prior to dispatch."}
+                      </span>
                     </div>
                   </div>
                 )}
@@ -308,14 +382,18 @@ export function ProductDetailModal({
                   <div className="py-4 space-y-3 text-xs animate-in fade-in">
                     {product.faqs && product.faqs.length > 0 ? (
                       product.faqs.map((faq, idx) => (
-                        <div key={idx} className="p-3 bg-secondary/30 rounded border border-border space-y-1">
+                        <div
+                          key={idx}
+                          className="p-3 bg-secondary/30 rounded border border-border space-y-1"
+                        >
                           <strong className="block text-foreground">{faq.question}</strong>
                           <span className="text-muted-foreground">{faq.answer}</span>
                         </div>
                       ))
                     ) : (
                       <div className="p-3 bg-secondary/30 rounded border border-border text-muted-foreground">
-                        Standard shipping, silk mark certification, and handloom care policies apply to this listing.
+                        Standard shipping, silk mark certification, and handloom care policies apply
+                        to this listing.
                       </div>
                     )}
                   </div>

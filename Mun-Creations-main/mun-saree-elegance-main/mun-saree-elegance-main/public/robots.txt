@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /source
+Disallow: /api/
+
+Sitemap: https://www.muncreation.com/sitemap.xml

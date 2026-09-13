@@ -33,6 +33,7 @@ This project is built as a **Full-Stack Server-Side Rendered (SSR) Web Applicati
 ## 2. Frontend Layer (UI & Client Logic)
 
 ### 🎨 Design & Styling Tokens ([styles.css](file:///c:/Users/Paul%20Adams/Documents/Anirban%202/project2/mun-saree-elegance/src/styles.css))
+
 - **TailwindCSS v4**: Uses modern CSS variables for theme palette tokenization:
   - `--wine-deep` (`oklch(0.26 0.11 22)`): Royal Indian wine/maroon background.
   - `--gold` (`oklch(0.76 0.14 82)`): Antique gold accent.
@@ -41,6 +42,7 @@ This project is built as a **Full-Stack Server-Side Rendered (SSR) Web Applicati
 - **Wavy Reveal Animations** (`@keyframes wavy-flow-in`): Custom fluid section entrance keyframes using skewing, scale morphing, and cubic-bezier easing (`cubic-bezier(0.16, 1, 0.3, 1)`).
 
 ### 📱 Key UI Components (`src/components/site/`)
+
 1. **Header & Announcement Bar** ([header.tsx](file:///c:/Users/Paul%20Adams/Documents/Anirban%202/project2/mun-saree-elegance/src/components/site/header.tsx)):
    - **Auto-Hiding Scroll Logic**: Listens to scroll direction (`lastScrollY` vs `currentScrollY`). Automatically slides off-screen when scrolling down to give full visibility to content, and reappears when scrolling back up or at the top.
    - **Transparent Overlay**: Remains 100% transparent at the top hero section to display the video.
@@ -53,7 +55,7 @@ This project is built as a **Full-Stack Server-Side Rendered (SSR) Web Applicati
 4. **Story Banner** ([sections.tsx](file:///c:/Users/Paul%20Adams/Documents/Anirban%202/project2/mun-saree-elegance/src/components/site/sections.tsx#L101)):
    - "Six yards. Six generations of craft" feature section with an embedded looping artisan weaving video (`/story-video.mp4`).
 5. **Accessories Teaser** ([index.tsx](file:///c:/Users/Paul%20Adams/Documents/Anirban%202/project2/mun-saree-elegance/src/routes/index.tsx#L102)):
-   - Dedicated photography matching product titles: *Rose Gold Embroidered Blouse*, *Ivory Zari Dupatta*, *Kundan & Pearl Choker*, and *Handcrafted Potli Bag*.
+   - Dedicated photography matching product titles: _Rose Gold Embroidered Blouse_, _Ivory Zari Dupatta_, _Kundan & Pearl Choker_, and _Handcrafted Potli Bag_.
 6. **Wavy Scroll Animations** ([reveal.tsx](file:///c:/Users/Paul%20Adams/Documents/Anirban%202/project2/mun-saree-elegance/src/components/site/reveal.tsx)):
    - `<WavySection>` wrapper powered by `IntersectionObserver` to trigger section transitions one by one as the user scrolls.
 
@@ -62,10 +64,12 @@ This project is built as a **Full-Stack Server-Side Rendered (SSR) Web Applicati
 ## 3. Backend Layer (Server & Routing Engine)
 
 ### 🚀 Server Runtime — Nitro Engine
+
 - **Nitro Runtime** (`nitro: 3.0.260603-beta`): Compiles SSR code and static assets into `.output/server` and `.output/public`.
 - **Prebuilt Deployment Target**: Configured via [netlify.toml](file:///c:/Users/Paul%20Adams/Documents/Anirban%202/project2/mun-saree-elegance/netlify.toml) and Cloudflare module targets for zero-cold-start hosting.
 
 ### 🔀 File-Based Routing (`src/routes/`)
+
 - **[__root.tsx](file:///c:/Users/Paul%20Adams/Documents/Anirban%202/project2/mun-saree-elegance/src/routes/__root.tsx)**:
   - Defines the global html document shell (`<html>`, `<head>`, `<body>`).
   - Injects global metadata, Google Fonts, brand favicon links (`/favicon.png`), and root error boundaries (`NotFoundComponent`, `ErrorComponent`).

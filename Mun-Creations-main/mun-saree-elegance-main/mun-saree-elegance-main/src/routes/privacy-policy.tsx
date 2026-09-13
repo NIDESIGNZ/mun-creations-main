@@ -22,10 +22,20 @@ function PrivacyPolicyPage() {
             <div className="container-boutique max-w-3xl space-y-6">
               <div className="bg-white p-8 md:p-12 rounded-sm border border-border shadow-md space-y-4">
                 <div className="eyebrow text-[var(--gold)]">Data Security</div>
-                <h1 className="font-serif text-3xl md:text-4xl font-bold text-[var(--wine-deep)]">Privacy Policy</h1>
+                <h1 className="font-serif text-3xl md:text-4xl font-bold text-[var(--wine-deep)]">
+                  Privacy Policy
+                </h1>
                 <div className="text-xs text-muted-foreground leading-relaxed space-y-4 pt-2">
-                  <p>Ethnic Boutique & Mun Creations respect your privacy. We collect minimal personal data strictly necessary to fulfill orders, process payments securely via Razorpay/Stripe, and dispatch shipments.</p>
-                  <p>We do not sell, rent, or lease customer lists to third parties. All financial credentials are processed through 256-bit SSL encrypted PCI-DSS compliant gateways.</p>
+                  <p>
+                    Ethnic Boutique & Mun Creations respect your privacy. We collect minimal
+                    personal data strictly necessary to fulfill orders, process payments securely
+                    via Razorpay, and dispatch shipments.
+                  </p>
+                  <p>
+                    We do not sell, rent, or lease customer lists to third parties. All financial
+                    credentials are processed through 256-bit SSL encrypted PCI-DSS compliant
+                    gateways.
+                  </p>
                 </div>
               </div>
             </div>

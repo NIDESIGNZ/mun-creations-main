@@ -13,7 +13,8 @@ export const Route = createFileRoute("/shop-by")({
       { title: "Shop Sarees By Fabric, Colour, Occasion & Price — Mun Creations" },
       {
         name: "description",
-        content: "Discover sarees by Fabric (Silk, Tussar, Organza, Cotton), Colour (Red, Pink, Gold), Occasion, and Price range.",
+        content:
+          "Discover sarees by Fabric (Silk, Tussar, Organza, Cotton), Colour (Red, Pink, Gold), Occasion, and Price range.",
       },
     ],
   }),
@@ -54,7 +55,9 @@ function ShopByContent() {
       <div className="bg-white p-6 md:p-8 rounded-sm border border-border shadow-sm space-y-4">
         <div className="flex items-center gap-2 border-b border-border pb-3">
           <Grid className="h-5 w-5 text-[var(--wine)]" />
-          <h2 className="font-serif text-2xl font-bold text-[var(--wine-deep)]">1. Shop By Fabric</h2>
+          <h2 className="font-serif text-2xl font-bold text-[var(--wine-deep)]">
+            1. Shop By Fabric
+          </h2>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
@@ -75,7 +78,9 @@ function ShopByContent() {
       <div className="bg-white p-6 md:p-8 rounded-sm border border-border shadow-sm space-y-4">
         <div className="flex items-center gap-2 border-b border-border pb-3">
           <Palette className="h-5 w-5 text-[var(--wine)]" />
-          <h2 className="font-serif text-2xl font-bold text-[var(--wine-deep)]">2. Shop By Colour</h2>
+          <h2 className="font-serif text-2xl font-bold text-[var(--wine-deep)]">
+            2. Shop By Colour
+          </h2>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
@@ -86,7 +91,10 @@ function ShopByContent() {
               search={{ color: col.name }}
               className="p-3 bg-secondary/30 hover:bg-secondary/80 rounded-sm border border-border flex items-center gap-2 text-xs font-bold transition-all"
             >
-              <span className="h-5 w-5 rounded-full border border-border" style={{ backgroundColor: col.hex }} />
+              <span
+                className="h-5 w-5 rounded-full border border-border"
+                style={{ backgroundColor: col.hex }}
+              />
               <span>{col.name}</span>
             </Link>
           ))}
@@ -97,7 +105,9 @@ function ShopByContent() {
       <div className="bg-white p-6 md:p-8 rounded-sm border border-border shadow-sm space-y-4">
         <div className="flex items-center gap-2 border-b border-border pb-3">
           <DollarSign className="h-5 w-5 text-[var(--wine)]" />
-          <h2 className="font-serif text-2xl font-bold text-[var(--wine-deep)]">3. Shop By Price Range</h2>
+          <h2 className="font-serif text-2xl font-bold text-[var(--wine-deep)]">
+            3. Shop By Price Range
+          </h2>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -108,7 +118,9 @@ function ShopByContent() {
               search={{ price: pt.label }}
               className="p-5 bg-secondary/20 hover:bg-[var(--wine)] hover:text-white rounded-sm border border-border space-y-2 transition-all shadow-xs group"
             >
-              <div className="font-serif text-xl font-bold text-[var(--wine-deep)] group-hover:text-white">{pt.label}</div>
+              <div className="font-serif text-xl font-bold text-[var(--wine-deep)] group-hover:text-white">
+                {pt.label}
+              </div>
               <div className="text-xs text-muted-foreground group-hover:text-white/80 font-mono">
                 ${pt.min} – ${pt.max}
               </div>

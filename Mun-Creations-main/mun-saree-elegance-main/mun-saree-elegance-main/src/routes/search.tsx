@@ -17,7 +17,8 @@ export const Route = createFileRoute("/search")({
       { title: "Search Sarees & AI Saree Finder Assistant — Mun Creations" },
       {
         name: "description",
-        content: "Search our handwoven catalog or ask our AI Saree Finder for personalized outfit recommendations.",
+        content:
+          "Search our handwoven catalog or ask our AI Saree Finder for personalized outfit recommendations.",
       },
     ],
   }),
@@ -75,12 +76,33 @@ function SearchContent() {
     const q = aiPrompt.toLowerCase();
     let reco = allProducts;
 
-    if (q.includes("wedding") || q.includes("bridal") || q.includes("sister") || q.includes("reception")) {
-      reco = allProducts.filter((p) => p.priceUsd > 350 || p.category === "Kanjivaram" || p.category === "Banarasi");
-    } else if (q.includes("summer") || q.includes("cotton") || q.includes("light") || q.includes("haldi") || q.includes("yellow")) {
-      reco = allProducts.filter((p) => p.fabric === "Muslin" || p.fabric === "Cotton" || p.fabric === "Organza" || p.priceUsd < 350);
+    if (
+      q.includes("wedding") ||
+      q.includes("bridal") ||
+      q.includes("sister") ||
+      q.includes("reception")
+    ) {
+      reco = allProducts.filter(
+        (p) => p.priceUsd > 350 || p.category === "Kanjivaram" || p.category === "Banarasi",
+      );
+    } else if (
+      q.includes("summer") ||
+      q.includes("cotton") ||
+      q.includes("light") ||
+      q.includes("haldi") ||
+      q.includes("yellow")
+    ) {
+      reco = allProducts.filter(
+        (p) =>
+          p.fabric === "Muslin" ||
+          p.fabric === "Cotton" ||
+          p.fabric === "Organza" ||
+          p.priceUsd < 350,
+      );
     } else if (q.includes("red") || q.includes("maroon") || q.includes("crimson")) {
-      reco = allProducts.filter((p) => p.color === "Red" || p.color === "Maroon" || p.color === "Wine");
+      reco = allProducts.filter(
+        (p) => p.color === "Red" || p.color === "Maroon" || p.color === "Wine",
+      );
     } else if (q.includes("tussar") || q.includes("tribal")) {
       reco = allProducts.filter((p) => p.category === "Tussar" || p.fabric === "Tussar Silk");
     }
@@ -92,7 +114,7 @@ function SearchContent() {
       setAiResponse(response);
     } catch {
       setAiResponse(
-        `Based on your request "${aiPrompt}", I recommend our handwoven Katan Banarasi and Kanjivaram silk ensembles crafted with pure zari. Here are recommended choices:`
+        `Based on your request "${aiPrompt}", I recommend our handwoven Katan Banarasi and Kanjivaram silk ensembles crafted with pure zari. Here are recommended choices:`,
       );
     } finally {
       setIsAiThinking(false);
@@ -104,7 +126,9 @@ function SearchContent() {
       {/* 1. Keyword Search Bar */}
       <div className="bg-white p-5 sm:p-8 rounded-sm border border-border shadow-md space-y-3 sm:space-y-4 text-center max-w-3xl mx-auto">
         <div className="eyebrow text-[var(--gold)]">Full Text & Attribute Search</div>
-        <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[var(--wine-deep)]">Search Master Catalog</h1>
+        <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[var(--wine-deep)]">
+          Search Master Catalog
+        </h1>
 
         <div className="relative pt-1">
           <input
@@ -119,15 +143,17 @@ function SearchContent() {
 
         <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs text-muted-foreground pt-1">
           <span>Popular:</span>
-          {["Banarasi", "Kanjivaram", "Tussar", "Organza", "Bridal Red", "Haldi Yellow"].map((term) => (
-            <button
-              key={term}
-              onClick={() => setQuery(term)}
-              className="bg-secondary/60 hover:bg-[var(--wine)] hover:text-white px-2.5 py-1 rounded-xs transition-colors cursor-pointer"
-            >
-              {term}
-            </button>
-          ))}
+          {["Banarasi", "Kanjivaram", "Tussar", "Organza", "Bridal Red", "Haldi Yellow"].map(
+            (term) => (
+              <button
+                key={term}
+                onClick={() => setQuery(term)}
+                className="bg-secondary/60 hover:bg-[var(--wine)] hover:text-white px-2.5 py-1 rounded-xs transition-colors cursor-pointer"
+              >
+                {term}
+              </button>
+            ),
+          )}
         </div>
       </div>
 
@@ -139,7 +165,9 @@ function SearchContent() {
         </div>
 
         <div>
-          <h2 className="font-serif text-xl sm:text-2xl font-bold">Ask AI: "What should I wear for my sister's wedding?"</h2>
+          <h2 className="font-serif text-xl sm:text-2xl font-bold">
+            Ask AI: "What should I wear for my sister's wedding?"
+          </h2>
           <p className="text-xs text-white/80 mt-1">
             Describe your event, preferred fabric, or budget to get instant AI recommendations.
           </p>
@@ -192,7 +220,8 @@ function SearchContent() {
 
           {searchResults.length === 0 ? (
             <div className="bg-white p-6 sm:p-8 text-center rounded border border-border text-muted-foreground text-xs">
-              No matching sarees found for "{query}". Try searching by category like 'Banarasi' or fabric like 'Silk'.
+              No matching sarees found for "{query}". Try searching by category like 'Banarasi' or
+              fabric like 'Silk'.
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">

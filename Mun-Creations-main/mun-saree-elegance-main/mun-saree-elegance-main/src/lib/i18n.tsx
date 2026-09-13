@@ -1,11 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from "react";
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   SUPPORTED_CURRENCIES,
   DEFAULT_FALLBACK_RATES,
@@ -16,6 +9,12 @@ import {
   formatCurrency,
   convertPrice,
 } from "@/services/currencyService";
+import {
+  CurrencyModalProvider,
+  useCurrencyModal,
+} from "@/components/site/currency-converter/CurrencyConverterModal";
+
+export { useCurrencyModal };
 
 export type CurrencyCode = ServiceCurrencyCode;
 export type LangCode = "en" | "hi" | "fr" | "es" | "ar";
@@ -244,8 +243,7 @@ export const TRANSLATIONS: Record<LangCode, Dict> = {
     "section.press": "ظهرنا في",
     "section.story.eyebrow": "فن الساري",
     "section.story.title": "ستة أمتار. ستة أجيال من الحرفية.",
-    "section.story.body":
-      "كل ساري من Mun Creations يبدأ على نول خشبي في ورشة قروية.",
+    "section.story.body": "كل ساري من Mun Creations يبدأ على نول خشبي في ورشة قروية.",
     "section.story.cta": "قصتنا",
     "section.wedding": "الأعراس والاحتفالات",
     "section.wedding.sub": "قطع للحظات المميزة",
@@ -318,7 +316,12 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       } else {
         // Asynchronously attempt IP detection if no saved preference
         detectCountryFromIP().then((ipCur) => {
-          if (isMounted && ipCur && SUPPORTED_CURRENCIES[ipCur] && !localStorage.getItem("mc_cur")) {
+          if (
+            isMounted &&
+            ipCur &&
+            SUPPORTED_CURRENCIES[ipCur] &&
+            !localStorage.getItem("mc_cur")
+          ) {
             setCurrency(ipCur);
           }
         });
@@ -359,10 +362,14 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       rates,
       isRatesLoading,
     }),
-    [currency, lang, rates, isRatesLoading]
+    [currency, lang, rates, isRatesLoading],
   );
 
-  return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
+  return (
+    <I18nContext.Provider value={value}>
+      <CurrencyModalProvider>{children}</CurrencyModalProvider>
+    </I18nContext.Provider>
+  );
 }
 
 export function useI18n() {

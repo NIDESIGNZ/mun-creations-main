@@ -41,6 +41,12 @@ export function WavySection({
   );
 }
 
-export function Reveal({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+export function Reveal({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return <WavySection className={className}>{children}</WavySection>;
 }

@@ -13,7 +13,8 @@ export const Route = createFileRoute("/collections")({
       { title: "Curated Saree Collections — Wedding, Festive, Designer | Mun Creations" },
       {
         name: "description",
-        content: "Explore curated saree collections: Wedding Bridal, Festive, Kathiyawadi, Red & White, Summer Essentials & Hand Embroidery.",
+        content:
+          "Explore curated saree collections: Wedding Bridal, Festive, Kathiyawadi, Red & White, Summer Essentials & Hand Embroidery.",
       },
     ],
   }),
@@ -46,7 +47,8 @@ function CollectionsContent() {
           Signature Heritage & Occasionwear Collections
         </h1>
         <p className="text-xs sm:text-sm text-muted-foreground max-w-xl mx-auto px-2 sm:px-0">
-          Explore curated fashion edits styled for weddings, traditional pujas, red carpet receptions, and summer everyday luxury.
+          Explore curated fashion edits styled for weddings, traditional pujas, red carpet
+          receptions, and summer everyday luxury.
         </p>
       </div>
 
@@ -64,7 +66,8 @@ function CollectionsContent() {
                 {c.name}
               </h3>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Handpicked handloom masterworks styled specifically for {c.name.toLowerCase()} occasions.
+                Handpicked handloom masterworks styled specifically for {c.name.toLowerCase()}{" "}
+                occasions.
               </p>
             </div>
 

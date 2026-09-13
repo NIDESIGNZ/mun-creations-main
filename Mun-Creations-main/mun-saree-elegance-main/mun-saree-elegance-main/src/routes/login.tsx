@@ -13,7 +13,8 @@ export const Route = createFileRoute("/login")({
       { title: "Portal Sign In — Mun Creations" },
       {
         name: "description",
-        content: "Authentication portal for Designers & Weavers, Customers, and Main Admin Executive Management.",
+        content:
+          "Authentication portal for Designers & Weavers, Customers, and Main Admin Executive Management.",
       },
     ],
   }),
@@ -52,7 +53,9 @@ function LoginFormContainer() {
 
     if (activeTab === "admin") {
       sessionStorage.setItem("mun_admin_authed", "true");
-      setAuthSuccessMsg("Admin authentication successful! Redirecting to Master Executive Admin Portal...");
+      setAuthSuccessMsg(
+        "Admin authentication successful! Redirecting to Master Executive Admin Portal...",
+      );
       setTimeout(() => {
         navigate({ to: "/admin" });
       }, 1000);
@@ -63,6 +66,8 @@ function LoginFormContainer() {
         navigate({ to: "/source" });
       }, 1000);
     } else {
+      sessionStorage.setItem("mun_customer_authed", "true");
+      sessionStorage.setItem("mun_customer_email", email);
       setAuthSuccessMsg("Customer login successful! Welcome back to Mun Creations.");
       setTimeout(() => {
         navigate({ to: "/account" });
@@ -79,8 +84,8 @@ function LoginFormContainer() {
       setEmail("rajeshwar@banarasihandloom.org");
       setPassword("mun@dev1234");
     } else {
-      setEmail("priya.sharma@example.com");
-      setPassword("mun@dev1234");
+      setEmail("");
+      setPassword("");
     }
   };
 
@@ -145,17 +150,20 @@ function LoginFormContainer() {
             <div>
               {activeTab === "designers" && (
                 <span>
-                  <strong>Designers & Artisans Portal:</strong> Access loom order schedules, submit new weave designs, and track monthly payouts.
+                  <strong>Designers & Artisans Portal:</strong> Access loom order schedules, submit
+                  new weave designs, and track monthly payouts.
                 </span>
               )}
               {activeTab === "customers" && (
                 <span>
-                  <strong>Customer Account:</strong> View order history, track international shipping, and access exclusive VIP collection previews.
+                  <strong>Customer Account:</strong> View order history, track international
+                  shipping, and access exclusive VIP collection previews.
                 </span>
               )}
               {activeTab === "admin" && (
                 <span>
-                  <strong>Main Executive Admin Portal:</strong> Full executive management suite to inspect Customer details, Designer rosters, and revenue diagnostics.
+                  <strong>Main Executive Admin Portal:</strong> Full executive management suite to
+                  inspect Customer details, Designer rosters, and revenue diagnostics.
                 </span>
               )}
             </div>
@@ -179,8 +187,8 @@ function LoginFormContainer() {
                       activeTab === "admin"
                         ? "admin@muncreations.com"
                         : activeTab === "designers"
-                        ? "designer@handloom.org"
-                        : "customer@example.com"
+                          ? "designer@handloom.org"
+                          : "customer@example.com"
                     }
                     className="w-full pl-9 pr-4 py-2.5 bg-secondary/20 border border-border rounded-sm focus:outline-none focus:border-[var(--wine)]"
                   />
@@ -226,8 +234,8 @@ function LoginFormContainer() {
                   {activeTab === "admin"
                     ? "Enter Main Admin Portal"
                     : activeTab === "designers"
-                    ? "Sign In to Designer Portal"
-                    : "Sign In to Customer Account"}
+                      ? "Sign In to Designer Portal"
+                      : "Sign In to Customer Account"}
                 </span>
                 <ArrowRight className="h-4 w-4" />
               </button>

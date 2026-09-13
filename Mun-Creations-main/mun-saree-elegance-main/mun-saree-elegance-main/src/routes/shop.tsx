@@ -7,29 +7,36 @@ import { Footer } from "@/components/site/footer";
 import { CartDrawer } from "@/components/site/cart-drawer";
 import { ProductCard } from "@/components/site/product";
 import { backendDB } from "@/lib/backend-api";
-import {
-  CATEGORY_FILTERS,
-  FABRIC_FILTERS,
-  COLOR_FILTERS,
-  PRICE_TIERS,
-} from "@/lib/catalog";
-import {
-  Filter,
-  SlidersHorizontal,
-  X,
-  ChevronDown,
-  Sparkles,
-  Search,
-  Check,
-} from "lucide-react";
+import { CATEGORY_FILTERS, FABRIC_FILTERS, COLOR_FILTERS, PRICE_TIERS } from "@/lib/catalog";
+import { Filter, SlidersHorizontal, X, ChevronDown, Sparkles, Search, Check } from "lucide-react";
+
+type ShopSearch = {
+  category?: string;
+  fabric?: string;
+  color?: string;
+  price?: string;
+  sort?: string;
+  q?: string;
+};
 
 export const Route = createFileRoute("/shop")({
+  validateSearch: (search: Record<string, unknown>): ShopSearch => {
+    return {
+      category: typeof search.category === "string" ? search.category : undefined,
+      fabric: typeof search.fabric === "string" ? search.fabric : undefined,
+      color: typeof search.color === "string" ? search.color : undefined,
+      price: typeof search.price === "string" ? search.price : undefined,
+      sort: typeof search.sort === "string" ? search.sort : undefined,
+      q: typeof search.q === "string" ? search.q : undefined,
+    };
+  },
   head: () => ({
     meta: [
       { title: "Shop Luxury Sarees, Kurtis & Blouses — Mun Creations" },
       {
         name: "description",
-        content: "Browse our handwoven Banarasi, Kanjivaram, Tussar, Organza & Chikankari sarees with custom filters.",
+        content:
+          "Browse our handwoven Banarasi, Kanjivaram, Tussar, Organza & Chikankari sarees with custom filters.",
       },
     ],
   }),
@@ -71,43 +78,59 @@ function ShopContent() {
 
   // Filter & Search Engine
   const filteredProducts = useMemo(() => {
-    return allProducts.filter((p) => {
-      // Category Match
-      if (selectedCategory && p.category.toLowerCase() !== selectedCategory.toLowerCase() && p.subcategory?.toLowerCase() !== selectedCategory.toLowerCase()) {
-        return false;
-      }
-      // Fabric Match
-      if (selectedFabric && p.fabric.toLowerCase() !== selectedFabric.toLowerCase()) {
-        return false;
-      }
-      // Color Match
-      if (selectedColor && p.color.toLowerCase() !== selectedColor.toLowerCase()) {
-        return false;
-      }
-      // Price Tier Match
-      if (selectedPriceTier) {
-        if (selectedPriceTier === "Budget Collection" && p.priceUsd > 150) return false;
-        if (selectedPriceTier === "Mid Range" && (p.priceUsd <= 150 || p.priceUsd > 350)) return false;
-        if (selectedPriceTier === "Premium" && (p.priceUsd <= 350 || p.priceUsd > 600)) return false;
-        if (selectedPriceTier === "Luxury" && p.priceUsd <= 600) return false;
-      }
-      // Search Query
-      if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase();
-        const matchesName = p.name.toLowerCase().includes(q);
-        const matchesCat = p.category.toLowerCase().includes(q);
-        const matchesFab = p.fabric.toLowerCase().includes(q);
-        const matchesSku = p.sku?.toLowerCase().includes(q);
-        if (!matchesName && !matchesCat && !matchesFab && !matchesSku) return false;
-      }
-      return true;
-    }).sort((a, b) => {
-      if (selectedSort === "price-asc") return a.priceUsd - b.priceUsd;
-      if (selectedSort === "price-desc") return b.priceUsd - a.priceUsd;
-      if (selectedSort === "newest") return a.badge === "new" ? -1 : 1;
-      return 0;
-    });
-  }, [allProducts, selectedCategory, selectedFabric, selectedColor, selectedPriceTier, searchQuery, selectedSort]);
+    return allProducts
+      .filter((p) => {
+        // Category Match
+        if (
+          selectedCategory &&
+          p.category.toLowerCase() !== selectedCategory.toLowerCase() &&
+          p.subcategory?.toLowerCase() !== selectedCategory.toLowerCase()
+        ) {
+          return false;
+        }
+        // Fabric Match
+        if (selectedFabric && p.fabric.toLowerCase() !== selectedFabric.toLowerCase()) {
+          return false;
+        }
+        // Color Match
+        if (selectedColor && p.color.toLowerCase() !== selectedColor.toLowerCase()) {
+          return false;
+        }
+        // Price Tier Match
+        if (selectedPriceTier) {
+          if (selectedPriceTier === "Budget Collection" && p.priceUsd > 150) return false;
+          if (selectedPriceTier === "Mid Range" && (p.priceUsd <= 150 || p.priceUsd > 350))
+            return false;
+          if (selectedPriceTier === "Premium" && (p.priceUsd <= 350 || p.priceUsd > 600))
+            return false;
+          if (selectedPriceTier === "Luxury" && p.priceUsd <= 600) return false;
+        }
+        // Search Query
+        if (searchQuery.trim()) {
+          const q = searchQuery.toLowerCase();
+          const matchesName = p.name.toLowerCase().includes(q);
+          const matchesCat = p.category.toLowerCase().includes(q);
+          const matchesFab = p.fabric.toLowerCase().includes(q);
+          const matchesSku = p.sku?.toLowerCase().includes(q);
+          if (!matchesName && !matchesCat && !matchesFab && !matchesSku) return false;
+        }
+        return true;
+      })
+      .sort((a, b) => {
+        if (selectedSort === "price-asc") return a.priceUsd - b.priceUsd;
+        if (selectedSort === "price-desc") return b.priceUsd - a.priceUsd;
+        if (selectedSort === "newest") return a.badge === "new" ? -1 : 1;
+        return 0;
+      });
+  }, [
+    allProducts,
+    selectedCategory,
+    selectedFabric,
+    selectedColor,
+    selectedPriceTier,
+    searchQuery,
+    selectedSort,
+  ]);
 
   const clearAllFilters = () => {
     setSelectedCategory("");
@@ -174,7 +197,9 @@ function ShopContent() {
 
             {/* Category Filter */}
             <div className="space-y-2">
-              <label className="font-bold text-xs uppercase tracking-wider block">Category & Weave</label>
+              <label className="font-bold text-xs uppercase tracking-wider block">
+                Category & Weave
+              </label>
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
@@ -191,7 +216,9 @@ function ShopContent() {
 
             {/* Fabric Filter */}
             <div className="space-y-2">
-              <label className="font-bold text-xs uppercase tracking-wider block">Fabric Type</label>
+              <label className="font-bold text-xs uppercase tracking-wider block">
+                Fabric Type
+              </label>
               <select
                 value={selectedFabric}
                 onChange={(e) => setSelectedFabric(e.target.value)}
@@ -208,12 +235,16 @@ function ShopContent() {
 
             {/* Price Tier Filter */}
             <div className="space-y-2">
-              <label className="font-bold text-xs uppercase tracking-wider block">Price Range</label>
+              <label className="font-bold text-xs uppercase tracking-wider block">
+                Price Range
+              </label>
               <div className="space-y-1 text-xs">
                 <button
                   onClick={() => setSelectedPriceTier("")}
                   className={`w-full text-left p-2 rounded-xs transition-colors ${
-                    selectedPriceTier === "" ? "bg-[var(--wine)] text-white font-bold" : "hover:bg-secondary text-foreground"
+                    selectedPriceTier === ""
+                      ? "bg-[var(--wine)] text-white font-bold"
+                      : "hover:bg-secondary text-foreground"
                   }`}
                 >
                   All Prices
@@ -223,7 +254,9 @@ function ShopContent() {
                     key={pt.label}
                     onClick={() => setSelectedPriceTier(pt.label)}
                     className={`w-full text-left p-2 rounded-xs transition-colors ${
-                      selectedPriceTier === pt.label ? "bg-[var(--wine)] text-white font-bold" : "hover:bg-secondary text-foreground"
+                      selectedPriceTier === pt.label
+                        ? "bg-[var(--wine)] text-white font-bold"
+                        : "hover:bg-secondary text-foreground"
                     }`}
                   >
                     {pt.label} ({formatPrice(pt.min)} - {formatPrice(pt.max)})
@@ -234,7 +267,9 @@ function ShopContent() {
 
             {/* Colour Filter Swatches */}
             <div className="space-y-2 pt-2 border-t border-border">
-              <label className="font-bold text-xs uppercase tracking-wider block">Shop by Colour</label>
+              <label className="font-bold text-xs uppercase tracking-wider block">
+                Shop by Colour
+              </label>
               <div className="flex flex-wrap gap-2 pt-1">
                 {COLOR_FILTERS.slice(0, 14).map((c) => (
                   <button
@@ -242,11 +277,15 @@ function ShopContent() {
                     title={c.name}
                     onClick={() => setSelectedColor(selectedColor === c.name ? "" : c.name)}
                     className={`h-7 w-7 rounded-full border transition-all flex items-center justify-center ${
-                      selectedColor === c.name ? "ring-2 ring-[var(--wine)] scale-110 border-white shadow-md" : "border-border/60 hover:scale-105"
+                      selectedColor === c.name
+                        ? "ring-2 ring-[var(--wine)] scale-110 border-white shadow-md"
+                        : "border-border/60 hover:scale-105"
                     }`}
                     style={{ backgroundColor: c.hex }}
                   >
-                    {selectedColor === c.name && <Check className="h-3 w-3 text-white drop-shadow-md" />}
+                    {selectedColor === c.name && (
+                      <Check className="h-3 w-3 text-white drop-shadow-md" />
+                    )}
                   </button>
                 ))}
               </div>
@@ -259,7 +298,9 @@ function ShopContent() {
           {/* Active Filter Pills Bar */}
           <div className="bg-white p-4 rounded-sm border border-border shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="font-bold text-muted-foreground uppercase tracking-wider">Active:</span>
+              <span className="font-bold text-muted-foreground uppercase tracking-wider">
+                Active:
+              </span>
               {selectedCategory && (
                 <span className="bg-[var(--wine)] text-white px-2.5 py-1 rounded-full flex items-center gap-1 font-semibold">
                   Category: {selectedCategory}
@@ -284,7 +325,9 @@ function ShopContent() {
                   <X className="h-3 w-3 cursor-pointer" onClick={() => setSelectedPriceTier("")} />
                 </span>
               )}
-              {activeFilterCount === 0 && <span className="text-muted-foreground italic">Showing all items</span>}
+              {activeFilterCount === 0 && (
+                <span className="text-muted-foreground italic">Showing all items</span>
+              )}
             </div>
 
             {/* Sorting Control */}
@@ -307,9 +350,12 @@ function ShopContent() {
           {filteredProducts.length === 0 ? (
             <div className="bg-white p-12 text-center rounded-sm border border-border space-y-4">
               <Sparkles className="h-10 w-10 text-[var(--gold)] mx-auto" />
-              <h3 className="font-serif text-2xl font-bold text-[var(--wine-deep)]">No Sarees Found</h3>
+              <h3 className="font-serif text-2xl font-bold text-[var(--wine-deep)]">
+                No Sarees Found
+              </h3>
               <p className="text-xs text-muted-foreground max-w-sm mx-auto">
-                No products matched your selected filters. Try clearing filters to explore our full handloom catalog.
+                No products matched your selected filters. Try clearing filters to explore our full
+                handloom catalog.
               </p>
               <button
                 onClick={clearAllFilters}

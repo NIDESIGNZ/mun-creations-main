@@ -42,25 +42,54 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<Ctx>(() => {
     const add = (p: Product) => {
+      const stock = p.stockQuantity ?? (p as any).stock ?? 10;
       setItems((prev) => {
         const found = prev.find((i) => i.product.id === p.id);
-        if (found) return prev.map((i) => (i.product.id === p.id ? { ...i, qty: i.qty + 1 } : i));
+        if (found) {
+          const nextQty = Math.min(found.qty + 1, stock);
+          return prev.map((i) => (i.product.id === p.id ? { ...i, qty: nextQty } : i));
+        }
         return [...prev, { product: p, qty: 1 }];
       });
       setOpen(true);
     };
-    const remove = (id: string) => setItems((prev) => prev.filter((i) => i.product.id !== id));
+    const remove = (id: string) => {
+      setItems((prev) => {
+        const updated = prev.filter((i) => i.product.id !== id);
+        try {
+          if (typeof window !== "undefined") {
+            localStorage.setItem("mun_cart_items", JSON.stringify(updated));
+          }
+        } catch {}
+        return updated;
+      });
+    };
     const setQty = (id: string, qty: number) =>
-      setItems((prev) =>
-        prev
-          .map((i) => (i.product.id === id ? { ...i, qty: Math.max(0, qty) } : i))
-          .filter((i) => i.qty > 0),
-      );
+      setItems((prev) => {
+        const updated = prev
+          .map((i) => {
+            if (i.product.id === id) {
+              const stock = i.product.stockQuantity ?? (i.product as any).stock ?? 10;
+              const clamped = Math.min(Math.max(1, qty), stock);
+              return { ...i, qty: clamped };
+            }
+            return i;
+          })
+          .filter((i) => i.qty > 0);
+        try {
+          if (typeof window !== "undefined") {
+            localStorage.setItem("mun_cart_items", JSON.stringify(updated));
+          }
+        } catch {}
+        return updated;
+      });
     const clearCart = () => {
       setItems([]);
       try {
         localStorage.removeItem("mun_cart_items");
-      } catch {}
+      } catch {
+        // Ignore localStorage error
+      }
     };
     return {
       items,

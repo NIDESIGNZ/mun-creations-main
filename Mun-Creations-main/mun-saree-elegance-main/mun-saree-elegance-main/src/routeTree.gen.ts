@@ -15,6 +15,7 @@ import { Route as AccountRouteImport } from './routes/account'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CollectionsRouteImport } from './routes/collections'
+import { Route as CurrencyConverterRouteImport } from './routes/currency-converter'
 import { Route as FaqsRouteImport } from './routes/faqs'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
@@ -27,6 +28,31 @@ import { Route as ShopRouteImport } from './routes/shop'
 import { Route as ShopByRouteImport } from './routes/shop-by'
 import { Route as SourceRouteImport } from './routes/source'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as ProductsRouteImport } from './routes/products'
+import { Route as ProductIdRouteImport } from './routes/product.$id'
+import { Route as CartRouteImport } from './routes/cart'
+import { Route as ContactRouteImport } from './routes/contact'
+
+const ProductsRoute = ProductsRouteImport.update({
+  id: '/products',
+  path: '/products',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProductIdRoute = ProductIdRouteImport.update({
+  id: '/product/$id',
+  path: '/product/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CartRoute = CartRouteImport.update({
+  id: '/cart',
+  path: '/cart',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -56,6 +82,11 @@ const CheckoutRoute = CheckoutRouteImport.update({
 const CollectionsRoute = CollectionsRouteImport.update({
   id: '/collections',
   path: '/collections',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CurrencyConverterRoute = CurrencyConverterRouteImport.update({
+  id: '/currency-converter',
+  path: '/currency-converter',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FaqsRoute = FaqsRouteImport.update({
@@ -124,11 +155,16 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/account': typeof AccountRoute
   '/admin': typeof AdminRoute
+  '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/collections': typeof CollectionsRoute
+  '/contact': typeof ContactRoute
+  '/currency-converter': typeof CurrencyConverterRoute
   '/faqs': typeof FaqsRoute
   '/login': typeof LoginRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
+  '/product/$id': typeof ProductIdRoute
+  '/products': typeof ProductsRoute
   '/refund-policy': typeof RefundPolicyRoute
   '/return-policy': typeof ReturnPolicyRoute
   '/sarees': typeof SareesRoute
@@ -144,11 +180,16 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/account': typeof AccountRoute
   '/admin': typeof AdminRoute
+  '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/collections': typeof CollectionsRoute
+  '/contact': typeof ContactRoute
+  '/currency-converter': typeof CurrencyConverterRoute
   '/faqs': typeof FaqsRoute
   '/login': typeof LoginRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
+  '/product/$id': typeof ProductIdRoute
+  '/products': typeof ProductsRoute
   '/refund-policy': typeof RefundPolicyRoute
   '/return-policy': typeof ReturnPolicyRoute
   '/sarees': typeof SareesRoute
@@ -165,11 +206,16 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/account': typeof AccountRoute
   '/admin': typeof AdminRoute
+  '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/collections': typeof CollectionsRoute
+  '/contact': typeof ContactRoute
+  '/currency-converter': typeof CurrencyConverterRoute
   '/faqs': typeof FaqsRoute
   '/login': typeof LoginRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
+  '/product/$id': typeof ProductIdRoute
+  '/products': typeof ProductsRoute
   '/refund-policy': typeof RefundPolicyRoute
   '/return-policy': typeof ReturnPolicyRoute
   '/sarees': typeof SareesRoute
@@ -187,11 +233,16 @@ export interface FileRouteTypes {
     | '/about'
     | '/account'
     | '/admin'
+    | '/cart'
     | '/checkout'
     | '/collections'
+    | '/contact'
+    | '/currency-converter'
     | '/faqs'
     | '/login'
     | '/privacy-policy'
+    | '/product/$id'
+    | '/products'
     | '/refund-policy'
     | '/return-policy'
     | '/sarees'
@@ -207,11 +258,16 @@ export interface FileRouteTypes {
     | '/about'
     | '/account'
     | '/admin'
+    | '/cart'
     | '/checkout'
     | '/collections'
+    | '/contact'
+    | '/currency-converter'
     | '/faqs'
     | '/login'
     | '/privacy-policy'
+    | '/product/$id'
+    | '/products'
     | '/refund-policy'
     | '/return-policy'
     | '/sarees'
@@ -227,11 +283,16 @@ export interface FileRouteTypes {
     | '/about'
     | '/account'
     | '/admin'
+    | '/cart'
     | '/checkout'
     | '/collections'
+    | '/contact'
+    | '/currency-converter'
     | '/faqs'
     | '/login'
     | '/privacy-policy'
+    | '/product/$id'
+    | '/products'
     | '/refund-policy'
     | '/return-policy'
     | '/sarees'
@@ -248,11 +309,16 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AccountRoute: typeof AccountRoute
   AdminRoute: typeof AdminRoute
+  CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
   CollectionsRoute: typeof CollectionsRoute
+  ContactRoute: typeof ContactRoute
+  CurrencyConverterRoute: typeof CurrencyConverterRoute
   FaqsRoute: typeof FaqsRoute
   LoginRoute: typeof LoginRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
+  ProductIdRoute: typeof ProductIdRoute
+  ProductsRoute: typeof ProductsRoute
   RefundPolicyRoute: typeof RefundPolicyRoute
   ReturnPolicyRoute: typeof ReturnPolicyRoute
   SareesRoute: typeof SareesRoute
@@ -294,6 +360,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cart': {
+      id: '/cart'
+      path: '/cart'
+      fullPath: '/cart'
+      preLoaderRoute: typeof CartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/checkout': {
       id: '/checkout'
       path: '/checkout'
@@ -306,6 +379,20 @@ declare module '@tanstack/react-router' {
       path: '/collections'
       fullPath: '/collections'
       preLoaderRoute: typeof CollectionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/currency-converter': {
+      id: '/currency-converter'
+      path: '/currency-converter'
+      fullPath: '/currency-converter'
+      preLoaderRoute: typeof CurrencyConverterRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/faqs': {
@@ -327,6 +414,20 @@ declare module '@tanstack/react-router' {
       path: '/privacy-policy'
       fullPath: '/privacy-policy'
       preLoaderRoute: typeof PrivacyPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/product/$id': {
+      id: '/product/$id'
+      path: '/product/$id'
+      fullPath: '/product/$id'
+      preLoaderRoute: typeof ProductIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/products': {
+      id: '/products'
+      path: '/products'
+      fullPath: '/products'
+      preLoaderRoute: typeof ProductsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/refund-policy': {
@@ -400,11 +501,16 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AccountRoute: AccountRoute,
   AdminRoute: AdminRoute,
+  CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
   CollectionsRoute: CollectionsRoute,
+  ContactRoute: ContactRoute,
+  CurrencyConverterRoute: CurrencyConverterRoute,
   FaqsRoute: FaqsRoute,
   LoginRoute: LoginRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
+  ProductIdRoute: ProductIdRoute,
+  ProductsRoute: ProductsRoute,
   RefundPolicyRoute: RefundPolicyRoute,
   ReturnPolicyRoute: ReturnPolicyRoute,
   SareesRoute: SareesRoute,

@@ -31,6 +31,8 @@ export interface AuthoritativePriceCalculation {
   subtotalUsd: number;
   discountUsd: number;
   shippingFeeUsd: number;
+  shippingCostInr?: number;
+  shippingProvider?: string;
   finalTotalUsd: number;
   amountPaise: number;
   currency: string;
@@ -44,6 +46,8 @@ export interface CreateOrderParams {
   items?: AuthoritativeItemInput[];
   promoCode?: string;
   shippingMethod?: "standard" | "express";
+  shippingCostInr?: number;
+  shippingProvider?: string;
 }
 
 export interface CreateOrderResult {
@@ -65,7 +69,9 @@ export class RazorpayService {
     items: AuthoritativeItemInput[],
     promoCode?: string,
     shippingMethod: "standard" | "express" = "standard",
-    currency: string = "INR"
+    currency: string = "INR",
+    shippingCostInr?: number,
+    shippingProvider?: string,
   ): AuthoritativePriceCalculation {
     if (!items || !Array.isArray(items) || items.length === 0) {
       const err: any = new Error("No cart items provided for order calculation.");
@@ -75,7 +81,12 @@ export class RazorpayService {
 
     const calculatedItems = items.map((item: any) => {
       const pId = item.productId || item.id;
-      const qty = typeof item.quantity === "number" ? item.quantity : (typeof item.qty === "number" ? item.qty : 1);
+      const qty =
+        typeof item.quantity === "number"
+          ? item.quantity
+          : typeof item.qty === "number"
+            ? item.qty
+            : 1;
       if (!pId || typeof qty !== "number" || qty <= 0) {
         const err: any = new Error(`Invalid item quantity for product ID: ${pId}`);
         err.status = 400;
@@ -89,8 +100,13 @@ export class RazorpayService {
         throw err;
       }
 
-      if (product.availability === "Out of Stock" || (product.stockQuantity !== undefined && product.stockQuantity < qty)) {
-        const err: any = new Error(`Product "${product.name}" does not have enough stock available.`);
+      if (
+        product.availability === "Out of Stock" ||
+        (product.stockQuantity !== undefined && product.stockQuantity < qty)
+      ) {
+        const err: any = new Error(
+          `Product "${product.name}" does not have enough stock available.`,
+        );
         err.status = 400;
         throw err;
       }
@@ -103,7 +119,10 @@ export class RazorpayService {
       };
     });
 
-    const subtotalUsd = calculatedItems.reduce((sum, item) => sum + item.priceUsd * item.quantity, 0);
+    const subtotalUsd = calculatedItems.reduce(
+      (sum, item) => sum + item.priceUsd * item.quantity,
+      0,
+    );
 
     // Validate and calculate discount authoritatively via DB Coupon Engine
     let discountUsd = 0;
@@ -115,18 +134,16 @@ export class RazorpayService {
     }
 
     // Calculate authoritative shipping rules:
-    // Free shipping if subtotal >= $500 or for standard shipping with qualifying subtotal
-    const isFreeShipping = subtotalUsd >= 500;
-    const shippingFeeUsd = isFreeShipping
-      ? 0
-      : shippingMethod === "express"
-      ? 45
-      : 25;
+    // Free shipping if subtotal >= $500 or subtotal in INR >= 40000, else standard insured shipping ($25 / ₹199)
+    const isFreeShipping = subtotalUsd >= 500 || subtotalUsd * 83.5 >= 40000;
+    const shippingFeeUsd = isFreeShipping ? 0 : 25;
+    const effectiveShippingInr = isFreeShipping ? 0 : 199;
 
     const finalTotalUsd = Math.max(0, subtotalUsd - discountUsd + shippingFeeUsd);
 
-    // Convert to INR paise (with standard currency conversion base 83.5 if base is USD)
-    const effectiveInr = currency.toUpperCase() === "INR" ? finalTotalUsd * 83.5 : finalTotalUsd * 83.5;
+    // Convert to INR paise: subtotal and discount in USD converted to INR + domestic shipping in INR
+    const netUsd = Math.max(0, subtotalUsd - discountUsd);
+    const effectiveInr = netUsd * 83.5 + effectiveShippingInr;
     const amountPaise = Math.max(100, Math.round(effectiveInr * 100));
 
     return {
@@ -134,6 +151,8 @@ export class RazorpayService {
       subtotalUsd,
       discountUsd,
       shippingFeeUsd,
+      shippingCostInr: effectiveShippingInr,
+      shippingProvider,
       finalTotalUsd,
       amountPaise,
       currency: "INR",
@@ -146,13 +165,20 @@ export class RazorpayService {
    * Minimum amount: 100 paise (₹1.00)
    */
   async createOrder(params: CreateOrderParams): Promise<CreateOrderResult> {
-    const { items, promoCode, shippingMethod, currency = "INR", receipt, notes } = params;
+    const { items, promoCode, shippingMethod, shippingCostInr, shippingProvider, currency = "INR", receipt, notes } = params;
 
     let targetAmountPaise: number;
     let calculation: AuthoritativePriceCalculation | undefined;
 
     if (items && Array.isArray(items) && items.length > 0) {
-      calculation = this.calculateAuthoritativePrice(items, promoCode, shippingMethod, currency);
+      calculation = this.calculateAuthoritativePrice(
+        items,
+        promoCode,
+        shippingMethod,
+        currency,
+        shippingCostInr,
+        shippingProvider,
+      );
       targetAmountPaise = calculation.amountPaise;
     } else if (typeof params.amount === "number" && !isNaN(params.amount)) {
       targetAmountPaise = Math.round(params.amount);
@@ -197,8 +223,14 @@ export class RazorpayService {
         calculation,
       };
     } catch (err: any) {
-      if (err?.statusCode === 401 || (err?.error?.code === "BAD_REQUEST_ERROR" && err?.error?.description?.includes("authenticate"))) {
-        const authErr: any = new Error("Razorpay authentication failed. Please check your credentials.");
+      if (
+        err?.statusCode === 401 ||
+        (err?.error?.code === "BAD_REQUEST_ERROR" &&
+          err?.error?.description?.includes("authenticate"))
+      ) {
+        const authErr: any = new Error(
+          "Razorpay authentication failed. Please check your credentials.",
+        );
         authErr.status = 401;
         throw authErr;
       }
@@ -207,7 +239,9 @@ export class RazorpayService {
         throw err;
       }
 
-      const apiErr: any = new Error(err?.error?.description || err?.message || "Failed to create Razorpay order");
+      const apiErr: any = new Error(
+        err?.error?.description || err?.message || "Failed to create Razorpay order",
+      );
       apiErr.status = err?.statusCode || 500;
       throw apiErr;
     }
@@ -227,7 +261,8 @@ export class RazorpayService {
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
       return {
         isValid: false,
-        error: "Missing required verification fields (razorpay_order_id, razorpay_payment_id, razorpay_signature)",
+        error:
+          "Missing required verification fields (razorpay_order_id, razorpay_payment_id, razorpay_signature)",
       };
     }
 
@@ -241,10 +276,7 @@ export class RazorpayService {
 
     try {
       const payload = `${razorpay_order_id}|${razorpay_payment_id}`;
-      const expectedSignature = crypto
-        .createHmac("sha256", secret)
-        .update(payload)
-        .digest("hex");
+      const expectedSignature = crypto.createHmac("sha256", secret).update(payload).digest("hex");
 
       const expectedBuffer = Buffer.from(expectedSignature, "utf-8");
       const receivedBuffer = Buffer.from(razorpay_signature, "utf-8");
@@ -272,7 +304,7 @@ export class RazorpayService {
   verifyWebhookSignature(
     rawBody: string,
     signature: string,
-    webhookSecret?: string
+    webhookSecret?: string,
   ): { isValid: boolean; error?: string } {
     const secret = webhookSecret || process.env.RAZORPAY_WEBHOOK_SECRET;
 
@@ -291,10 +323,7 @@ export class RazorpayService {
     }
 
     try {
-      const expectedSignature = crypto
-        .createHmac("sha256", secret)
-        .update(rawBody)
-        .digest("hex");
+      const expectedSignature = crypto.createHmac("sha256", secret).update(rawBody).digest("hex");
 
       const expectedBuffer = Buffer.from(expectedSignature, "utf-8");
       const receivedBuffer = Buffer.from(signature, "utf-8");
@@ -332,7 +361,7 @@ export class RazorpayService {
   async refundPayment(
     paymentId: string,
     amountPaise?: number,
-    notes?: Record<string, string>
+    notes?: Record<string, string>,
   ): Promise<any> {
     if (!paymentId) {
       throw new Error("Payment ID is required for processing refund.");

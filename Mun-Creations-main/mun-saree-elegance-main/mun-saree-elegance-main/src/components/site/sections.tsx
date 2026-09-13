@@ -16,12 +16,9 @@ import {
 } from "@/lib/products";
 import { SectionHeading } from "./product";
 import { ProductDetailModal } from "./product-detail-modal";
-import { ProductShowcase } from "./product-showcase/ProductShowcase";
-export { ProductShowcase };
 import {
   FEATURED_SHOP_BY_CATEGORIES,
   TUSSAR_MERCHANDISING_BLOCK,
-  HOMEPAGE_COLLECTIONS,
 } from "@/lib/catalog";
 
 export function TrustStrip() {
@@ -97,11 +94,23 @@ export function ShopByFeaturedBlock({ onSelectFilter }: FilterCallbackProps) {
 
 export function TussarShowcaseBlock({ onSelectFilter }: FilterCallbackProps) {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [addedToast, setAddedToast] = useState(false);
   const { add } = useCart();
+  const { formatPrice } = useI18n();
 
-  const awardWinningSaree = (PRODUCTS.find((p) => p.id === "p5") || PRODUCTS[0]) as Product;
-  const allPhotos = awardWinningSaree.images || [tussarTribalFusion];
+  const awardWinningSaree =
+    (PRODUCTS.find((p) => p.id === "p5" || p.sku === "TFH-TUSSAR-01") || PRODUCTS[0]) as Product;
+  const allPhotos =
+    awardWinningSaree.images && awardWinningSaree.images.length > 0
+      ? awardWinningSaree.images
+      : [awardWinningSaree.image || tussarTribalFusion];
   const [activeSpotlightImg, setActiveSpotlightImg] = useState<string>(allPhotos[0]);
+
+  const handleAddToCart = () => {
+    add(awardWinningSaree);
+    setAddedToast(true);
+    setTimeout(() => setAddedToast(false), 2400);
+  };
 
   const handleClick = (name: string) => {
     if (onSelectFilter) {
@@ -113,7 +122,10 @@ export function TussarShowcaseBlock({ onSelectFilter }: FilterCallbackProps) {
   };
 
   return (
-    <section className="py-12 sm:py-16 md:py-20 bg-[var(--wine-deep)] text-[var(--ivory)] relative overflow-hidden">
+    <section
+      className="py-12 sm:py-16 md:py-20 bg-[var(--wine-deep)] text-[var(--ivory)] relative overflow-hidden"
+      aria-label="Tussar Heritage Collections"
+    >
       <div className="container-boutique">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-10 gap-4">
           <div>
@@ -121,12 +133,16 @@ export function TussarShowcaseBlock({ onSelectFilter }: FilterCallbackProps) {
               <Gem className="h-3.5 w-3.5" />
               <span>National & International Award Winning Saree</span>
             </div>
-            <h2 className="font-serif text-2xl sm:text-3xl md:text-5xl text-white">Tussar Heritage Collections</h2>
+            <h2 className="font-serif text-2xl sm:text-3xl md:text-5xl text-white font-bold">
+              Tussar Heritage Collections
+            </h2>
             <p className="text-xs sm:text-sm text-white/70 mt-2 max-w-xl">
-              Authentic high quality super purified Triple twisted international standard TUSSAR sarees handcrafted by master weavers.
+              Authentic high quality super purified Triple twisted international standard TUSSAR
+              sarees handcrafted by master weavers.
             </p>
           </div>
           <button
+            type="button"
             onClick={() => handleClick("Tussar")}
             className="text-xs uppercase tracking-widest text-[var(--gold)] hover:text-white border-b border-[var(--gold)] pb-1 font-semibold self-start md:self-auto cursor-pointer"
           >
@@ -140,31 +156,47 @@ export function TussarShowcaseBlock({ onSelectFilter }: FilterCallbackProps) {
             <div className="relative group overflow-hidden rounded-md aspect-[3/4] max-h-[380px] sm:max-h-[440px]">
               <img
                 src={activeSpotlightImg}
-                alt="Tribal Fusion Handloom Award Winning Tussar Saree"
+                alt={awardWinningSaree.name}
                 className="w-full h-full object-cover object-top rounded-md transition-transform duration-700 group-hover:scale-105"
               />
               <div className="absolute top-2.5 left-2.5 bg-[var(--gold)] text-[var(--wine-deep)] px-2.5 py-1 text-[9px] sm:text-[10px] font-bold tracking-widest uppercase rounded shadow-md">
                 Award Winning Saree
               </div>
               <div className="absolute bottom-2.5 left-2.5 right-2.5 bg-black/60 backdrop-blur-xs p-2 sm:p-2.5 rounded text-xs text-white flex justify-between items-center">
-                <span>Reddish-Maroon & Blue</span>
-                <span className="text-[10px] text-[var(--gold)] font-mono">6 Real Photos</span>
+                <span>
+                  {awardWinningSaree.color}
+                  {awardWinningSaree.secondaryColor ? ` & ${awardWinningSaree.secondaryColor}` : ""}
+                </span>
+                <span className="text-[10px] text-[var(--gold)] font-mono">
+                  {allPhotos.length} Master Photos
+                </span>
               </div>
             </div>
 
             {/* Thumbnail selector */}
-            <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+            <div
+              className="flex gap-2 overflow-x-auto pb-1 no-scrollbar"
+              role="group"
+              aria-label="Product image gallery"
+            >
               {allPhotos.map((imgSrc: string, idx: number) => (
                 <button
+                  type="button"
                   key={idx}
                   onClick={() => setActiveSpotlightImg(imgSrc)}
+                  aria-label={`View photo ${idx + 1} of ${awardWinningSaree.name}`}
+                  aria-pressed={activeSpotlightImg === imgSrc}
                   className={`h-12 w-10 sm:h-14 sm:w-12 rounded border overflow-hidden shrink-0 transition-all cursor-pointer ${
                     activeSpotlightImg === imgSrc
                       ? "border-[var(--gold)] ring-2 ring-[var(--gold)]/50 scale-105"
                       : "border-white/20 opacity-70 hover:opacity-100"
                   }`}
                 >
-                  <img src={imgSrc} alt={`View ${idx + 1}`} className="w-full h-full object-cover" />
+                  <img
+                    src={imgSrc}
+                    alt={`${awardWinningSaree.name} thumbnail ${idx + 1}`}
+                    className="w-full h-full object-cover"
+                  />
                 </button>
               ))}
             </div>
@@ -177,10 +209,10 @@ export function TussarShowcaseBlock({ onSelectFilter }: FilterCallbackProps) {
                 <span>National & International Award Winning Saree</span>
               </div>
               <h3 className="font-serif text-xl sm:text-2xl md:text-3xl text-white font-bold leading-snug">
-                Tribal Fusion Handloom Tussar Saree
+                {awardWinningSaree.name}
               </h3>
               <p className="text-[var(--gold)] font-mono text-xl sm:text-2xl font-bold mt-1.5">
-                $350.00
+                {formatPrice(awardWinningSaree.priceUsd)}
               </p>
             </div>
 
@@ -188,27 +220,44 @@ export function TussarShowcaseBlock({ onSelectFilter }: FilterCallbackProps) {
               <p className="font-semibold text-[var(--gold)] uppercase tracking-wider text-[10px] sm:text-[11px]">
                 Craftsmanship & Description:
               </p>
-              <p>
-                TRIBAL FUSION HANDLOOM (DOLABEDI+KOTPAD+DONGARIA+DHALAPATHAR+SIMINOI+GANJAM-BOMKAI/BERHAMPURI+HABASPURI) high quality super purified Tripple twisted international standard purified+smooth TUSSUR saree with compulsory Contrast colour blouse having a special TRIBAL FUSION HANDLOOM KING-SIZE DOUBLE pallu
+              <p className="line-clamp-4">
+                {awardWinningSaree.fullDescription || awardWinningSaree.shortDescription}
               </p>
               <div className="pt-2 border-t border-white/10 text-xs text-white/70 flex flex-wrap gap-x-4 gap-y-1">
-                <span><strong>Color:</strong> Reddish-Maroon & Blue</span>
+                <span>
+                  <strong>Color:</strong> {awardWinningSaree.color}
+                  {awardWinningSaree.secondaryColor ? ` & ${awardWinningSaree.secondaryColor}` : ""}
+                </span>
                 <span>•</span>
-                <span><strong>Fabric:</strong> Triple Twisted Smooth Tussar Silk</span>
-                <span>•</span>
-                <span><strong>Pallu:</strong> King-Size Double Pallu</span>
+                <span>
+                  <strong>Fabric:</strong> {awardWinningSaree.fabric}
+                </span>
+                {awardWinningSaree.palluType && (
+                  <>
+                    <span>•</span>
+                    <span>
+                      <strong>Pallu:</strong> {awardWinningSaree.palluType}
+                    </span>
+                  </>
+                )}
               </div>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3 pt-1">
               <button
-                onClick={() => add(awardWinningSaree as any)}
+                type="button"
+                onClick={handleAddToCart}
                 className="w-full sm:flex-1 bg-[var(--gold)] text-[var(--wine-deep)] py-3 sm:py-3.5 px-6 rounded text-xs font-bold uppercase tracking-widest hover:bg-white transition-all shadow-lg flex items-center justify-center gap-2 min-h-[44px] cursor-pointer"
               >
                 <ShoppingBag className="h-4 w-4" />
-                Add to Cart — $350.00
+                <span>
+                  {addedToast
+                    ? "Added to Cart!"
+                    : `Add to Cart — ${formatPrice(awardWinningSaree.priceUsd)}`}
+                </span>
               </button>
               <button
+                type="button"
                 onClick={() => setSelectedProduct(awardWinningSaree)}
                 className="w-full sm:w-auto py-3 sm:py-3.5 px-6 rounded text-xs font-semibold uppercase tracking-widest border border-white/30 text-white hover:bg-white/10 transition-all min-h-[44px] cursor-pointer"
               >
@@ -222,6 +271,7 @@ export function TussarShowcaseBlock({ onSelectFilter }: FilterCallbackProps) {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-4">
           {TUSSAR_MERCHANDISING_BLOCK.map((tussar) => (
             <button
+              type="button"
               key={tussar.slug}
               onClick={() => handleClick(tussar.name)}
               className="group p-3.5 sm:p-4 rounded-sm bg-white/5 hover:bg-[var(--gold)]/20 border border-white/10 hover:border-[var(--gold)]/50 transition-all text-left flex flex-col justify-between min-h-[90px] sm:min-h-[110px] cursor-pointer"
@@ -238,60 +288,8 @@ export function TussarShowcaseBlock({ onSelectFilter }: FilterCallbackProps) {
       </div>
 
       {selectedProduct && (
-        <ProductDetailModal
-          product={selectedProduct}
-          onClose={() => setSelectedProduct(null)}
-        />
+        <ProductDetailModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
       )}
-    </section>
-  );
-}
-
-export function HomepageCollectionsBanner({ onSelectFilter }: FilterCallbackProps) {
-  const handleClick = (name: string) => {
-    if (onSelectFilter) {
-      onSelectFilter(name, "collection");
-    } else {
-      const el = document.getElementById("collection-section");
-      if (el) el.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
-  return (
-    <section className="py-12 sm:py-16 md:py-20">
-      <div className="container-boutique">
-        <SectionHeading
-          eyebrow="Merchandising Showcase"
-          title="Curated Collections"
-          sub="Find budget-friendly handlooms, luxury couture, and trending drapes"
-        />
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          {HOMEPAGE_COLLECTIONS.map((c, i) => {
-            const images = [heroSaree, catSilk, catBridal, catCotton, productTeal, productPink];
-            return (
-              <button
-                key={c.slug}
-                onClick={() => handleClick(c.name)}
-                className="group relative overflow-hidden aspect-[16/10] rounded-sm shadow-md text-left w-full cursor-pointer"
-              >
-                <img
-                  src={images[i % images.length]}
-                  alt={c.name}
-                  className="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[var(--wine-deep)]/90 via-[var(--wine-deep)]/40 to-transparent" />
-                <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5 text-[var(--ivory)]">
-                  <span className="text-[9px] sm:text-[10px] tracking-widest uppercase text-[var(--gold)] font-bold">
-                    {c.tag}
-                  </span>
-                  <h3 className="font-serif text-xl sm:text-2xl text-white mt-0.5">{c.name}</h3>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </div>
     </section>
   );
 }
@@ -394,8 +392,12 @@ export function Newsletter() {
         <div className="text-[10px] tracking-[0.32em] uppercase text-[var(--gold)] mb-3 sm:mb-4">
           Newsletter
         </div>
-        <h2 className="font-serif text-2xl sm:text-4xl md:text-5xl mb-3 sm:mb-4">{t("news.title")}</h2>
-        <p className="text-xs sm:text-sm md:text-base text-[var(--ivory)]/70 max-w-md mx-auto mb-6 sm:mb-8">{t("news.sub")}</p>
+        <h2 className="font-serif text-2xl sm:text-4xl md:text-5xl mb-3 sm:mb-4">
+          {t("news.title")}
+        </h2>
+        <p className="text-xs sm:text-sm md:text-base text-[var(--ivory)]/70 max-w-md mx-auto mb-6 sm:mb-8">
+          {t("news.sub")}
+        </p>
         <form
           onSubmit={(e) => e.preventDefault()}
           className="flex flex-col sm:flex-row max-w-lg mx-auto gap-3 px-2 sm:px-0"
@@ -416,8 +418,4 @@ export function Newsletter() {
       </div>
     </section>
   );
-}
-
-export function DepthCarouselShowcase() {
-  return <ProductShowcase />;
 }

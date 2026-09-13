@@ -94,7 +94,13 @@ export function getCategoryGuidance(category?: string, subcategory?: string): Ca
   const cat = (category || "").toLowerCase();
   const sub = (subcategory || "").toLowerCase();
 
-  if (cat.includes("saree") || cat.includes("banarasi") || cat.includes("kanjivaram") || cat.includes("tussar") || sub.includes("saree")) {
+  if (
+    cat.includes("saree") ||
+    cat.includes("banarasi") ||
+    cat.includes("kanjivaram") ||
+    cat.includes("tussar") ||
+    sub.includes("saree")
+  ) {
     return CATEGORY_TRY_ON_GUIDANCE.saree;
   }
   if (cat.includes("kurti") || cat.includes("anarkali") || cat.includes("suit")) {
@@ -103,7 +109,12 @@ export function getCategoryGuidance(category?: string, subcategory?: string): Ca
   if (cat.includes("blouse") || sub.includes("blouse")) {
     return CATEGORY_TRY_ON_GUIDANCE.blouse;
   }
-  if (cat.includes("jewel") || cat.includes("dupatta") || cat.includes("accessory") || cat.includes("potli")) {
+  if (
+    cat.includes("jewel") ||
+    cat.includes("dupatta") ||
+    cat.includes("accessory") ||
+    cat.includes("potli")
+  ) {
     return CATEGORY_TRY_ON_GUIDANCE.accessories;
   }
   return CATEGORY_TRY_ON_GUIDANCE.default;
@@ -148,7 +159,7 @@ export async function synthesizeVirtualTryOnLook(
     weave?: string;
     color?: string;
     name?: string;
-  }
+  },
 ): Promise<string> {
   if (typeof window === "undefined" || typeof document === "undefined") {
     return userImageUrl;
@@ -193,9 +204,9 @@ export async function synthesizeVirtualTryOnLook(
         const chestY = height * 0.46;
         const waistY = height * 0.72;
         const bottomY = height * 0.98;
-        const leftShoulderX = width * 0.20;
-        const rightShoulderX = width * 0.80;
-        const centerX = width * 0.50;
+        const leftShoulderX = width * 0.2;
+        const rightShoulderX = width * 0.8;
+        const centerX = width * 0.5;
 
         // Clip the drape silhouette (replaces torso/garment area)
         gCtx.save();
@@ -203,7 +214,12 @@ export async function synthesizeVirtualTryOnLook(
         // Start under chin
         gCtx.moveTo(centerX - width * 0.09, neckY);
         // Left collarbone and shoulder contour
-        gCtx.quadraticCurveTo(width * 0.32, neckY + height * 0.02, leftShoulderX, neckY + height * 0.07);
+        gCtx.quadraticCurveTo(
+          width * 0.32,
+          neckY + height * 0.02,
+          leftShoulderX,
+          neckY + height * 0.07,
+        );
         // Left arm and torso down to waist
         gCtx.quadraticCurveTo(width * 0.24, height * 0.56, width * 0.26, waistY);
         // Down to hips and saree skirt pleats
@@ -211,7 +227,12 @@ export async function synthesizeVirtualTryOnLook(
         gCtx.lineTo(width * 0.78, bottomY);
         // Right hip up to right shoulder
         gCtx.quadraticCurveTo(width * 0.76, waistY, width * 0.75, height * 0.55);
-        gCtx.quadraticCurveTo(width * 0.78, neckY + height * 0.07, rightShoulderX - width * 0.05, neckY + height * 0.04);
+        gCtx.quadraticCurveTo(
+          width * 0.78,
+          neckY + height * 0.07,
+          rightShoulderX - width * 0.05,
+          neckY + height * 0.04,
+        );
         // Right collarbone curve back to neckline
         gCtx.quadraticCurveTo(width * 0.64, neckY + height * 0.01, centerX + width * 0.09, neckY);
         // Sweetheart / U neckline dip
@@ -248,7 +269,12 @@ export async function synthesizeVirtualTryOnLook(
         gCtx.save();
         gCtx.beginPath();
         gCtx.moveTo(width * 0.28, waistY);
-        gCtx.quadraticCurveTo(width * 0.48, chestY, rightShoulderX - width * 0.04, neckY + height * 0.05);
+        gCtx.quadraticCurveTo(
+          width * 0.48,
+          chestY,
+          rightShoulderX - width * 0.04,
+          neckY + height * 0.05,
+        );
         gCtx.lineWidth = Math.max(7, width * 0.024);
         gCtx.strokeStyle = "rgba(212, 175, 55, 0.95)";
         gCtx.shadowColor = "rgba(0, 0, 0, 0.6)";
@@ -258,7 +284,12 @@ export async function synthesizeVirtualTryOnLook(
         // Inner golden shimmer trim
         gCtx.beginPath();
         gCtx.moveTo(width * 0.28, waistY);
-        gCtx.quadraticCurveTo(width * 0.48, chestY, rightShoulderX - width * 0.04, neckY + height * 0.05);
+        gCtx.quadraticCurveTo(
+          width * 0.48,
+          chestY,
+          rightShoulderX - width * 0.04,
+          neckY + height * 0.05,
+        );
         gCtx.lineWidth = Math.max(2, width * 0.008);
         gCtx.strokeStyle = "#fff4c2";
         gCtx.stroke();
@@ -313,7 +344,7 @@ export async function synthesizeVirtualTryOnLook(
  */
 export async function submitTryOnRequest(
   payload: TryOnRequestPayload,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ): Promise<TryOnResult> {
   const startTime = Date.now();
 
@@ -333,7 +364,7 @@ export async function submitTryOnRequest(
     // 2. Synthesize photorealistic visualization on user's photo
     const personalizedDrapedLook = await synthesizeVirtualTryOnLook(
       payload.userImage,
-      payload.product
+      payload.product,
     );
 
     return {
@@ -348,10 +379,7 @@ export async function submitTryOnRequest(
       throw err;
     }
     // Fallback: still synthesize client-side
-    const fallbackLook = await synthesizeVirtualTryOnLook(
-      payload.userImage,
-      payload.product
-    );
+    const fallbackLook = await synthesizeVirtualTryOnLook(payload.userImage, payload.product);
     return {
       success: true,
       requestId: `try_${Date.now()}`,
@@ -375,7 +403,7 @@ export function trackTryOnEvent(eventName: string, metadata?: Record<string, any
     window.dispatchEvent(
       new CustomEvent("mun:ai_tryon_event", {
         detail: { event: eventName, ...sanitizedMeta, timestamp: Date.now() },
-      })
+      }),
     );
   } catch (e) {
     // Fail silently

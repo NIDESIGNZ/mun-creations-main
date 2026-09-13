@@ -5,12 +5,17 @@ import { CartProvider } from "@/lib/cart";
 import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/footer";
 import { CartDrawer } from "@/components/site/cart-drawer";
+import { backendDB, WeaverSource, CustomerOrder } from "@/lib/backend-api";
 import {
-  backendDB,
-  WeaverSource,
-  CustomerOrder,
-} from "@/lib/backend-api";
-import { Product, PRODUCTS, heroSaree, catSilk, catPredraped, catCotton, productTeal, productPink } from "@/lib/products";
+  Product,
+  PRODUCTS,
+  heroSaree,
+  catSilk,
+  catPredraped,
+  catCotton,
+  productTeal,
+  productPink,
+} from "@/lib/products";
 import {
   Building2,
   Package,
@@ -66,7 +71,10 @@ function SourcePortalPage() {
 function SourcePortalContent() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     if (typeof window === "undefined") return false;
-    return sessionStorage.getItem("mun_source_authed") === "true" || sessionStorage.getItem("mun_admin_authed") === "true";
+    return (
+      sessionStorage.getItem("mun_source_authed") === "true" ||
+      sessionStorage.getItem("mun_admin_authed") === "true"
+    );
   });
   const [passcode, setPasscode] = useState("");
   const [passError, setPassError] = useState("");
@@ -89,6 +97,40 @@ function SourcePortalContent() {
   const [orders, setOrders] = useState<CustomerOrder[]>(() => backendDB.getOrders());
   const [health, setHealth] = useState(() => backendDB.getHealthStatus());
 
+  // Search & Filter State
+  const [catalogSearch, setCatalogSearch] = useState("");
+  const [newClusterModal, setNewClusterModal] = useState(false);
+  const [newProductModal, setNewProductModal] = useState(false);
+
+  // New Cluster Form State
+  const [clusterForm, setClusterForm] = useState({
+    clusterName: "",
+    region: "",
+    state: "",
+    specialty: "",
+    artisanCount: 50,
+    contactPerson: "",
+    phone: "",
+    email: "",
+    leadTimeDays: 14,
+    qualityRating: 4.9,
+    status: "Active" as const,
+  });
+
+  // New Product Form State
+  const [productForm, setProductForm] = useState({
+    name: "",
+    category: "Banarasi",
+    mainCategory: "sarees" as const,
+    fabric: "Silk",
+    weave: "Banarasi",
+    priceUsd: 350,
+    color: "Red",
+    inStock: true,
+    badge: "new" as const,
+    image: "/logo-light.png",
+  });
+
   if (!isAuthenticated) {
     return (
       <div className="container-boutique max-w-md mx-auto py-12">
@@ -96,7 +138,9 @@ function SourcePortalContent() {
           <div className="h-12 w-12 rounded-full bg-[var(--gold)]/20 text-[var(--wine)] flex items-center justify-center mx-auto border border-[var(--gold)]/30">
             <Building2 className="h-6 w-6 text-[var(--wine)]" />
           </div>
-          <h2 className="font-serif text-2xl font-bold text-[var(--wine-deep)]">Sourcing Registry Access</h2>
+          <h2 className="font-serif text-2xl font-bold text-[var(--wine-deep)]">
+            Sourcing Registry Access
+          </h2>
           <p className="text-xs text-muted-foreground">
             This sourcing portal is passcode protected for authorized weavers & craft personnel.
           </p>
@@ -132,40 +176,6 @@ function SourcePortalContent() {
       </div>
     );
   }
-
-  // Search & Filter State
-  const [catalogSearch, setCatalogSearch] = useState("");
-  const [newClusterModal, setNewClusterModal] = useState(false);
-  const [newProductModal, setNewProductModal] = useState(false);
-
-  // New Cluster Form State
-  const [clusterForm, setClusterForm] = useState({
-    clusterName: "",
-    region: "",
-    state: "",
-    specialty: "",
-    artisanCount: 50,
-    contactPerson: "",
-    phone: "",
-    email: "",
-    leadTimeDays: 14,
-    qualityRating: 4.9,
-    status: "Active" as const,
-  });
-
-  // New Product Form State
-  const [productForm, setProductForm] = useState({
-    name: "",
-    category: "Banarasi",
-    mainCategory: "sarees" as const,
-    fabric: "Silk",
-    weave: "Banarasi",
-    priceUsd: 350,
-    color: "Red",
-    inStock: true,
-    badge: "new" as const,
-    image: "/logo-light.png",
-  });
 
   const handleAddCluster = (e: React.FormEvent) => {
     e.preventDefault();
@@ -230,7 +240,7 @@ function SourcePortalContent() {
     (p) =>
       p.name.toLowerCase().includes(catalogSearch.toLowerCase()) ||
       p.category.toLowerCase().includes(catalogSearch.toLowerCase()) ||
-      p.fabric?.toLowerCase().includes(catalogSearch.toLowerCase())
+      p.fabric?.toLowerCase().includes(catalogSearch.toLowerCase()),
   );
 
   return (
@@ -247,7 +257,8 @@ function SourcePortalContent() {
               Artisanal Sourcing & Admin Portal
             </h1>
             <p className="text-xs md:text-sm text-white/70 max-w-2xl">
-              Oversee direct handloom weaver clusters in Varanasi, Kanchipuram, Bengal, & Lucknow, manage catalog inventory, & monitor real-time backend API endpoints.
+              Oversee direct handloom weaver clusters in Varanasi, Kanchipuram, Bengal, & Lucknow,
+              manage catalog inventory, & monitor real-time backend API endpoints.
             </p>
           </div>
 
@@ -277,7 +288,9 @@ function SourcePortalContent() {
             <Building2 className="h-6 w-6" />
           </div>
           <div>
-            <div className="text-2xl font-serif font-bold text-[var(--wine-deep)]">{sources.length}</div>
+            <div className="text-2xl font-serif font-bold text-[var(--wine-deep)]">
+              {sources.length}
+            </div>
             <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
               Weaving Clusters
             </div>
@@ -289,7 +302,9 @@ function SourcePortalContent() {
             <Package className="h-6 w-6" />
           </div>
           <div>
-            <div className="text-2xl font-serif font-bold text-[var(--wine-deep)]">{products.length}</div>
+            <div className="text-2xl font-serif font-bold text-[var(--wine-deep)]">
+              {products.length}
+            </div>
             <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
               Sourced Items
             </div>
@@ -301,7 +316,9 @@ function SourcePortalContent() {
             <ShoppingBag className="h-6 w-6" />
           </div>
           <div>
-            <div className="text-2xl font-serif font-bold text-[var(--wine-deep)]">{orders.length}</div>
+            <div className="text-2xl font-serif font-bold text-[var(--wine-deep)]">
+              {orders.length}
+            </div>
             <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
               Active Orders
             </div>
@@ -376,13 +393,18 @@ function SourcePortalContent() {
       {activeTab === "clusters" && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {sources.map((src) => (
-            <div key={src.id} className="bg-white rounded-sm border border-border p-6 shadow-xs space-y-4 hover:border-[var(--gold)] transition-colors">
+            <div
+              key={src.id}
+              className="bg-white rounded-sm border border-border p-6 shadow-xs space-y-4 hover:border-[var(--gold)] transition-colors"
+            >
               <div className="flex items-start justify-between border-b border-border pb-3">
                 <div>
                   <span className="text-[10px] uppercase tracking-wider font-bold text-[var(--gold)] bg-[var(--wine-deep)] px-2.5 py-0.5 rounded-xs">
                     {src.region}, {src.state}
                   </span>
-                  <h3 className="font-serif text-xl font-bold text-[var(--wine-deep)] mt-1">{src.clusterName}</h3>
+                  <h3 className="font-serif text-xl font-bold text-[var(--wine-deep)] mt-1">
+                    {src.clusterName}
+                  </h3>
                 </div>
                 <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 flex items-center gap-1">
                   <CheckCircle2 className="h-3.5 w-3.5" />
@@ -392,7 +414,8 @@ function SourcePortalContent() {
 
               <div className="text-xs space-y-2 text-foreground/80">
                 <p className="font-medium text-foreground">
-                  <span className="text-muted-foreground font-normal">Craft Specialty:</span> {src.specialty}
+                  <span className="text-muted-foreground font-normal">Craft Specialty:</span>{" "}
+                  {src.specialty}
                 </p>
                 <div className="grid grid-cols-2 gap-2 pt-1 border-t border-border/50 text-[11px]">
                   <div className="flex items-center gap-1.5">
@@ -416,9 +439,13 @@ function SourcePortalContent() {
 
               <div className="pt-3 border-t border-border flex items-center justify-between text-xs text-muted-foreground">
                 <div>
-                  <span className="font-semibold text-foreground">{src.contactPerson}</span> · {src.phone}
+                  <span className="font-semibold text-foreground">{src.contactPerson}</span> ·{" "}
+                  {src.phone}
                 </div>
-                <a href={`mailto:${src.email}`} className="text-[var(--wine)] hover:underline font-medium">
+                <a
+                  href={`mailto:${src.email}`}
+                  className="text-[var(--wine)] hover:underline font-medium"
+                >
                   {src.email}
                 </a>
               </div>
@@ -463,9 +490,15 @@ function SourcePortalContent() {
                 {filteredProducts.map((p) => (
                   <tr key={p.id} className="hover:bg-secondary/30 transition-colors">
                     <td className="py-3 px-4 font-semibold text-foreground flex items-center gap-3">
-                      <img src={p.image} alt={p.name} className="h-9 w-9 object-cover rounded-xs border border-border" />
+                      <img
+                        src={p.image}
+                        alt={p.name}
+                        className="h-9 w-9 object-cover rounded-xs border border-border"
+                      />
                       <div>
-                        <div className="text-xs font-serif font-bold text-[var(--wine-deep)]">{p.name}</div>
+                        <div className="text-xs font-serif font-bold text-[var(--wine-deep)]">
+                          {p.name}
+                        </div>
                         <div className="text-[10px] text-muted-foreground">ID: {p.id}</div>
                       </div>
                     </td>
@@ -506,11 +539,16 @@ function SourcePortalContent() {
       {activeTab === "orders" && (
         <div className="space-y-4">
           {orders.map((ord) => (
-            <div key={ord.id} className="bg-white rounded-sm border border-border p-6 shadow-xs space-y-4">
+            <div
+              key={ord.id}
+              className="bg-white rounded-sm border border-border p-6 shadow-xs space-y-4"
+            >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-border gap-2">
                 <div>
                   <div className="flex items-center gap-3">
-                    <h3 className="font-serif text-lg font-bold text-[var(--wine-deep)]">{ord.id}</h3>
+                    <h3 className="font-serif text-lg font-bold text-[var(--wine-deep)]">
+                      {ord.id}
+                    </h3>
                     <span className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800">
                       {ord.status}
                     </span>
@@ -521,8 +559,12 @@ function SourcePortalContent() {
                 </div>
 
                 <div className="text-right">
-                  <div className="text-lg font-serif font-bold text-[var(--wine)]">${ord.subtotalUsd}</div>
-                  <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Paid via Card</div>
+                  <div className="text-lg font-serif font-bold text-[var(--wine)]">
+                    ${ord.subtotalUsd}
+                  </div>
+                  <div className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                    Paid via Card
+                  </div>
                 </div>
               </div>
 
@@ -532,7 +574,9 @@ function SourcePortalContent() {
                     Customer & Shipping Address
                   </div>
                   <div className="font-semibold">{ord.customerName}</div>
-                  <div className="text-muted-foreground">{ord.email} · {ord.phone}</div>
+                  <div className="text-muted-foreground">
+                    {ord.email} · {ord.phone}
+                  </div>
                   <div className="text-foreground/80 mt-1">{ord.shippingAddress}</div>
                 </div>
 
@@ -542,8 +586,13 @@ function SourcePortalContent() {
                   </div>
                   <div className="space-y-1">
                     {ord.items.map((item: any, idx: number) => (
-                      <div key={idx} className="flex justify-between py-0.5 border-b border-border/40">
-                        <span>{item.quantity}x {item.productName}</span>
+                      <div
+                        key={idx}
+                        className="flex justify-between py-0.5 border-b border-border/40"
+                      >
+                        <span>
+                          {item.quantity}x {item.productName}
+                        </span>
                         <span className="font-semibold">${item.priceUsd}</span>
                       </div>
                     ))}
@@ -561,8 +610,12 @@ function SourcePortalContent() {
           <div className="bg-white rounded-sm border border-border p-6 shadow-xs space-y-4">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <div>
-                <h3 className="font-serif text-lg font-bold text-[var(--wine-deep)]">Backend Health & REST API Controller</h3>
-                <p className="text-xs text-muted-foreground">Production REST endpoints serving products, weaver clusters, & checkout orders</p>
+                <h3 className="font-serif text-lg font-bold text-[var(--wine-deep)]">
+                  Backend Health & REST API Controller
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  Production REST endpoints serving products, weaver clusters, & checkout orders
+                </p>
               </div>
 
               <button
@@ -576,39 +629,65 @@ function SourcePortalContent() {
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
               <div className="p-3 bg-secondary/40 rounded-sm">
-                <span className="text-[10px] text-muted-foreground uppercase font-bold">Server State</span>
+                <span className="text-[10px] text-muted-foreground uppercase font-bold">
+                  Server State
+                </span>
                 <div className="text-sm font-bold text-emerald-600">{health.status}</div>
               </div>
               <div className="p-3 bg-secondary/40 rounded-sm">
-                <span className="text-[10px] text-muted-foreground uppercase font-bold">Uptime</span>
+                <span className="text-[10px] text-muted-foreground uppercase font-bold">
+                  Uptime
+                </span>
                 <div className="text-sm font-bold text-foreground">{health.uptimeSeconds}s</div>
               </div>
               <div className="p-3 bg-secondary/40 rounded-sm">
-                <span className="text-[10px] text-muted-foreground uppercase font-bold">Database State</span>
+                <span className="text-[10px] text-muted-foreground uppercase font-bold">
+                  Database State
+                </span>
                 <div className="text-sm font-bold text-blue-600">{health.databaseState}</div>
               </div>
               <div className="p-3 bg-secondary/40 rounded-sm">
-                <span className="text-[10px] text-muted-foreground uppercase font-bold">Version</span>
+                <span className="text-[10px] text-muted-foreground uppercase font-bold">
+                  Version
+                </span>
                 <div className="text-sm font-bold text-foreground">{health.version}</div>
               </div>
             </div>
 
             <div className="space-y-2 pt-2">
-              <div className="font-bold text-xs uppercase tracking-wider text-muted-foreground">Available REST Routes</div>
+              <div className="font-bold text-xs uppercase tracking-wider text-muted-foreground">
+                Available REST Routes
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs font-mono">
-                <a href="/api/health" target="_blank" className="p-2.5 bg-slate-900 text-slate-100 rounded-sm flex items-center justify-between hover:bg-slate-800">
+                <a
+                  href="/api/health"
+                  target="_blank"
+                  className="p-2.5 bg-slate-900 text-slate-100 rounded-sm flex items-center justify-between hover:bg-slate-800"
+                >
                   <span>GET /api/health</span>
                   <ExternalLink className="h-3.5 w-3.5 text-emerald-400" />
                 </a>
-                <a href="/api/products" target="_blank" className="p-2.5 bg-slate-900 text-slate-100 rounded-sm flex items-center justify-between hover:bg-slate-800">
+                <a
+                  href="/api/products"
+                  target="_blank"
+                  className="p-2.5 bg-slate-900 text-slate-100 rounded-sm flex items-center justify-between hover:bg-slate-800"
+                >
                   <span>GET /api/products</span>
                   <ExternalLink className="h-3.5 w-3.5 text-emerald-400" />
                 </a>
-                <a href="/api/sources" target="_blank" className="p-2.5 bg-slate-900 text-slate-100 rounded-sm flex items-center justify-between hover:bg-slate-800">
+                <a
+                  href="/api/sources"
+                  target="_blank"
+                  className="p-2.5 bg-slate-900 text-slate-100 rounded-sm flex items-center justify-between hover:bg-slate-800"
+                >
                   <span>GET /api/sources</span>
                   <ExternalLink className="h-3.5 w-3.5 text-emerald-400" />
                 </a>
-                <a href="/api/orders" target="_blank" className="p-2.5 bg-slate-900 text-slate-100 rounded-sm flex items-center justify-between hover:bg-slate-800">
+                <a
+                  href="/api/orders"
+                  target="_blank"
+                  className="p-2.5 bg-slate-900 text-slate-100 rounded-sm flex items-center justify-between hover:bg-slate-800"
+                >
                   <span>GET /api/orders</span>
                   <ExternalLink className="h-3.5 w-3.5 text-emerald-400" />
                 </a>
@@ -622,7 +701,9 @@ function SourcePortalContent() {
       {newClusterModal && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-sm max-w-lg w-full p-6 shadow-2xl space-y-4 animate-in fade-in">
-            <h3 className="font-serif text-xl font-bold text-[var(--wine-deep)]">Register New Weaver Cluster</h3>
+            <h3 className="font-serif text-xl font-bold text-[var(--wine-deep)]">
+              Register New Weaver Cluster
+            </h3>
             <form onSubmit={handleAddCluster} className="space-y-3 text-xs">
               <div>
                 <label className="font-semibold block mb-1">Cluster / Cooperative Name</label>
@@ -676,7 +757,9 @@ function SourcePortalContent() {
                   <input
                     type="number"
                     value={clusterForm.artisanCount}
-                    onChange={(e) => setClusterForm({ ...clusterForm, artisanCount: Number(e.target.value) })}
+                    onChange={(e) =>
+                      setClusterForm({ ...clusterForm, artisanCount: Number(e.target.value) })
+                    }
                     className="w-full p-2 border border-border rounded-sm"
                   />
                 </div>
@@ -687,7 +770,9 @@ function SourcePortalContent() {
                     required
                     placeholder="Master Weaver"
                     value={clusterForm.contactPerson}
-                    onChange={(e) => setClusterForm({ ...clusterForm, contactPerson: e.target.value })}
+                    onChange={(e) =>
+                      setClusterForm({ ...clusterForm, contactPerson: e.target.value })
+                    }
                     className="w-full p-2 border border-border rounded-sm"
                   />
                 </div>
@@ -716,7 +801,9 @@ function SourcePortalContent() {
       {newProductModal && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-sm max-w-lg w-full p-6 shadow-2xl space-y-4 animate-in fade-in">
-            <h3 className="font-serif text-xl font-bold text-[var(--wine-deep)]">Add New Sourced Listing</h3>
+            <h3 className="font-serif text-xl font-bold text-[var(--wine-deep)]">
+              Add New Sourced Listing
+            </h3>
             <form onSubmit={handleAddProduct} className="space-y-3 text-xs">
               <div>
                 <label className="font-semibold block mb-1">Product Title</label>
@@ -760,7 +847,9 @@ function SourcePortalContent() {
                     type="number"
                     required
                     value={productForm.priceUsd}
-                    onChange={(e) => setProductForm({ ...productForm, priceUsd: Number(e.target.value) })}
+                    onChange={(e) =>
+                      setProductForm({ ...productForm, priceUsd: Number(e.target.value) })
+                    }
                     className="w-full p-2 border border-border rounded-sm"
                   />
                 </div>
@@ -781,7 +870,11 @@ function SourcePortalContent() {
                 <div className="flex items-center gap-3">
                   <div className="h-16 w-16 rounded-sm border border-border bg-secondary/50 overflow-hidden shrink-0 flex items-center justify-center relative shadow-xs">
                     {productForm.image ? (
-                      <img src={productForm.image} alt="Preview" className="h-full w-full object-cover" />
+                      <img
+                        src={productForm.image}
+                        alt="Preview"
+                        className="h-full w-full object-cover"
+                      />
                     ) : (
                       <ImageIcon className="h-6 w-6 text-muted-foreground" />
                     )}
@@ -809,7 +902,10 @@ function SourcePortalContent() {
                       </label>
 
                       <select
-                        onChange={(e) => e.target.value && setProductForm({ ...productForm, image: e.target.value })}
+                        onChange={(e) =>
+                          e.target.value &&
+                          setProductForm({ ...productForm, image: e.target.value })
+                        }
                         className="text-[11px] p-1.5 border border-border rounded-sm bg-white text-muted-foreground focus:outline-none"
                       >
                         <option value="">Sample Images...</option>

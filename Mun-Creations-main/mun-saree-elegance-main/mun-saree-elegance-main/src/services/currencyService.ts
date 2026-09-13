@@ -18,47 +18,146 @@ export interface CachedRatesData {
 export const SUPPORTED_CURRENCIES: Record<string, CurrencyInfo> = {
   INR: { code: "INR", symbol: "₹", label: "Indian Rupee", country: "India", decimalPlaces: 0 },
   USD: { code: "USD", symbol: "$", label: "US Dollar", country: "United States", decimalPlaces: 2 },
-  GBP: { code: "GBP", symbol: "£", label: "British Pound", country: "United Kingdom", decimalPlaces: 2 },
+  GBP: {
+    code: "GBP",
+    symbol: "£",
+    label: "British Pound",
+    country: "United Kingdom",
+    decimalPlaces: 2,
+  },
   EUR: { code: "EUR", symbol: "€", label: "Euro", country: "European Union", decimalPlaces: 2 },
-  AED: { code: "AED", symbol: "د.إ", label: "UAE Dirham", country: "United Arab Emirates", decimalPlaces: 2 },
+  AED: {
+    code: "AED",
+    symbol: "د.إ",
+    label: "UAE Dirham",
+    country: "United Arab Emirates",
+    decimalPlaces: 2,
+  },
   CAD: { code: "CAD", symbol: "C$", label: "Canadian Dollar", country: "Canada", decimalPlaces: 2 },
-  AUD: { code: "AUD", symbol: "A$", label: "Australian Dollar", country: "Australia", decimalPlaces: 2 },
-  NZD: { code: "NZD", symbol: "NZ$", label: "New Zealand Dollar", country: "New Zealand", decimalPlaces: 2 },
-  SGD: { code: "SGD", symbol: "S$", label: "Singapore Dollar", country: "Singapore", decimalPlaces: 2 },
-  CHF: { code: "CHF", symbol: "CHF", label: "Swiss Franc", country: "Switzerland", decimalPlaces: 2 },
+  AUD: {
+    code: "AUD",
+    symbol: "A$",
+    label: "Australian Dollar",
+    country: "Australia",
+    decimalPlaces: 2,
+  },
+  NZD: {
+    code: "NZD",
+    symbol: "NZ$",
+    label: "New Zealand Dollar",
+    country: "New Zealand",
+    decimalPlaces: 2,
+  },
+  SGD: {
+    code: "SGD",
+    symbol: "S$",
+    label: "Singapore Dollar",
+    country: "Singapore",
+    decimalPlaces: 2,
+  },
+  CHF: {
+    code: "CHF",
+    symbol: "CHF",
+    label: "Swiss Franc",
+    country: "Switzerland",
+    decimalPlaces: 2,
+  },
   JPY: { code: "JPY", symbol: "¥", label: "Japanese Yen", country: "Japan", decimalPlaces: 0 },
   CNY: { code: "CNY", symbol: "¥", label: "Chinese Yuan", country: "China", decimalPlaces: 2 },
-  SAR: { code: "SAR", symbol: "﷼", label: "Saudi Riyal", country: "Saudi Arabia", decimalPlaces: 2 },
+  SAR: {
+    code: "SAR",
+    symbol: "﷼",
+    label: "Saudi Riyal",
+    country: "Saudi Arabia",
+    decimalPlaces: 2,
+  },
   QAR: { code: "QAR", symbol: "﷼", label: "Qatari Riyal", country: "Qatar", decimalPlaces: 2 },
   KWD: { code: "KWD", symbol: "KWD", label: "Kuwaiti Dinar", country: "Kuwait", decimalPlaces: 3 },
-  ZAR: { code: "ZAR", symbol: "R", label: "South African Rand", country: "South Africa", decimalPlaces: 2 },
-  BDT: { code: "BDT", symbol: "৳", label: "Bangladeshi Taka", country: "Bangladesh", decimalPlaces: 2 },
-  LKR: { code: "LKR", symbol: "Rs", label: "Sri Lankan Rupee", country: "Sri Lanka", decimalPlaces: 2 },
+  ZAR: {
+    code: "ZAR",
+    symbol: "R",
+    label: "South African Rand",
+    country: "South Africa",
+    decimalPlaces: 2,
+  },
+  BDT: {
+    code: "BDT",
+    symbol: "৳",
+    label: "Bangladeshi Taka",
+    country: "Bangladesh",
+    decimalPlaces: 2,
+  },
+  LKR: {
+    code: "LKR",
+    symbol: "Rs",
+    label: "Sri Lankan Rupee",
+    country: "Sri Lanka",
+    decimalPlaces: 2,
+  },
 };
 
 export type CurrencyCode = keyof typeof SUPPORTED_CURRENCIES;
 
 // 2. Country to Currency Mapping
 export const COUNTRY_TO_CURRENCY_MAP: Record<string, CurrencyCode> = {
-  IN: "INR", India: "INR",
-  US: "USD", "United States": "USD", USA: "USD",
-  GB: "GBP", "United Kingdom": "GBP", UK: "GBP", GreatBritain: "GBP",
-  AE: "AED", "United Arab Emirates": "AED", UAE: "AED", Dubai: "AED",
-  CA: "CAD", Canada: "CAD",
-  AU: "AUD", Australia: "AUD",
-  NZ: "NZD", "New Zealand": "NZD",
-  SG: "SGD", Singapore: "SGD",
-  DE: "EUR", FR: "EUR", IT: "EUR", ES: "EUR", NL: "EUR", IE: "EUR", PT: "EUR", AT: "EUR", BE: "EUR", FI: "EUR", GR: "EUR",
-  Germany: "EUR", France: "EUR", Italy: "EUR", Spain: "EUR", Netherlands: "EUR", Ireland: "EUR", Portugal: "EUR",
-  CH: "CHF", Switzerland: "CHF",
-  JP: "JPY", Japan: "JPY",
-  CN: "CNY", China: "CNY",
-  SA: "SAR", "Saudi Arabia": "SAR", KSA: "SAR",
-  QA: "QAR", Qatar: "QAR",
-  KW: "KWD", Kuwait: "KWD",
-  ZA: "ZAR", "South Africa": "ZAR",
-  BD: "BDT", Bangladesh: "BDT",
-  LK: "LKR", "Sri Lanka": "LKR",
+  IN: "INR",
+  India: "INR",
+  US: "USD",
+  "United States": "USD",
+  USA: "USD",
+  GB: "GBP",
+  "United Kingdom": "GBP",
+  UK: "GBP",
+  GreatBritain: "GBP",
+  AE: "AED",
+  "United Arab Emirates": "AED",
+  UAE: "AED",
+  Dubai: "AED",
+  CA: "CAD",
+  Canada: "CAD",
+  AU: "AUD",
+  Australia: "AUD",
+  NZ: "NZD",
+  "New Zealand": "NZD",
+  SG: "SGD",
+  Singapore: "SGD",
+  DE: "EUR",
+  FR: "EUR",
+  IT: "EUR",
+  ES: "EUR",
+  NL: "EUR",
+  IE: "EUR",
+  PT: "EUR",
+  AT: "EUR",
+  BE: "EUR",
+  FI: "EUR",
+  GR: "EUR",
+  Germany: "EUR",
+  France: "EUR",
+  Italy: "EUR",
+  Spain: "EUR",
+  Netherlands: "EUR",
+  Ireland: "EUR",
+  Portugal: "EUR",
+  CH: "CHF",
+  Switzerland: "CHF",
+  JP: "JPY",
+  Japan: "JPY",
+  CN: "CNY",
+  China: "CNY",
+  SA: "SAR",
+  "Saudi Arabia": "SAR",
+  KSA: "SAR",
+  QA: "QAR",
+  Qatar: "QAR",
+  KW: "KWD",
+  Kuwait: "KWD",
+  ZA: "ZAR",
+  "South Africa": "ZAR",
+  BD: "BDT",
+  Bangladesh: "BDT",
+  LK: "LKR",
+  "Sri Lanka": "LKR",
 };
 
 // 3. Fallback Exchange Rates (Base: USD)
@@ -86,7 +185,19 @@ export const DEFAULT_FALLBACK_RATES: Record<string, number> = {
 const CACHE_KEY = "mc_rates_cache_v2";
 const CACHE_TTL_MS = 4 * 60 * 60 * 1000; // 4 Hours Cache Duration
 
-// 4. Fetch & Cache Exchange Rates
+export interface LiveConversionResult {
+  success: boolean;
+  from: string;
+  to: string;
+  amount: number;
+  rate: number;
+  convertedAmount: number;
+  lastUpdated: string;
+  isCached?: boolean;
+  error?: string;
+}
+
+// 4. Fetch & Cache Exchange Rates from internal server endpoint (No client API key exposed)
 export async function getExchangeRates(): Promise<Record<string, number>> {
   // Check LocalStorage Cache
   if (typeof window !== "undefined" && window.localStorage) {
@@ -104,16 +215,15 @@ export async function getExchangeRates(): Promise<Record<string, number>> {
     }
   }
 
-  // Fetch Live Rates from Exchange Rates API
-  const apiKey = (import.meta as any).env?.VITE_EXCHANGE_RATES_API_KEY || "82a22ebce01ba8607f47383b";
-  const url = `https://v6.exchangerate-api.com/v6/${apiKey}/latest/USD`;
-
+  // Fetch Live Rates from internal server-side currency API
   try {
-    const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
+    const res = await fetch("/api/currency?action=rates&base=USD", {
+      signal: AbortSignal.timeout(6000),
+    });
     if (res.ok) {
       const data = await res.json();
-      if (data.result === "success" && data.conversion_rates) {
-        const mergedRates = { ...DEFAULT_FALLBACK_RATES, ...data.conversion_rates };
+      if (data.success && data.rates) {
+        const mergedRates = { ...DEFAULT_FALLBACK_RATES, ...data.rates };
         if (typeof window !== "undefined" && window.localStorage) {
           try {
             localStorage.setItem(
@@ -122,7 +232,7 @@ export async function getExchangeRates(): Promise<Record<string, number>> {
                 base: "USD",
                 rates: mergedRates,
                 timestamp: Date.now(),
-              })
+              }),
             );
           } catch {
             // Ignore cache write error
@@ -132,7 +242,7 @@ export async function getExchangeRates(): Promise<Record<string, number>> {
       }
     }
   } catch (err) {
-    console.warn("Exchange rate fetch failed, using cached/fallback rates:", err);
+    console.warn("Server currency rates fetch failed, using cached/fallback rates:", err);
   }
 
   // Fallback if network/API fails
@@ -149,6 +259,74 @@ export async function getExchangeRates(): Promise<Record<string, number>> {
   }
 
   return DEFAULT_FALLBACK_RATES;
+}
+
+// 4b. Direct Live Currency Converter via Server Endpoint
+export async function convertLiveCurrency(
+  from: string,
+  to: string,
+  amount: number,
+): Promise<LiveConversionResult> {
+  const cleanFrom = from.trim().toUpperCase();
+  const cleanTo = to.trim().toUpperCase();
+  const numAmount = Number(amount);
+
+  if (cleanFrom === cleanTo) {
+    return {
+      success: true,
+      from: cleanFrom,
+      to: cleanTo,
+      amount: numAmount,
+      rate: 1,
+      convertedAmount: numAmount,
+      lastUpdated: new Date().toISOString(),
+    };
+  }
+
+  try {
+    const res = await fetch("/api/currency", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ from: cleanFrom, to: cleanTo, amount: numAmount }),
+      signal: AbortSignal.timeout(8000),
+    });
+
+    const data = await res.json();
+    if (res.ok && data.success) {
+      return {
+        success: true,
+        from: data.from,
+        to: data.to,
+        amount: data.amount,
+        rate: data.rate,
+        convertedAmount: data.convertedAmount,
+        lastUpdated: data.lastUpdated,
+        isCached: data.isCached,
+      };
+    }
+
+    return {
+      success: false,
+      from: cleanFrom,
+      to: cleanTo,
+      amount: numAmount,
+      rate: 0,
+      convertedAmount: 0,
+      lastUpdated: new Date().toISOString(),
+      error: data?.error || "Failed to convert currency. Please check inputs and try again.",
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      from: cleanFrom,
+      to: cleanTo,
+      amount: numAmount,
+      rate: 0,
+      convertedAmount: 0,
+      lastUpdated: new Date().toISOString(),
+      error: err?.message || "Network error while contacting currency service.",
+    };
+  }
 }
 
 // 5. Automatic Country & Currency Detection
@@ -196,7 +374,7 @@ export async function detectCountryFromIP(): Promise<CurrencyCode | null> {
 export function convertPrice(
   baseAmountUsd: number,
   targetCurrency: CurrencyCode,
-  rates: Record<string, number>
+  rates: Record<string, number>,
 ): number {
   const rate = rates[targetCurrency] || DEFAULT_FALLBACK_RATES[targetCurrency] || 1;
   const rawConverted = baseAmountUsd * rate;
@@ -211,7 +389,7 @@ export function convertPrice(
 export function formatCurrency(
   baseAmountUsd: number,
   targetCurrency: CurrencyCode,
-  rates: Record<string, number>
+  rates: Record<string, number>,
 ): string {
   const info = SUPPORTED_CURRENCIES[targetCurrency] || SUPPORTED_CURRENCIES.INR;
   const converted = convertPrice(baseAmountUsd, targetCurrency, rates);

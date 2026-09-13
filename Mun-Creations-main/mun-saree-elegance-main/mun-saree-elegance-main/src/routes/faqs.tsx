@@ -13,7 +13,8 @@ export const Route = createFileRoute("/faqs")({
       { title: "Frequently Asked Questions — Shipping, Care & Returns | Mun Creations" },
       {
         name: "description",
-        content: "Find answers regarding handloom silk mark certification, shipping timelines, returns, and care guidance.",
+        content:
+          "Find answers regarding handloom silk mark certification, shipping timelines, returns, and care guidance.",
       },
     ],
   }),
@@ -48,7 +49,7 @@ const FAQS_DATA = [
   },
   {
     q: "What payment methods do you accept?",
-    a: "We accept 100% prepaid secure payments via Razorpay (UPI, NetBanking, GPay, PhonePe, Paytm), Stripe (Global Credit/Debit Cards), PayPal Express, and Direct Visa/Mastercard.",
+    a: "We accept 100% prepaid secure payments via Razorpay (UPI, Google Pay, PhonePe, Paytm, Credit/Debit Cards, and NetBanking across 50+ banks).",
   },
   {
     q: "What is your store return policy?",
@@ -71,7 +72,8 @@ function FaqsContent() {
           Frequently Asked Questions
         </h1>
         <p className="text-xs text-muted-foreground max-w-md mx-auto">
-          Everything you need to know about our handloom heritage sarees, international delivery, and silk care.
+          Everything you need to know about our handloom heritage sarees, international delivery,
+          and silk care.
         </p>
       </div>
 

@@ -38,8 +38,32 @@ export type Order = {
   paymentId?: string;
   awbNumber?: string;
   courierPartner?: string;
+  shippingProvider?: string;
+  shippingService?: string;
+  shippingMethod?: string;
+  shippingCostInr?: number;
+  shippingCostUsd?: number;
+  estimatedDeliveryDate?: string;
+  trackingNumber?: string;
+  shipmentId?: string;
   trackingUrl?: string;
   createdAt: string;
+};
+
+export type Shipment = {
+  id: string;
+  orderId: string;
+  provider: string;
+  service: string;
+  trackingNumber: string;
+  labelUrl?: string;
+  status: string;
+  originPincode: string;
+  destinationPincode: string;
+  shippingCostInr: number;
+  estimatedDeliveryDate: string;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type CustomerOrder = Order;
@@ -82,60 +106,33 @@ export type PincodeServiceability = {
 };
 
 const initialSources: WeaverSource[] = [
-  { id: "s1", name: "Varanasi Master Weavers Cooperative", region: "Varanasi, UP", craft: "Kadwa Banarasi", artisanCount: 120, verified: true },
-  { id: "s2", name: "Kanchipuram Silk Handloom Society", region: "Kanchipuram, TN", craft: "Korvai Kanjivaram", artisanCount: 85, verified: true },
-  { id: "s3", name: "Bishnupur Tussar Guild", region: "Bishnupur, WB", craft: "Kantha Tussar", artisanCount: 64, verified: true },
+  {
+    id: "s1",
+    name: "Varanasi Master Weavers Cooperative",
+    region: "Varanasi, UP",
+    craft: "Kadwa Banarasi",
+    artisanCount: 120,
+    verified: true,
+  },
+  {
+    id: "s2",
+    name: "Kanchipuram Silk Handloom Society",
+    region: "Kanchipuram, TN",
+    craft: "Korvai Kanjivaram",
+    artisanCount: 85,
+    verified: true,
+  },
+  {
+    id: "s3",
+    name: "Bishnupur Tussar Guild",
+    region: "Bishnupur, WB",
+    craft: "Kantha Tussar",
+    artisanCount: 64,
+    verified: true,
+  },
 ];
 
-const initialOrders: Order[] = [
-  {
-    id: "ORD-2026-9041",
-    customerName: "Ananya Roy",
-    email: "ananya.roy@example.com",
-    phone: "+91 98765 43210",
-    shippingAddress: "B-402, Green Glen Layout, Bellandur, Bengaluru, Karnataka 560103",
-    pincode: "560103",
-    items: [
-      {
-        productId: "p1",
-        productName: "Maroon Katan Banarasi Silk Saree With Kadwa Jaal",
-        quantity: 1,
-        priceUsd: 580,
-      },
-    ],
-    subtotalUsd: 580,
-    status: "Shipped",
-    paymentMethod: "razorpay",
-    paymentId: "pay_Rzp9041B",
-    awbNumber: "SR109482710IN",
-    courierPartner: "Shiprocket (Bluedart Express)",
-    trackingUrl: "https://shiprocket.co/tracking/SR109482710IN",
-    createdAt: "2026-08-11T14:30:00Z",
-  },
-  {
-    id: "ORD-2026-9042",
-    customerName: "Priya Sharma",
-    email: "priya.sharma@example.com",
-    phone: "+1 (555) 234-5678",
-    shippingAddress: "450 Lexington Ave, Suite 1200, New York, NY 10017, United States",
-    pincode: "10017",
-    items: [
-      {
-        productId: "p4",
-        productName: "Royal Crimson Pure Kanjivaram Silk Bridal Saree",
-        quantity: 1,
-        priceUsd: 899,
-      },
-    ],
-    subtotalUsd: 899,
-    status: "Confirmed",
-    paymentMethod: "stripe",
-    paymentId: "ch_3M00000000000000",
-    awbNumber: "DHL998234101",
-    courierPartner: "DHL Express Worldwide",
-    createdAt: "2026-08-12T10:15:00Z",
-  },
-];
+const initialOrders: Order[] = [];
 
 const initialCoupons: Coupon[] = [
   {
@@ -157,11 +154,46 @@ const initialCoupons: Coupon[] = [
 ];
 
 const PINCODE_DATABASE: Record<string, PincodeServiceability> = {
-  "110001": { pincode: "110001", city: "New Delhi", state: "Delhi", serviceable: true, codAvailable: true, estimatedDays: 3 },
-  "400001": { pincode: "400001", city: "Mumbai", state: "Maharashtra", serviceable: true, codAvailable: true, estimatedDays: 3 },
-  "560001": { pincode: "560001", city: "Bengaluru", state: "Karnataka", serviceable: true, codAvailable: true, estimatedDays: 2 },
-  "700001": { pincode: "700001", city: "Kolkata", state: "West Bengal", serviceable: true, codAvailable: true, estimatedDays: 2 },
-  "10017": { pincode: "10017", city: "New York", state: "NY", serviceable: true, codAvailable: false, estimatedDays: 5 },
+  "110001": {
+    pincode: "110001",
+    city: "New Delhi",
+    state: "Delhi",
+    serviceable: true,
+    codAvailable: true,
+    estimatedDays: 3,
+  },
+  "400001": {
+    pincode: "400001",
+    city: "Mumbai",
+    state: "Maharashtra",
+    serviceable: true,
+    codAvailable: true,
+    estimatedDays: 3,
+  },
+  "560001": {
+    pincode: "560001",
+    city: "Bengaluru",
+    state: "Karnataka",
+    serviceable: true,
+    codAvailable: true,
+    estimatedDays: 2,
+  },
+  "700001": {
+    pincode: "700001",
+    city: "Kolkata",
+    state: "West Bengal",
+    serviceable: true,
+    codAvailable: true,
+    estimatedDays: 2,
+  },
+  "10017": {
+    pincode: "10017",
+    city: "New York",
+    state: "NY",
+    serviceable: true,
+    codAvailable: false,
+    estimatedDays: 5,
+  },
 };
 
 class BackendDatabase {
@@ -192,7 +224,9 @@ class BackendDatabase {
     }
     if (filter?.search) {
       const q = filter.search.toLowerCase();
-      list = list.filter((p) => p.name.toLowerCase().includes(q) || p.fabric.toLowerCase().includes(q));
+      list = list.filter(
+        (p) => p.name.toLowerCase().includes(q) || p.fabric.toLowerCase().includes(q),
+      );
     }
     return list;
   }
@@ -211,6 +245,7 @@ class BackendDatabase {
       id: `p_${Date.now()}`,
       stockQuantity: newProduct.stockQuantity ?? 1,
       availability: newProduct.availability ?? "Available",
+      inStock: newProduct.inStock ?? true,
       vendor: newProduct.vendor ?? "Ethnic Boutique",
     };
     this.products.unshift(created);
@@ -228,6 +263,175 @@ class BackendDatabase {
     const initialLen = this.products.length;
     this.products = this.products.filter((p) => p.id !== id);
     return this.products.length < initialLen;
+  }
+
+  // Authoritative Inventory Adjustment Engine
+  adjustStock(
+    productId: string,
+    deltaQuantity: number,
+    reason: string = "manual adjustment",
+  ): { product?: Product; success: boolean; newStock: number; message: string } {
+    const prod = this.getProductById(productId);
+    if (!prod) {
+      return { success: false, newStock: 0, message: `Product ${productId} not found` };
+    }
+
+    const currentStock = prod.stockQuantity ?? prod.stock ?? 0;
+    const newStock = Math.max(0, currentStock + deltaQuantity);
+    const inStock = newStock > 0;
+    const availability = newStock > 0 ? "Available" : "Out of Stock";
+
+    const updated = this.updateProduct(productId, {
+      stockQuantity: newStock,
+      stock: newStock,
+      inStock,
+      active: inStock,
+      availability,
+    });
+
+    return {
+      product: updated,
+      success: true,
+      newStock,
+      message: `Stock updated for ${prod.name}: ${currentStock} -> ${newStock} (${reason})`,
+    };
+  }
+
+  // Categories Hierarchy Engine
+  getCategories(): Array<{ name: string; slug: string; count: number; subcategories: string[] }> {
+    const catMap = new Map<string, { count: number; subcategories: Set<string> }>();
+
+    this.products.forEach((p) => {
+      const cat = p.category || "Uncategorized";
+      if (!catMap.has(cat)) {
+        catMap.set(cat, { count: 0, subcategories: new Set() });
+      }
+      const entry = catMap.get(cat)!;
+      entry.count += 1;
+      if (p.subcategory) entry.subcategories.add(p.subcategory);
+    });
+
+    return Array.from(catMap.entries()).map(([name, data]) => ({
+      name,
+      slug: name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+      count: data.count,
+      subcategories: Array.from(data.subcategories),
+    }));
+  }
+
+  getCategoryBySlug(slug: string): { name: string; products: Product[] } | null {
+    const clean = slug.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    const matched = this.products.filter(
+      (p) =>
+        p.category.toLowerCase().replace(/[^a-z0-9]+/g, "-") === clean ||
+        p.subcategory?.toLowerCase().replace(/[^a-z0-9]+/g, "-") === clean ||
+        p.group?.toLowerCase().replace(/[^a-z0-9]+/g, "-") === clean,
+    );
+
+    if (matched.length === 0) return null;
+    return {
+      name: matched[0].category,
+      products: matched,
+    };
+  }
+
+  // Authoritative Server-Side Cart Calculation
+  calculateCartTotals(
+    items: Array<{ productId: string; quantity: number }>,
+    promoCode?: string,
+    shippingMethod: "standard" | "express" = "standard",
+  ) {
+    if (!items || items.length === 0) {
+      return {
+        items: [],
+        subtotalUsd: 0,
+        discountUsd: 0,
+        shippingFeeUsd: 0,
+        finalTotalUsd: 0,
+        currency: "USD",
+      };
+    }
+
+    const calculatedItems = items.map((it) => {
+      const prod = this.getProductById(it.productId);
+      if (!prod) {
+        throw new Error(`Product with ID "${it.productId}" does not exist in catalog.`);
+      }
+      const stock = prod.stockQuantity ?? prod.stock ?? 1;
+      if (stock < it.quantity) {
+        throw new Error(`Insufficient stock for "${prod.name}". Only ${stock} left.`);
+      }
+      const price = prod.priceUsd ?? prod.price ?? 0;
+      return {
+        productId: prod.id,
+        productName: prod.name,
+        image: prod.image || prod.thumbnail || "",
+        unitPriceUsd: price,
+        quantity: it.quantity,
+        lineTotalUsd: price * it.quantity,
+      };
+    });
+
+    const subtotalUsd = calculatedItems.reduce((acc, i) => acc + i.lineTotalUsd, 0);
+
+    let discountUsd = 0;
+    let couponMessage = "";
+    if (promoCode) {
+      const couponCheck = this.validateCoupon(promoCode, subtotalUsd);
+      if (couponCheck.valid) {
+        discountUsd = couponCheck.discountAmountUsd;
+        couponMessage = couponCheck.message;
+      }
+    }
+
+    const isFreeShipping = subtotalUsd >= 500;
+    const shippingFeeUsd = isFreeShipping ? 0 : shippingMethod === "express" ? 45 : 25;
+    const finalTotalUsd = Math.max(0, subtotalUsd - discountUsd + shippingFeeUsd);
+
+    return {
+      items: calculatedItems,
+      subtotalUsd,
+      discountUsd,
+      couponMessage,
+      shippingFeeUsd,
+      finalTotalUsd,
+      currency: "USD",
+    };
+  }
+
+  // POS In-Store Sale Terminal Engine
+  createPOSSale(posData: {
+    items: Array<{ productId: string; quantity: number }>;
+    customerName?: string;
+    customerEmail?: string;
+    customerPhone?: string;
+    paymentMethod: "cash" | "card" | "upi" | "pos";
+    tenderedAmountUsd?: number;
+    notes?: string;
+  }): Order {
+    const calc = this.calculateCartTotals(posData.items);
+
+    const orderItems: OrderItem[] = calc.items.map((it) => ({
+      productId: it.productId,
+      productName: it.productName,
+      quantity: it.quantity,
+      priceUsd: it.unitPriceUsd,
+    }));
+
+    const order = this.createOrder({
+      customerName: posData.customerName || "In-Store Walk-in Guest",
+      email: posData.customerEmail || "pos@muncreation.com",
+      phone: posData.customerPhone || "+91 99999 00000",
+      shippingAddress: "Mun Creations Flagship Atelier (In-Store Retail POS Sale)",
+      pincode: "560001",
+      items: orderItems,
+      subtotalUsd: calc.finalTotalUsd,
+      paymentMethod: (posData.paymentMethod === "pos" ? "card" : posData.paymentMethod) as any,
+      paymentId: `pos_${Date.now()}`,
+      status: "Confirmed",
+    });
+
+    return order;
   }
 
   // Weaver Sources Methods
@@ -254,7 +458,13 @@ class BackendDatabase {
     return this.orders.find((o) => o.paymentId === paymentId);
   }
 
-  createOrder(orderData: Omit<Order, "id" | "status" | "createdAt" | "paymentMethod"> & { paymentMethod?: Order["paymentMethod"]; paymentId?: string; status?: OrderStatus }): Order {
+  createOrder(
+    orderData: Omit<Order, "id" | "status" | "createdAt" | "paymentMethod"> & {
+      paymentMethod?: Order["paymentMethod"];
+      paymentId?: string;
+      status?: OrderStatus;
+    },
+  ): Order {
     // Idempotency: If order with this paymentId already exists, return it without duplicate stock deduction
     if (orderData.paymentId) {
       const existing = this.getOrderByPaymentId(orderData.paymentId);
@@ -275,24 +485,42 @@ class BackendDatabase {
     };
     this.orders.unshift(newOrder);
 
-    // Deduct stock inventory authoritatively
+    // Deduct stock inventory authoritatively across online and in-store channels
     orderData.items.forEach((item) => {
-      const prod = this.getProductById(item.productId);
-      if (prod && prod.stockQuantity !== undefined) {
-        const newStock = Math.max(0, prod.stockQuantity - item.quantity);
-        this.updateProduct(prod.id, {
-          stockQuantity: newStock,
-          availability: newStock === 0 ? "Out of Stock" : "Available",
-        });
-      }
+      this.adjustStock(item.productId, -item.quantity, `Order fulfillment ${newOrder.id}`);
     });
 
     return newOrder;
   }
 
+  cancelOrder(orderId: string, reason: string = "Customer cancellation"): Order | undefined {
+    const order = this.getOrderById(orderId);
+    if (!order || order.status === "Cancelled") return order;
+
+    // Restore stock inventory
+    order.items.forEach((item) => {
+      this.adjustStock(item.productId, item.quantity, `Order cancellation ${orderId}: ${reason}`);
+    });
+
+    order.status = "Cancelled";
+    return order;
+  }
+
   updateOrderStatus(orderId: string, status: OrderStatus): Order | undefined {
     const order = this.getOrderById(orderId);
     if (!order) return undefined;
+
+    // If transitioned to Cancelled or Returned, restore inventory
+    if (
+      (status === "Cancelled" || status === "Returned") &&
+      order.status !== "Cancelled" &&
+      order.status !== "Returned"
+    ) {
+      order.items.forEach((item) => {
+        this.adjustStock(item.productId, item.quantity, `Order ${status} ${orderId}`);
+      });
+    }
+
     order.status = status;
     return order;
   }
@@ -309,7 +537,10 @@ class BackendDatabase {
     return this.coupons;
   }
 
-  validateCoupon(code: string, cartTotalUsd: number): { valid: boolean; discountAmountUsd: number; message: string } {
+  validateCoupon(
+    code: string,
+    cartTotalUsd: number,
+  ): { valid: boolean; discountAmountUsd: number; message: string } {
     const clean = code.trim().toUpperCase();
     const found = this.coupons.find((c) => c.code === clean);
 

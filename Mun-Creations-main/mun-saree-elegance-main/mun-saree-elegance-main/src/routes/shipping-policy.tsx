@@ -23,11 +23,25 @@ function ShippingPolicyPage() {
             <div className="container-boutique max-w-3xl space-y-6">
               <div className="bg-white p-8 md:p-12 rounded-sm border border-border shadow-md space-y-4">
                 <div className="eyebrow text-[var(--gold)]">Delivery Terms</div>
-                <h1 className="font-serif text-3xl md:text-4xl font-bold text-[var(--wine-deep)]">Worldwide Shipping Policy</h1>
+                <h1 className="font-serif text-3xl md:text-4xl font-bold text-[var(--wine-deep)]">
+                  Worldwide Shipping Policy
+                </h1>
                 <div className="text-xs text-muted-foreground leading-relaxed space-y-4 pt-2">
-                  <p><strong>Domestic Shipping (India):</strong> We offer complimentary insured air shipping across all serviceable pincodes in India. Standard delivery takes 2 to 4 business days.</p>
-                  <p><strong>International Shipping:</strong> We ship to over 150 countries via DHL Express & FedEx. International orders above $500 USD qualify for complimentary express air dispatch.</p>
-                  <p><strong>Customs & Duties:</strong> All import duties, local taxes, and clearance fees are handled transparently. Tracking links (AWB) are dispatched via email and WhatsApp upon order dispatch.</p>
+                  <p>
+                    <strong>Domestic Shipping (India):</strong> We offer complimentary insured air
+                    shipping across all serviceable pincodes in India. Standard delivery takes 2 to
+                    4 business days.
+                  </p>
+                  <p>
+                    <strong>International Shipping:</strong> We ship to over 150 countries via DHL
+                    Express & FedEx. International orders above $500 USD qualify for complimentary
+                    express air dispatch.
+                  </p>
+                  <p>
+                    <strong>Customs & Duties:</strong> All import duties, local taxes, and clearance
+                    fees are handled transparently. Tracking links (AWB) are dispatched via email
+                    and WhatsApp upon order dispatch.
+                  </p>
                 </div>
               </div>
             </div>

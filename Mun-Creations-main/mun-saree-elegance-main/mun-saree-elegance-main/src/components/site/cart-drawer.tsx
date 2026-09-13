@@ -79,8 +79,12 @@ export function CartDrawer() {
               <div className="h-16 w-16 rounded-full bg-[var(--wine)]/10 text-[var(--wine)] flex items-center justify-center border border-[var(--wine)]/20">
                 <Sparkles className="h-8 w-8 text-[var(--gold)]" />
               </div>
-              <div className="font-serif text-2xl font-bold text-[var(--wine-deep)]">{t("cart.empty")}</div>
-              <p className="text-xs max-w-xs">Explore our handwoven Banarasi, Kanjivaram & Tussar sarees to start your checkout.</p>
+              <div className="font-serif text-2xl font-bold text-[var(--wine-deep)]">
+                {t("cart.empty")}
+              </div>
+              <p className="text-xs max-w-xs">
+                Explore our handwoven Banarasi, Kanjivaram & Tussar sarees to start your checkout.
+              </p>
             </div>
           ) : (
             <div className="space-y-5 sm:space-y-6">
@@ -91,7 +95,10 @@ export function CartDrawer() {
                   {isFreeShipping ? (
                     <strong>Complimentary Worldwide Insured Air Shipping Unlocked!</strong>
                   ) : (
-                    <span>Spend <strong>{formatPrice(500 - subtotalUsd)}</strong> more for Complimentary Express Air Dispatch</span>
+                    <span>
+                      Spend <strong>{formatPrice(500 - subtotalUsd)}</strong> more for Complimentary
+                      Express Air Dispatch
+                    </span>
                   )}
                 </span>
               </div>
@@ -166,19 +173,27 @@ export function CartDrawer() {
               </span>
             </div>
 
-            {/* Amazon-Style High Conversion PROCEED TO CHECKOUT Button */}
-            <Link
-              to="/checkout"
-              onClick={() => setOpen(false)}
-              className="w-full bg-[var(--gold)] text-[var(--wine-deep)] py-3.5 sm:py-4 text-xs font-bold uppercase tracking-[0.2em] rounded-sm hover:bg-white hover:text-[var(--wine-deep)] transition-all shadow-lg flex items-center justify-center gap-2 border border-[var(--wine-deep)]/20 min-h-[48px]"
-            >
-              <Lock className="h-4 w-4 text-[var(--wine-deep)]" />
-              <span>PROCEED TO PAYMENT ({formatPrice(subtotalUsd)})</span>
-              <ArrowRight className="h-4 w-4" />
-            </Link>
+            {/* Action Buttons */}
+            <div className="grid grid-cols-2 gap-2">
+              <Link
+                to="/cart"
+                onClick={() => setOpen(false)}
+                className="w-full bg-white text-[var(--wine-deep)] border border-border py-3 text-[11px] font-bold uppercase tracking-wider rounded-xs hover:border-[var(--wine)] text-center flex items-center justify-center gap-1.5"
+              >
+                <span>View Full Bag</span>
+              </Link>
+              <Link
+                to="/checkout"
+                onClick={() => setOpen(false)}
+                className="w-full bg-[var(--gold)] text-[var(--wine-deep)] py-3 text-[11px] font-bold uppercase tracking-wider rounded-xs hover:bg-[var(--gold)]/90 text-center flex items-center justify-center gap-1.5 font-bold shadow-sm"
+              >
+                <Lock className="h-3.5 w-3.5" />
+                <span>Checkout</span>
+              </Link>
+            </div>
 
             <div className="flex items-center justify-center gap-2 text-[10px] text-muted-foreground tracking-wider uppercase pt-0.5">
-              <span>Razorpay</span>·<span>Stripe</span>·<span>PayPal</span>·<span>Visa</span>·<span>UPI</span>
+              <span>Razorpay Secure</span>·<span>UPI</span>·<span>Cards</span>·<span>NetBanking</span>
             </div>
           </div>
         )}

@@ -5,7 +5,8 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-serif: "Metanoia", "Cinzel", "Marcellus", "Cormorant Garamond", "Playfair Display", Georgia, serif;
+  --font-serif:
+    "Metanoia", "Cinzel", "Marcellus", "Cormorant Garamond", "Playfair Display", Georgia, serif;
   --font-sans: "Metanoia", "Montserrat", "Inter", "Helvetica Neue", system-ui, sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -42,15 +43,15 @@
   --radius: 0.375rem;
 
   /* Brand palette — Mun Creations */
-  --ivory: oklch(0.975 0.012 82);          /* warm cream backdrop */
-  --wine: oklch(0.35 0.12 20);             /* deep maroon */
-  --wine-deep: oklch(0.26 0.11 22);        /* darker wine */
-  --gold: oklch(0.76 0.14 82);             /* mustard/antique gold */
+  --ivory: oklch(0.975 0.012 82); /* warm cream backdrop */
+  --wine: oklch(0.35 0.12 20); /* deep maroon */
+  --wine-deep: oklch(0.26 0.11 22); /* darker wine */
+  --gold: oklch(0.76 0.14 82); /* mustard/antique gold */
   --gold-deep: oklch(0.62 0.14 72);
-  --emerald-brand: oklch(0.42 0.11 165);   /* jewel emerald */
+  --emerald-brand: oklch(0.42 0.11 165); /* jewel emerald */
 
   --background: var(--ivory);
-  --foreground: oklch(0.22 0.03 30);       /* warm near-black */
+  --foreground: oklch(0.22 0.03 30); /* warm near-black */
   --card: oklch(0.995 0.008 82);
   --card-foreground: oklch(0.22 0.03 30);
   --popover: oklch(0.995 0.008 82);
@@ -79,7 +80,9 @@
 }
 
 @layer base {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     border-color: var(--color-border);
     box-sizing: border-box;
   }
@@ -101,11 +104,20 @@
     min-height: 100vh;
     min-height: 100dvh;
   }
-  h1, h2, h3, h4, .font-serif, nav, button, a, .eyebrow {
+  h1,
+  h2,
+  h3,
+  h4,
+  .font-serif,
+  nav,
+  button,
+  a,
+  .eyebrow {
     font-family: var(--font-serif);
     letter-spacing: 0.02em;
   }
-  img, video {
+  img,
+  video {
     max-width: 100%;
     height: auto;
   }
@@ -176,8 +188,12 @@
 }
 
 @keyframes marquee-x {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }
 .animate-marquee {
   animation: marquee-x 30s linear infinite;
@@ -205,7 +221,10 @@
   opacity: 0;
   transform: translateY(48px) scale(0.96) skewY(1.2deg);
   will-change: transform, opacity, filter;
-  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 1s ease-out, filter 1s ease-out;
+  transition:
+    transform 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 1s ease-out,
+    filter 1s ease-out;
 }
 
 .section-wavy-active {
@@ -216,8 +235,14 @@
 }
 
 @keyframes fade-up {
-  from { opacity: 0; transform: translateY(24px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 .reveal {
   opacity: 0;

@@ -22,10 +22,21 @@ function RefundPolicyPage() {
             <div className="container-boutique max-w-3xl space-y-6">
               <div className="bg-white p-8 md:p-12 rounded-sm border border-border shadow-md space-y-4">
                 <div className="eyebrow text-[var(--gold)]">Financial Terms</div>
-                <h1 className="font-serif text-3xl md:text-4xl font-bold text-[var(--wine-deep)]">Prepaid Refund Policy</h1>
+                <h1 className="font-serif text-3xl md:text-4xl font-bold text-[var(--wine-deep)]">
+                  Prepaid Refund Policy
+                </h1>
                 <div className="text-xs text-muted-foreground leading-relaxed space-y-4 pt-2">
-                  <p><strong>Order Cancellations Prior to Dispatch:</strong> If you request an order cancellation before your saree is dispatched from our Varanasi studio, a 100% full refund will be processed back to your original payment account (Razorpay / Stripe / PayPal / Card) within 3-5 business days.</p>
-                  <p><strong>Dispatched Orders:</strong> Once an order is handed over to our courier partner (Shiprocket Air / DHL Express), all sales are final and cannot be cancelled or returned.</p>
+                  <p>
+                    <strong>Order Cancellations Prior to Dispatch:</strong> If you request an order
+                    cancellation before your saree is dispatched from our Varanasi studio, a 100%
+                    full refund will be processed back to your original payment account via Razorpay
+                    within 3-5 business days.
+                  </p>
+                  <p>
+                    <strong>Dispatched Orders:</strong> Once an order is handed over to our courier
+                    partner (Shiprocket Air / DHL Express), all sales are final and cannot be
+                    cancelled or returned.
+                  </p>
                 </div>
               </div>
             </div>

@@ -318,9 +318,18 @@ class AITryOnService {
   private provider: TryOnProvider;
 
   constructor() {
-    const tryOnApiKey = (typeof process !== "undefined" ? process.env?.AI_TRYON_API_KEY || process.env?.AIMLAPI_KEY : undefined) || AIML_CONFIG.tryOnApiKey || AIML_CONFIG.chatApiKey;
-    const apiUrl = (typeof process !== "undefined" ? process.env?.AI_TRYON_API_URL : undefined) || AIML_CONFIG.imageUrl;
-    const model = (typeof process !== "undefined" ? process.env?.AI_TRYON_MODEL : undefined) || AIML_CONFIG.tryOnModel;
+    const tryOnApiKey =
+      (typeof process !== "undefined"
+        ? process.env?.AI_TRYON_API_KEY || process.env?.AIMLAPI_KEY
+        : undefined) ||
+      AIML_CONFIG.tryOnApiKey ||
+      AIML_CONFIG.chatApiKey;
+    const apiUrl =
+      (typeof process !== "undefined" ? process.env?.AI_TRYON_API_URL : undefined) ||
+      AIML_CONFIG.imageUrl;
+    const model =
+      (typeof process !== "undefined" ? process.env?.AI_TRYON_MODEL : undefined) ||
+      AIML_CONFIG.tryOnModel;
 
     if (tryOnApiKey) {
       this.provider = new AIMLAPIProvider(tryOnApiKey, apiUrl, model);

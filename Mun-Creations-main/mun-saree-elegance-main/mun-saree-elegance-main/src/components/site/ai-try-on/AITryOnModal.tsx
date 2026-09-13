@@ -21,13 +21,7 @@ import {
 } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useCart } from "@/lib/cart";
-import {
-  type Product,
-  catSilk,
-  catBridal,
-  catCotton,
-  storyWeaver,
-} from "@/lib/products";
+import { type Product, catSilk, catBridal, catCotton, storyWeaver } from "@/lib/products";
 import {
   type TryOnStep,
   validateTryOnImage,
@@ -50,11 +44,7 @@ const SAMPLE_MODELS = [
   { id: "m4", label: "Artisan Weave Pose", image: storyWeaver },
 ];
 
-export const AITryOnModal: React.FC<AITryOnModalProps> = ({
-  product,
-  isOpen,
-  onClose,
-}) => {
+export const AITryOnModal: React.FC<AITryOnModalProps> = ({ product, isOpen, onClose }) => {
   const { formatPrice } = useI18n();
   const { add } = useCart();
 
@@ -129,6 +119,12 @@ export const AITryOnModal: React.FC<AITryOnModalProps> = ({
     }
   }, [cameraActive, mode]);
 
+  const handleClose = useCallback(() => {
+    stopCameraStream();
+    abortControllerRef.current?.abort();
+    onClose();
+  }, [onClose]);
+
   // Handle ESC key to close modal
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -138,13 +134,7 @@ export const AITryOnModal: React.FC<AITryOnModalProps> = ({
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen]);
-
-  const handleClose = () => {
-    stopCameraStream();
-    abortControllerRef.current?.abort();
-    onClose();
-  };
+  }, [isOpen, handleClose]);
 
   // Start Camera
   const startCamera = async (facing: "user" | "environment" = facingMode) => {
@@ -181,7 +171,7 @@ export const AITryOnModal: React.FC<AITryOnModalProps> = ({
       setCameraError(
         err.name === "NotAllowedError" || err.name === "PermissionDeniedError"
           ? "Camera permission was not granted. You can easily upload a photo or choose a sample model below."
-          : "Unable to connect to camera device. Please use the Upload Photo option."
+          : "Unable to connect to camera device. Please use the Upload Photo option.",
       );
     }
   };
@@ -231,7 +221,10 @@ export const AITryOnModal: React.FC<AITryOnModalProps> = ({
       if (typeof e.target?.result === "string") {
         setUserImage(e.target.result);
         setStep("preview");
-        trackTryOnEvent("ai_tryon_photo_uploaded", { source: "file_upload", productId: product.id });
+        trackTryOnEvent("ai_tryon_photo_uploaded", {
+          source: "file_upload",
+          productId: product.id,
+        });
       }
     };
     reader.onerror = () => {
@@ -293,7 +286,7 @@ export const AITryOnModal: React.FC<AITryOnModalProps> = ({
             priceUsd: product.priceUsd,
           },
         },
-        controller.signal
+        controller.signal,
       );
 
       clearInterval(stageInterval);
@@ -301,7 +294,10 @@ export const AITryOnModal: React.FC<AITryOnModalProps> = ({
       if (response.success && response.resultImageUrl) {
         setResultImage(response.resultImageUrl);
         setStep("result");
-        trackTryOnEvent("ai_tryon_completed", { productId: product.id, durationMs: response.processingTimeMs });
+        trackTryOnEvent("ai_tryon_completed", {
+          productId: product.id,
+          durationMs: response.processingTimeMs,
+        });
       } else {
         throw new Error(response.error || "Unable to generate virtual try-on at this time.");
       }
@@ -426,7 +422,11 @@ export const AITryOnModal: React.FC<AITryOnModalProps> = ({
 
           <div
             className={`ai-tryon-step ${
-              step === "preview" ? "is-active" : step === "processing" || step === "result" ? "is-completed" : ""
+              step === "preview"
+                ? "is-active"
+                : step === "processing" || step === "result"
+                  ? "is-completed"
+                  : ""
             }`}
           >
             <span className="ai-tryon-step__circle">
@@ -434,7 +434,9 @@ export const AITryOnModal: React.FC<AITryOnModalProps> = ({
             </span>
             <span>Confirm & Pose</span>
           </div>
-          <span className={`ai-tryon-step__line ${step === "processing" || step === "result" ? "is-active" : ""}`} />
+          <span
+            className={`ai-tryon-step__line ${step === "processing" || step === "result" ? "is-active" : ""}`}
+          />
 
           <div
             className={`ai-tryon-step ${
@@ -637,9 +639,7 @@ export const AITryOnModal: React.FC<AITryOnModalProps> = ({
                       title={`Try with ${model.label}`}
                     >
                       <img src={model.image} alt={model.label} loading="lazy" />
-                      <div className="ai-tryon-preset-card__label">
-                        {model.label}
-                      </div>
+                      <div className="ai-tryon-preset-card__label">{model.label}</div>
                     </div>
                   ))}
                 </div>
@@ -649,7 +649,9 @@ export const AITryOnModal: React.FC<AITryOnModalProps> = ({
               <div className="ai-tryon-guidance">
                 <div className="ai-tryon-guidance__title">
                   <Info className="h-3.5 w-3.5" />
-                  <span>Recommended for {product.category}: {guidance.headline}</span>
+                  <span>
+                    Recommended for {product.category}: {guidance.headline}
+                  </span>
                 </div>
                 <ul className="ai-tryon-guidance__list">
                   {guidance.tips.map((tip, idx) => (
@@ -684,9 +686,18 @@ export const AITryOnModal: React.FC<AITryOnModalProps> = ({
                     {product.name}
                   </h4>
                   <div className="text-xs text-foreground/75 flex flex-wrap gap-x-3 gap-y-1">
-                    <span>Fabric: <strong>{product.fabric || "Silk"}</strong></span>
-                    <span>Weave: <strong>{product.weave || "Handloom"}</strong></span>
-                    <span>Price: <strong className="text-[var(--gold)]">{formatPrice(product.priceUsd)}</strong></span>
+                    <span>
+                      Fabric: <strong>{product.fabric || "Silk"}</strong>
+                    </span>
+                    <span>
+                      Weave: <strong>{product.weave || "Handloom"}</strong>
+                    </span>
+                    <span>
+                      Price:{" "}
+                      <strong className="text-[var(--gold)]">
+                        {formatPrice(product.priceUsd)}
+                      </strong>
+                    </span>
                   </div>
                 </div>
 
@@ -832,7 +843,9 @@ export const AITryOnModal: React.FC<AITryOnModalProps> = ({
                   {/* After (Try-On Result Image clipped) */}
                   <div
                     className="ai-tryon-comparison__after-wrap"
-                    style={{ clipPath: `polygon(${sliderPosition}% 0, 100% 0, 100% 100%, ${sliderPosition}% 100%)` }}
+                    style={{
+                      clipPath: `polygon(${sliderPosition}% 0, 100% 0, 100% 100%, ${sliderPosition}% 100%)`,
+                    }}
                   >
                     <img
                       src={resultImage}
@@ -898,7 +911,8 @@ export const AITryOnModal: React.FC<AITryOnModalProps> = ({
                 Processing Interrupted
               </h3>
               <p className="text-xs text-red-200 mb-5">
-                {errorMessage || "We could not generate the virtual try-on for this image. Please try again with a clearer, well-lit photo."}
+                {errorMessage ||
+                  "We could not generate the virtual try-on for this image. Please try again with a clearer, well-lit photo."}
               </p>
               <button
                 type="button"
@@ -954,11 +968,7 @@ export const AITryOnModal: React.FC<AITryOnModalProps> = ({
                   <span>{cartToast ? "Added to Bag ✓" : "Add to Bag"}</span>
                 </button>
 
-                <Link
-                  to="/checkout"
-                  onClick={() => add(product)}
-                  className="ai-tryon-btn-gold"
-                >
+                <Link to="/checkout" onClick={() => add(product)} className="ai-tryon-btn-gold">
                   <span>Buy Now · {formatPrice(product.priceUsd)}</span>
                   <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
