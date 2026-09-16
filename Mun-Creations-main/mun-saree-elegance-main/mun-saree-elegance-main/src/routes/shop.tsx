@@ -6,7 +6,7 @@ import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/footer";
 import { CartDrawer } from "@/components/site/cart-drawer";
 import { ProductCard } from "@/components/site/product";
-import { backendDB } from "@/lib/backend-api";
+import { useCatalogProducts, useCatalogCategories } from "@/lib/catalog-client";
 import { CATEGORY_FILTERS, FABRIC_FILTERS, COLOR_FILTERS, PRICE_TIERS } from "@/lib/catalog";
 import { Filter, SlidersHorizontal, X, ChevronDown, Sparkles, Search, Check } from "lucide-react";
 
@@ -74,7 +74,13 @@ function ShopContent() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
-  const allProducts = backendDB.getProducts();
+  const { data: allProducts = [] } = useCatalogProducts();
+  const { data: dynamicCategories = [] } = useCatalogCategories();
+
+  const categoryOptions = useMemo(() => {
+    const fromApi = dynamicCategories.map((c) => c.name);
+    return Array.from(new Set([...CATEGORY_FILTERS, ...fromApi]));
+  }, [dynamicCategories]);
 
   // Filter & Search Engine
   const filteredProducts = useMemo(() => {
@@ -206,7 +212,7 @@ function ShopContent() {
                 className="w-full p-2 bg-secondary/20 border border-border rounded-sm text-xs font-medium focus:outline-none focus:border-[var(--wine)]"
               >
                 <option value="">All Categories</option>
-                {CATEGORY_FILTERS.map((cat) => (
+                {categoryOptions.map((cat) => (
                   <option key={cat} value={cat}>
                     {cat}
                   </option>

@@ -6,7 +6,7 @@ import { Footer } from "@/components/site/footer";
 import { CartDrawer } from "@/components/site/cart-drawer";
 import { ProductCard } from "@/components/site/product";
 import { EXPANDED_SAREE_TAXONOMY } from "@/lib/catalog";
-import { PRODUCTS } from "@/lib/products";
+import { useCatalogProducts } from "@/lib/catalog-client";
 import { Layers } from "lucide-react";
 
 export const Route = createFileRoute("/sarees")({
@@ -41,7 +41,8 @@ function SareesPage() {
 }
 
 function SareesContent() {
-  const sareeProducts = PRODUCTS.filter((p) => p.mainCategory === "sarees" || p.category);
+  const { data: allProducts = [] } = useCatalogProducts();
+  const sareeProducts = allProducts.filter((p) => p.mainCategory === "sarees" || p.category);
 
   return (
     <div className="container-boutique space-y-8 sm:space-y-12">

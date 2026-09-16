@@ -1,10 +1,12 @@
 import Razorpay from "razorpay";
 import crypto from "crypto";
 import { backendDB } from "../lib/backend-api";
+import { ensureEnvLoaded } from "../lib/envLoader";
 
 function getRazorpayInstance() {
-  const key_id = process.env.RAZORPAY_KEY_ID;
-  const key_secret = process.env.RAZORPAY_KEY_SECRET;
+  ensureEnvLoaded();
+  const key_id = (process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || "").trim();
+  const key_secret = (process.env.RAZORPAY_KEY_SECRET || "").trim();
 
   if (!key_id || !key_secret) {
     throw new Error("Razorpay credentials (RAZORPAY_KEY_ID or RAZORPAY_KEY_SECRET) are missing.");
@@ -94,8 +96,18 @@ export class RazorpayService {
       }
 
       const product = backendDB.getProductById(pId);
-      if (!product) {
-        const err: any = new Error(`Product with ID "${pId}" was not found in catalog.`);
+      if (
+        !product ||
+        (product as any).deletedAt ||
+        (product as any).archivedAt ||
+        (product as any).published === false ||
+        (product as any).active === false ||
+        (product as any).status === "archived" ||
+        (product as any).status === "draft"
+      ) {
+        const err: any = new Error(
+          `Product "${product?.name || pId}" is no longer available in our active catalog. Please remove it from your bag to proceed.`,
+        );
         err.status = 404;
         throw err;
       }
@@ -111,11 +123,18 @@ export class RazorpayService {
         throw err;
       }
 
+      const authoritativePrice =
+        typeof product.priceUsd === "number"
+          ? product.priceUsd
+          : typeof (product as any).price === "number"
+            ? (product as any).price
+            : 0;
+
       return {
         productId: product.id,
         productName: product.name,
         quantity: Math.floor(qty),
-        priceUsd: product.priceUsd,
+        priceUsd: authoritativePrice,
       };
     });
 
@@ -266,6 +285,7 @@ export class RazorpayService {
       };
     }
 
+    ensureEnvLoaded();
     const secret = process.env.RAZORPAY_KEY_SECRET;
     if (!secret) {
       return {
@@ -306,7 +326,8 @@ export class RazorpayService {
     signature: string,
     webhookSecret?: string,
   ): { isValid: boolean; error?: string } {
-    const secret = webhookSecret || process.env.RAZORPAY_WEBHOOK_SECRET;
+    ensureEnvLoaded();
+    const secret = webhookSecret || process.env.RAZORPAY_WEBHOOK_SECRET || process.env.RAZORPAY_KEY_SECRET;
 
     if (!secret) {
       return {

@@ -1,7 +1,10 @@
 import { backendDB } from "./lib/backend-api";
-import { aiTryOnService } from "./services/aiTryOnService";
 import { razorpayService } from "./services/razorpayService";
 import { exchangeRateServerService } from "./services/exchangeRateServerService";
+import { ensureEnvLoaded } from "./lib/envLoader";
+import { productDatabase } from "./lib/server/productDatabase";
+import fs from "fs";
+import pathModule from "path";
 
 // API router for backend REST endpoints
 async function handleApiRequests(request: Request): Promise<Response | null> {
@@ -10,11 +13,16 @@ async function handleApiRequests(request: Request): Promise<Response | null> {
 
   if (!path.startsWith("/api/")) return null;
 
+  ensureEnvLoaded();
+
   const headers = {
     "content-type": "application/json",
     "access-control-allow-origin": "*",
     "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
     "access-control-allow-headers": "Content-Type, Authorization",
+    "cache-control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
+    "pragma": "no-cache",
+    "expires": "0",
   };
 
   if (request.method === "OPTIONS") {
@@ -24,7 +32,8 @@ async function handleApiRequests(request: Request): Promise<Response | null> {
   try {
     if (path === "/api/health") {
       const dbStatus = backendDB.getHealthStatus();
-      const hasKeyId = Boolean(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_ID.trim());
+      const effectiveKeyId = (process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || "").trim();
+      const hasKeyId = Boolean(effectiveKeyId);
       const hasKeySecret = Boolean(
         process.env.RAZORPAY_KEY_SECRET && process.env.RAZORPAY_KEY_SECRET.trim(),
       );
@@ -81,7 +90,7 @@ async function handleApiRequests(request: Request): Promise<Response | null> {
             amount: order.amount,
             currency: order.currency,
             receipt: order.receipt,
-            key_id: process.env.RAZORPAY_KEY_ID,
+            key_id: (process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || "").trim(),
             calculation: order.calculation,
           }),
           { status: 200, headers },
@@ -313,13 +322,322 @@ async function handleApiRequests(request: Request): Promise<Response | null> {
       }
     }
 
-    // --- PRODUCTS API ---
+    // --- ADMIN AUTHENTICATION & SESSION API ---
+    if (path === "/api/admin/auth/login") {
+      if (request.method !== "POST") {
+        return new Response(JSON.stringify({ error: "Method not allowed. Use POST." }), { status: 405, headers });
+      }
+      const body = await request.json().catch(() => ({}));
+      const { password } = body;
+      const result = productDatabase.verifyAdminCredentials(password || "");
+      if (result.success) {
+        return new Response(JSON.stringify({ success: true, token: result.token, message: "Authentication successful." }), {
+          status: 200,
+          headers,
+        });
+      }
+      return new Response(JSON.stringify({ success: false, error: result.error || "Authentication failed." }), {
+        status: 401,
+        headers,
+      });
+    }
+
+    if (path === "/api/admin/auth/verify") {
+      const authHeader = request.headers.get("authorization");
+      const isAuthed = productDatabase.validateSessionToken(authHeader);
+      return new Response(JSON.stringify({ success: isAuthed, authenticated: isAuthed }), {
+        status: isAuthed ? 200 : 401,
+        headers,
+      });
+    }
+
+    if (path === "/api/admin/auth/logout") {
+      const authHeader = request.headers.get("authorization") || "";
+      productDatabase.logoutSession(authHeader);
+      return new Response(JSON.stringify({ success: true, message: "Logged out successfully." }), { status: 200, headers });
+    }
+
+    // --- ADMIN AUTHORIZATION MIDDLEWARE GUARD ---
+    if (path.startsWith("/api/admin/")) {
+      const authHeader = request.headers.get("authorization");
+      const isAuthed = productDatabase.validateSessionToken(authHeader);
+      if (!isAuthed) {
+        return new Response(
+          JSON.stringify({ success: false, error: "Unauthorized: Administrator access token is required or expired." }),
+          { status: 401, headers },
+        );
+      }
+    }
+
+    // --- ADMIN PRODUCTS API ---
+    if (path === "/api/admin/products/export") {
+      const csv = productDatabase.exportProductsToCSV();
+      return new Response(csv, {
+        status: 200,
+        headers: {
+          ...headers,
+          "content-type": "text/csv; charset=utf-8",
+          "content-disposition": `attachment; filename="mun_creations_catalog_${Date.now()}.csv"`,
+        },
+      });
+    }
+
+    if (path === "/api/admin/products/bulk-import") {
+      if (request.method !== "POST") {
+        return new Response(JSON.stringify({ error: "Method not allowed. Use POST." }), { status: 405, headers });
+      }
+      const body = await request.json().catch(() => ({}));
+      const { csvContent } = body;
+      if (!csvContent || typeof csvContent !== "string") {
+        return new Response(JSON.stringify({ success: false, error: "csvContent string is required." }), { status: 400, headers });
+      }
+      const importRes = productDatabase.bulkImportCSV(csvContent);
+      return new Response(JSON.stringify({ success: true, ...importRes }), { status: 200, headers });
+    }
+
+    if (path === "/api/admin/products/bulk-update") {
+      if (request.method !== "POST") {
+        return new Response(JSON.stringify({ error: "Method not allowed. Use POST." }), { status: 405, headers });
+      }
+      const body = await request.json().catch(() => ({}));
+      const { productIds, updates } = body;
+      if (!Array.isArray(productIds) || productIds.length === 0 || !updates) {
+        return new Response(JSON.stringify({ success: false, error: "productIds array and updates object are required." }), { status: 400, headers });
+      }
+      const bulkRes = productDatabase.bulkUpdate(productIds, updates);
+      return new Response(JSON.stringify({ success: true, ...bulkRes }), { status: 200, headers });
+    }
+
+    if (path.startsWith("/api/admin/products/")) {
+      const rest = path.replace("/api/admin/products/", "");
+      const segments = rest.split("/");
+      const id = decodeURIComponent(segments[0]);
+      const action = segments[1];
+
+      if (action === "publish" && request.method === "POST") {
+        const updated = productDatabase.updateProduct(id, { published: true, active: true });
+        return new Response(JSON.stringify({ success: true, product: updated }), { status: 200, headers });
+      }
+
+      if (action === "unpublish" && request.method === "POST") {
+        const updated = productDatabase.updateProduct(id, { published: false });
+        return new Response(JSON.stringify({ success: true, product: updated }), { status: 200, headers });
+      }
+
+      if (action === "duplicate" && request.method === "POST") {
+        const duplicated = productDatabase.duplicateProduct(id);
+        return new Response(JSON.stringify({ success: true, product: duplicated }), { status: 201, headers });
+      }
+
+      if (action === "restore" && request.method === "POST") {
+        const restored = productDatabase.restoreProduct(id);
+        return new Response(JSON.stringify({ success: true, product: restored }), { status: 200, headers });
+      }
+
+      // Single Product CRUD: /api/admin/products/:id
+      if (!action) {
+        if (request.method === "GET") {
+          const product = productDatabase.getProductById(id);
+          if (!product) {
+            return new Response(JSON.stringify({ success: false, error: `Product "${id}" not found.` }), { status: 404, headers });
+          }
+          return new Response(JSON.stringify({ success: true, product }), { status: 200, headers });
+        }
+
+        if (request.method === "PATCH" || request.method === "PUT") {
+          const body = await request.json().catch(() => ({}));
+          try {
+            const updated = productDatabase.updateProduct(id, body);
+            return new Response(JSON.stringify({ success: true, product: updated }), { status: 200, headers });
+          } catch (err: any) {
+            return new Response(JSON.stringify({ success: false, error: err?.message || "Failed to update product." }), { status: 400, headers });
+          }
+        }
+
+        if (request.method === "DELETE") {
+          const hard = url.searchParams.get("hard") === "true";
+          const success = productDatabase.deleteProduct(id, hard);
+          return new Response(JSON.stringify({ success }), { status: success ? 200 : 404, headers });
+        }
+      }
+    }
+
+    if (path === "/api/admin/products") {
+      if (request.method === "GET") {
+        const search = url.searchParams.get("search") || url.searchParams.get("q") || undefined;
+        const category = url.searchParams.get("category") || undefined;
+        const status = (url.searchParams.get("status") as any) || "all";
+        const stockStatus = (url.searchParams.get("stockStatus") as any) || "all";
+        const sort = url.searchParams.get("sort") || "newest";
+        const limitStr = url.searchParams.get("limit");
+        const offsetStr = url.searchParams.get("offset");
+        const limit = limitStr ? parseInt(limitStr, 10) : 50;
+        const offset = offsetStr ? parseInt(offsetStr, 10) : 0;
+
+        const result = productDatabase.getAdminProducts({ search, category, status, stockStatus, sort, limit, offset });
+        return new Response(JSON.stringify({ success: true, ...result }), { status: 200, headers });
+      }
+
+      if (request.method === "POST") {
+        const body = await request.json().catch(() => ({}));
+        try {
+          const created = productDatabase.addProduct(body);
+          return new Response(JSON.stringify({ success: true, product: created }), { status: 201, headers });
+        } catch (err: any) {
+          return new Response(JSON.stringify({ success: false, error: err?.message || "Failed to create product." }), { status: 400, headers });
+        }
+      }
+    }
+
+    // --- ADMIN CATEGORIES API ---
+    if (path.startsWith("/api/admin/categories/")) {
+      const id = decodeURIComponent(path.replace("/api/admin/categories/", ""));
+      if (request.method === "PATCH" || request.method === "PUT") {
+        const body = await request.json().catch(() => ({}));
+        try {
+          const updated = productDatabase.updateCategory(id, body);
+          return new Response(JSON.stringify({ success: true, category: updated }), { status: 200, headers });
+        } catch (err: any) {
+          return new Response(JSON.stringify({ success: false, error: err.message }), { status: 400, headers });
+        }
+      }
+      if (request.method === "DELETE") {
+        const deleted = productDatabase.deleteCategory(id);
+        return new Response(JSON.stringify({ success: deleted }), { status: deleted ? 200 : 404, headers });
+      }
+    }
+
+    if (path === "/api/admin/categories") {
+      if (request.method === "GET") {
+        const categories = productDatabase.getCategories();
+        return new Response(JSON.stringify({ success: true, categories }), { status: 200, headers });
+      }
+      if (request.method === "POST") {
+        const body = await request.json().catch(() => ({}));
+        try {
+          const created = productDatabase.addCategory(body);
+          return new Response(JSON.stringify({ success: true, category: created }), { status: 201, headers });
+        } catch (err: any) {
+          return new Response(JSON.stringify({ success: false, error: err.message }), { status: 400, headers });
+        }
+      }
+    }
+
+    // --- ADMIN INVENTORY API ---
+    if (path.startsWith("/api/admin/inventory/") && path.endsWith("/adjust")) {
+      const parts = path.replace("/api/admin/inventory/", "").split("/");
+      const productId = decodeURIComponent(parts[0]);
+      const body = await request.json().catch(() => ({}));
+      const { deltaQuantity, reason } = body;
+      if (typeof deltaQuantity !== "number") {
+        return new Response(JSON.stringify({ success: false, error: "Numeric deltaQuantity is required." }), { status: 400, headers });
+      }
+      try {
+        const res = productDatabase.adjustStock(productId, deltaQuantity, reason || "Admin manual adjustment");
+        const movements = productDatabase.getInventoryMovements(productId, 1);
+        return new Response(JSON.stringify({ success: true, ...res, movement: movements[0] }), { status: 200, headers });
+      } catch (err: any) {
+        return new Response(JSON.stringify({ success: false, error: err.message }), { status: 400, headers });
+      }
+    }
+
+    if (path === "/api/admin/inventory") {
+      const movements = productDatabase.getInventoryMovements(undefined, 100);
+      const adminData = productDatabase.getAdminProducts();
+      return new Response(
+        JSON.stringify({
+          success: true,
+          stats: adminData.stats,
+          lowStockItems: adminData.products.filter(
+            (p) => (p.stockQuantity ?? 0) <= (p.lowStockThreshold || 2)
+          ),
+          movements,
+        }),
+        { status: 200, headers }
+      );
+    }
+
+    // --- ADMIN IMAGE UPLOAD API ---
+    if (path === "/api/admin/upload-image" && request.method === "POST") {
+      try {
+        const body = await request.json().catch(() => ({}));
+        const { base64Data } = body || {};
+
+        if (!base64Data || typeof base64Data !== "string") {
+          return new Response(
+            JSON.stringify({ success: false, error: "base64Data string is required." }),
+            { status: 400, headers }
+          );
+        }
+
+        // Validate format
+        const match = base64Data.match(/^data:image\/(png|jpe?g|webp);base64,(.+)$/i);
+        if (!match) {
+          return new Response(
+            JSON.stringify({
+              success: false,
+              error: "Invalid image format. Supported formats: JPG, PNG, WEBP.",
+            }),
+            { status: 400, headers }
+          );
+        }
+
+        const ext = match[1].toLowerCase() === "jpeg" ? "jpg" : match[1].toLowerCase();
+        const buffer = Buffer.from(match[2], "base64");
+
+        if (buffer.length > 10 * 1024 * 1024) {
+          return new Response(
+            JSON.stringify({ success: false, error: "Image file exceeds 10MB limit." }),
+            { status: 400, headers }
+          );
+        }
+
+        // Generate safe unique filename
+        const safeName = `${Date.now()}_${Math.floor(Math.random() * 10000)}.${ext}`;
+        const uploadDir = pathModule.resolve(process.cwd(), "public/images/products");
+        if (!fs.existsSync(uploadDir)) {
+          fs.mkdirSync(uploadDir, { recursive: true });
+        }
+        fs.writeFileSync(pathModule.join(uploadDir, safeName), buffer);
+
+        const publicUrl = `/images/products/${safeName}`;
+        return new Response(
+          JSON.stringify({ success: true, url: publicUrl, filename: safeName }),
+          { status: 201, headers }
+        );
+      } catch (uploadErr: any) {
+        return new Response(
+          JSON.stringify({
+            success: false,
+            error: uploadErr.message || "Failed to upload image.",
+          }),
+          { status: 500, headers }
+        );
+      }
+    }
+
+    // --- ADMIN AUDIT LOGS API ---
+    if (path === "/api/admin/audit-logs" && request.method === "GET") {
+      const limitStr = url.searchParams.get("limit");
+      const logs = productDatabase.getAuditLogs(limitStr ? parseInt(limitStr, 10) : 100);
+      return new Response(JSON.stringify({ success: true, logs }), { status: 200, headers });
+    }
+
+    // --- PUBLIC PRODUCTS API ---
     if (path === "/api/products" || path.startsWith("/api/products/")) {
       // GET /api/products/slug/:slug
       if (path.startsWith("/api/products/slug/")) {
         const slug = decodeURIComponent(path.replace("/api/products/slug/", ""));
-        const product = backendDB.getProductBySlug(slug);
-        if (!product) {
+        const product = productDatabase.getProductBySlug(slug);
+        if (
+          !product ||
+          product.published === false ||
+          product.active === false ||
+          product.deletedAt ||
+          product.archivedAt ||
+          product.status === "archived" ||
+          product.status === "draft"
+        ) {
           return new Response(JSON.stringify({ error: `Product with slug "${slug}" not found` }), {
             status: 404,
             headers,
@@ -331,101 +649,71 @@ async function handleApiRequests(request: Request): Promise<Response | null> {
       // GET /api/products/:id
       if (path !== "/api/products" && path !== "/api/products/") {
         const id = decodeURIComponent(path.replace("/api/products/", ""));
-        if (request.method === "GET") {
-          const product = backendDB.getProductById(id);
-          if (!product) {
-            return new Response(JSON.stringify({ error: `Product with ID "${id}" not found` }), {
-              status: 404,
-              headers,
-            });
-          }
-          return new Response(JSON.stringify(product), { headers });
+        const product = productDatabase.getPublicProductById(id);
+        if (
+          !product ||
+          product.published === false ||
+          product.active === false ||
+          product.deletedAt ||
+          product.archivedAt ||
+          product.status === "archived" ||
+          product.status === "draft"
+        ) {
+          return new Response(JSON.stringify({ error: `Product with ID "${id}" not found` }), {
+            status: 404,
+            headers,
+          });
         }
-
-        if (request.method === "PUT" || request.method === "PATCH") {
-          const body = await request.json();
-          const updated = backendDB.updateProduct(id, body);
-          if (!updated) {
-            return new Response(JSON.stringify({ error: `Product with ID "${id}" not found` }), {
-              status: 404,
-              headers,
-            });
-          }
-          return new Response(JSON.stringify(updated), { headers });
-        }
-
-        if (request.method === "DELETE") {
-          const deleted = backendDB.deleteProduct(id);
-          return new Response(JSON.stringify({ success: deleted }), { headers });
-        }
+        return new Response(JSON.stringify(product), { headers });
       }
 
-      // Collection endpoints: GET /api/products & POST /api/products
+      // GET /api/products (Public filtered collection)
       if (request.method === "GET") {
-        const cat = url.searchParams.get("category") || undefined;
-        const q = url.searchParams.get("q") || undefined;
-        let products = backendDB.getProducts({ category: cat, search: q });
+        const category = url.searchParams.get("category") || undefined;
+        const subcategory = url.searchParams.get("subcategory") || undefined;
+        const fabric = url.searchParams.get("fabric") || undefined;
+        const color = url.searchParams.get("color") || undefined;
+        const tier = url.searchParams.get("tier") || undefined;
+        const search = url.searchParams.get("search") || url.searchParams.get("q") || undefined;
+        const sort = url.searchParams.get("sort") || "featured";
+        const limitStr = url.searchParams.get("limit");
+        const offsetStr = url.searchParams.get("offset");
+        const limit = limitStr ? parseInt(limitStr, 10) : undefined;
+        const offset = offsetStr ? parseInt(offsetStr, 10) : undefined;
 
-        // Optional query filters
-        const fabric = url.searchParams.get("fabric");
-        if (fabric) {
-          products = products.filter(
-            (p) => p.fabric && p.fabric.toLowerCase() === fabric.toLowerCase(),
-          );
-        }
+        const result = productDatabase.getPublicProducts({
+          category,
+          subcategory,
+          fabric,
+          color,
+          tier,
+          search,
+          sort,
+          limit,
+          offset,
+        });
 
-        const color = url.searchParams.get("color");
-        if (color) {
-          products = products.filter(
-            (p) => p.color && p.color.toLowerCase() === color.toLowerCase(),
-          );
-        }
-
-        const tier = url.searchParams.get("tier");
-        if (tier) {
-          products = products.filter(
-            (p) => p.priceTier && p.priceTier.toLowerCase() === tier.toLowerCase(),
-          );
-        }
-
-        const sort = url.searchParams.get("sort");
-        if (sort === "price-low") {
-          products.sort((a, b) => a.priceUsd - b.priceUsd);
-        } else if (sort === "price-high") {
-          products.sort((a, b) => b.priceUsd - a.priceUsd);
-        } else if (sort === "newest") {
-          products.sort(
-            (a, b) =>
-              new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime(),
-          );
-        }
-
-        return new Response(JSON.stringify(products), { headers });
-      }
-
-      if (request.method === "POST") {
-        const body = await request.json();
-        const created = backendDB.addProduct(body);
-        return new Response(JSON.stringify(created), { status: 201, headers });
+        return new Response(JSON.stringify(result.products), { headers });
       }
     }
 
-    // --- CATEGORIES API ---
+    // --- PUBLIC CATEGORIES API ---
     if (path === "/api/categories" || path.startsWith("/api/categories/")) {
       if (request.method === "GET") {
         if (path !== "/api/categories" && path !== "/api/categories/") {
           const slug = decodeURIComponent(path.replace("/api/categories/", ""));
-          const cat = backendDB.getCategoryBySlug(slug);
+          const cat = productDatabase.getCategoryBySlug(slug);
           if (!cat) {
             return new Response(JSON.stringify({ error: `Category "${slug}" not found` }), {
               status: 404,
               headers,
             });
           }
-          return new Response(JSON.stringify(cat), { headers });
+          const products = productDatabase.getPublicProducts({ category: cat.name }).products;
+          return new Response(JSON.stringify({ ...cat, products }), { headers });
         }
 
-        const categories = backendDB.getCategories();
+        const categories = productDatabase.getCategories().filter((c) => c.active !== false);
         return new Response(JSON.stringify(categories), { headers });
       }
     }
@@ -574,56 +862,6 @@ async function handleApiRequests(request: Request): Promise<Response | null> {
         const body = await request.json();
         const created = backendDB.createOrder(body);
         return new Response(JSON.stringify(created), { status: 201, headers });
-      }
-    }
-
-    if (path.startsWith("/api/ai-try-on")) {
-      if (request.method === "POST") {
-        const body = await request.json();
-        if (!body.userImage) {
-          return new Response(
-            JSON.stringify({ success: false, error: "Please provide a valid user photograph." }),
-            { status: 400, headers },
-          );
-        }
-        if (!body.product || !body.product.productId) {
-          return new Response(
-            JSON.stringify({
-              success: false,
-              error: "Missing product details for virtual try-on.",
-            }),
-            { status: 400, headers },
-          );
-        }
-
-        const result = await aiTryOnService.runTryOn(body);
-        return new Response(JSON.stringify(result), { status: 200, headers });
-      }
-
-      if (request.method === "GET") {
-        const id = url.searchParams.get("id") || path.split("/").pop();
-        if (!id || id === "ai-try-on") {
-          return new Response(JSON.stringify({ error: "Missing try-on request ID" }), {
-            status: 400,
-            headers,
-          });
-        }
-        const status = await aiTryOnService.getStatus(id);
-        if (!status) {
-          return new Response(JSON.stringify({ error: "Try-on session not found or expired" }), {
-            status: 404,
-            headers,
-          });
-        }
-        return new Response(JSON.stringify(status), { headers });
-      }
-
-      if (request.method === "DELETE") {
-        const id = url.searchParams.get("id") || path.split("/").pop();
-        if (id && id !== "ai-try-on") {
-          aiTryOnService.delete(id);
-        }
-        return new Response(JSON.stringify({ success: true }), { headers });
       }
     }
 

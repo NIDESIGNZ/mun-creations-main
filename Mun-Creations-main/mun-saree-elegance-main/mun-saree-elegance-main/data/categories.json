@@ -1,0 +1,79 @@
+[
+  {
+    "id": "cat_sarees",
+    "name": "Sarees",
+    "slug": "sarees",
+    "description": "Handcrafted heritage sarees woven by master artisans across India.",
+    "image": "/images/cat-silk.jpg",
+    "orderIndex": 1,
+    "active": true,
+    "subcategories": [
+      "Banarasi",
+      "Kanjivaram",
+      "Tussar",
+      "Paithani",
+      "Bandhani",
+      "Jamdani",
+      "Chanderi",
+      "Organza",
+      "Tissue",
+      "Chikankari",
+      "Khaddi",
+      "Crepe",
+      "Handloom"
+    ],
+    "seoTitle": "Luxury Handloom Sarees Collection — Mun Creations",
+    "seoDescription": "Explore luxury handwoven Banarasi, Kanjivaram, and Tussar silk sarees."
+  },
+  {
+    "id": "cat_kurti",
+    "name": "Kurti",
+    "slug": "kurti",
+    "description": "Artisanal bespoke kurtis and tunics crafted from pure natural fabrics.",
+    "image": "/images/cat-cotton.jpg",
+    "orderIndex": 2,
+    "active": true,
+    "subcategories": [
+      "Chanderi Kurti",
+      "Silk Kurti",
+      "Anarkali",
+      "Straight Cut"
+    ],
+    "seoTitle": "Artisanal Kurtis & Tunics — Mun Creations",
+    "seoDescription": "Discover handcrafted luxury kurtis woven with pure natural silk and cotton."
+  },
+  {
+    "id": "cat_blouses",
+    "name": "Blouses",
+    "slug": "blouses",
+    "description": "Designer tailored blouses and corset styles with authentic handwork.",
+    "image": "/images/acc-blouse.jpg",
+    "orderIndex": 3,
+    "active": true,
+    "subcategories": [
+      "Raw Silk",
+      "Brocade Blouse",
+      "Zardosi Embroidered",
+      "Velvet"
+    ],
+    "seoTitle": "Designer Saree Blouses — Mun Creations",
+    "seoDescription": "Bespoke handcrafted saree blouses with heritage embroidery and brocade."
+  },
+  {
+    "id": "cat_accessories",
+    "name": "Accessories",
+    "slug": "accessories",
+    "description": "Royal potlis, handcrafted dupattas, and heirloom couture accents.",
+    "image": "/images/acc-potli.jpg",
+    "orderIndex": 4,
+    "active": true,
+    "subcategories": [
+      "Potlis",
+      "Dupattas",
+      "Jewelry",
+      "Stoles"
+    ],
+    "seoTitle": "Couture Accents & Accessories — Mun Creations",
+    "seoDescription": "Heirloom handcrafted potli bags, pure silk dupattas and regal jewelry."
+  }
+]

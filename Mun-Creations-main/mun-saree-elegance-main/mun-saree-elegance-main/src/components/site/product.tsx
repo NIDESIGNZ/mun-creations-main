@@ -5,7 +5,6 @@ import { useI18n } from "@/lib/i18n";
 import { useCart } from "@/lib/cart";
 import type { Product } from "@/lib/products";
 import { ProductDetailModal } from "@/components/site/product-detail-modal";
-import { AITryOnModal } from "@/components/site/ai-try-on/AITryOnModal";
 
 export function SectionHeading({
   eyebrow,
@@ -44,7 +43,6 @@ export function ProductCard({ product }: { product: Product }) {
   const { t, formatPrice } = useI18n();
   const { add } = useCart();
   const [showModal, setShowModal] = useState(false);
-  const [showTryOn, setShowTryOn] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
 
   return (
@@ -65,20 +63,6 @@ export function ProductCard({ product }: { product: Product }) {
               {product.badge === "new" ? t("product.new") : t("product.bestseller")}
             </span>
           )}
-
-          {/* Quick AI Try-On Action Badge */}
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowTryOn(true);
-            }}
-            aria-label={`AI Virtual Try-On for ${product.name}`}
-            className="absolute top-2.5 right-11 sm:top-3 sm:right-13 h-8 sm:h-9 px-2 sm:px-2.5 flex items-center gap-1 bg-[var(--wine-deep)]/90 backdrop-blur-xs rounded-full text-[var(--gold)] text-[9px] sm:text-[10px] tracking-wider uppercase font-bold border border-[var(--gold)]/40 hover:border-[var(--gold)] hover:shadow-[0_0_12px_rgba(212,175,55,0.4)] transition-all z-10 cursor-pointer"
-          >
-            <Sparkles className="h-3 w-3 text-[var(--gold)]" />
-            <span>Try On</span>
-          </button>
 
           <button
             type="button"
@@ -157,10 +141,6 @@ export function ProductCard({ product }: { product: Product }) {
       </div>
 
       {showModal && <ProductDetailModal product={product} onClose={() => setShowModal(false)} />}
-
-      {showTryOn && (
-        <AITryOnModal product={product} isOpen={showTryOn} onClose={() => setShowTryOn(false)} />
-      )}
     </>
   );
 }

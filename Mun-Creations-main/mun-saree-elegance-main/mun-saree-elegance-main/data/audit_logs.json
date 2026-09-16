@@ -1,0 +1,230 @@
+[
+  {
+    "id": "aud_1789536446454_57",
+    "action": "PRODUCT_DELETED",
+    "entity": "product",
+    "entityId": "p1",
+    "details": "Permanently deleted product \"Maroon Katan Banarasi Silk Saree With Kadwa Jaal\" (SKU: EBS029A1)",
+    "user": "admin",
+    "timestamp": "2026-09-16T05:27:26.454Z"
+  },
+  {
+    "id": "aud_1789536437365_322",
+    "action": "PRODUCT_DELETED",
+    "entity": "product",
+    "entityId": "p2",
+    "details": "Permanently deleted product \"Rust Orange Bengal Matka Muslin Saree\" (SKU: EBS042B3)",
+    "user": "admin",
+    "timestamp": "2026-09-16T05:27:17.365Z"
+  },
+  {
+    "id": "aud_1789536431378_50",
+    "action": "PRODUCT_DELETED",
+    "entity": "product",
+    "entityId": "p3",
+    "details": "Permanently deleted product \"Emerald Khaddi Georgette Banarasi Saree\" (SKU: EBS088C4)",
+    "user": "admin",
+    "timestamp": "2026-09-16T05:27:11.378Z"
+  },
+  {
+    "id": "aud_1789536423723_287",
+    "action": "PRODUCT_DELETED",
+    "entity": "product",
+    "entityId": "b1",
+    "details": "Permanently deleted product \"Rose Gold Zari Embroidered Silk Blouse\" (SKU: EBB010R2)",
+    "user": "admin",
+    "timestamp": "2026-09-16T05:27:03.723Z"
+  },
+  {
+    "id": "aud_1789536417297_159",
+    "action": "PRODUCT_DELETED",
+    "entity": "product",
+    "entityId": "a1",
+    "details": "Permanently deleted product \"Pure Katan Silk Banarasi Zari Dupatta\" (SKU: EBA001D1)",
+    "user": "admin",
+    "timestamp": "2026-09-16T05:26:57.297Z"
+  },
+  {
+    "id": "aud_1789536410133_271",
+    "action": "PRODUCT_DELETED",
+    "entity": "product",
+    "entityId": "a2",
+    "details": "Permanently deleted product \"Handcrafted Zardosi Raw Silk Potli Bag\" (SKU: EBA002P2)",
+    "user": "admin",
+    "timestamp": "2026-09-16T05:26:50.133Z"
+  },
+  {
+    "id": "aud_1789536381711_23",
+    "action": "PRODUCT_DELETED",
+    "entity": "product",
+    "entityId": "k1",
+    "details": "Permanently deleted product \"Teal Designer Anarkali Silk Kurti Set\" (SKU: EBK001A9)",
+    "user": "admin",
+    "timestamp": "2026-09-16T05:26:21.711Z"
+  },
+  {
+    "id": "aud_1789536338427_598",
+    "action": "BULK_UPDATE",
+    "entity": "product",
+    "details": "Bulk updated 7 products",
+    "user": "admin",
+    "timestamp": "2026-09-16T05:25:38.427Z"
+  },
+  {
+    "id": "aud_1789536338426_201",
+    "action": "PRODUCT_UPDATED",
+    "entity": "product",
+    "entityId": "p1",
+    "details": "Updated product \"Maroon Katan Banarasi Silk Saree With Kadwa Jaal\" (SKU: EBS029A1)",
+    "user": "admin",
+    "timestamp": "2026-09-16T05:25:38.426Z"
+  },
+  {
+    "id": "aud_1789536338426_627",
+    "action": "PRODUCT_UPDATED",
+    "entity": "product",
+    "entityId": "p2",
+    "details": "Updated product \"Rust Orange Bengal Matka Muslin Saree\" (SKU: EBS042B3)",
+    "user": "admin",
+    "timestamp": "2026-09-16T05:25:38.426Z"
+  },
+  {
+    "id": "aud_1789536338425_309",
+    "action": "PRODUCT_UPDATED",
+    "entity": "product",
+    "entityId": "p3",
+    "details": "Updated product \"Emerald Khaddi Georgette Banarasi Saree\" (SKU: EBS088C4)",
+    "user": "admin",
+    "timestamp": "2026-09-16T05:25:38.425Z"
+  },
+  {
+    "id": "aud_1789536338423_915",
+    "action": "PRODUCT_UPDATED",
+    "entity": "product",
+    "entityId": "k1",
+    "details": "Updated product \"Teal Designer Anarkali Silk Kurti Set\" (SKU: EBK001A9)",
+    "user": "admin",
+    "timestamp": "2026-09-16T05:25:38.423Z"
+  },
+  {
+    "id": "aud_1789536338422_81",
+    "action": "PRODUCT_UPDATED",
+    "entity": "product",
+    "entityId": "b1",
+    "details": "Updated product \"Rose Gold Zari Embroidered Silk Blouse\" (SKU: EBB010R2)",
+    "user": "admin",
+    "timestamp": "2026-09-16T05:25:38.422Z"
+  },
+  {
+    "id": "aud_1789536338420_650",
+    "action": "PRODUCT_UPDATED",
+    "entity": "product",
+    "entityId": "a1",
+    "details": "Updated product \"Pure Katan Silk Banarasi Zari Dupatta\" (SKU: EBA001D1)",
+    "user": "admin",
+    "timestamp": "2026-09-16T05:25:38.420Z"
+  },
+  {
+    "id": "aud_1789536338419_998",
+    "action": "PRODUCT_UPDATED",
+    "entity": "product",
+    "entityId": "a2",
+    "details": "Updated product \"Handcrafted Zardosi Raw Silk Potli Bag\" (SKU: EBA002P2)",
+    "user": "admin",
+    "timestamp": "2026-09-16T05:25:38.419Z"
+  },
+  {
+    "id": "aud_1789536313483_833",
+    "action": "PRODUCT_ARCHIVED",
+    "entity": "product",
+    "entityId": "p_1789534734665_253",
+    "details": "Archived/Soft-deleted product \"Automated Acceptance Royal Gold Katan Saree\" (SKU: TEST-MUN-1789534734650)",
+    "user": "admin",
+    "timestamp": "2026-09-16T05:25:13.483Z"
+  },
+  {
+    "id": "aud_1789536155880_79",
+    "action": "ADMIN_LOGIN",
+    "entity": "auth",
+    "details": "Administrator logged into CMS",
+    "user": "admin",
+    "timestamp": "2026-09-16T05:22:35.880Z"
+  },
+  {
+    "id": "aud_1789535500025_457",
+    "action": "ADMIN_LOGIN",
+    "entity": "auth",
+    "details": "Administrator logged into CMS",
+    "user": "admin",
+    "timestamp": "2026-09-16T05:11:40.025Z"
+  },
+  {
+    "id": "aud_1789535480186_580",
+    "action": "ADMIN_LOGIN",
+    "entity": "auth",
+    "details": "Administrator logged into CMS",
+    "user": "admin",
+    "timestamp": "2026-09-16T05:11:20.186Z"
+  },
+  {
+    "id": "aud_1789534773172_335",
+    "action": "PRODUCT_DELETED",
+    "entity": "product",
+    "entityId": "p_1789534773114_373",
+    "details": "Permanently deleted product \"Automated Acceptance Royal Gold Katan Saree\" (SKU: TEST-MUN-1789534773113)",
+    "user": "admin",
+    "timestamp": "2026-09-16T04:59:33.172Z"
+  },
+  {
+    "id": "aud_1789534773143_312",
+    "action": "STOCK_ADJUSTED",
+    "entity": "inventory",
+    "entityId": "p_1789534773114_373",
+    "details": "Stock adjusted for \"Automated Acceptance Royal Gold Katan Saree\": 6 -> 4 (Automated test deduction)",
+    "user": "admin",
+    "timestamp": "2026-09-16T04:59:33.143Z"
+  },
+  {
+    "id": "aud_1789534773116_83",
+    "action": "PRODUCT_CREATED",
+    "entity": "product",
+    "entityId": "p_1789534773114_373",
+    "details": "Created product \"Automated Acceptance Royal Gold Katan Saree\" (SKU: TEST-MUN-1789534773113)",
+    "user": "admin",
+    "timestamp": "2026-09-16T04:59:33.116Z"
+  },
+  {
+    "id": "aud_1789534773104_216",
+    "action": "ADMIN_LOGIN",
+    "entity": "auth",
+    "details": "Administrator logged into CMS",
+    "user": "admin",
+    "timestamp": "2026-09-16T04:59:33.104Z"
+  },
+  {
+    "id": "aud_1789534734709_391",
+    "action": "STOCK_ADJUSTED",
+    "entity": "inventory",
+    "entityId": "p_1789534734665_253",
+    "details": "Stock adjusted for \"Automated Acceptance Royal Gold Katan Saree\": 6 -> 4 (Automated test deduction)",
+    "user": "admin",
+    "timestamp": "2026-09-16T04:58:54.709Z"
+  },
+  {
+    "id": "aud_1789534734668_334",
+    "action": "PRODUCT_CREATED",
+    "entity": "product",
+    "entityId": "p_1789534734665_253",
+    "details": "Created product \"Automated Acceptance Royal Gold Katan Saree\" (SKU: TEST-MUN-1789534734650)",
+    "user": "admin",
+    "timestamp": "2026-09-16T04:58:54.668Z"
+  },
+  {
+    "id": "aud_1789534734642_661",
+    "action": "ADMIN_LOGIN",
+    "entity": "auth",
+    "details": "Administrator logged into CMS",
+    "user": "admin",
+    "timestamp": "2026-09-16T04:58:54.642Z"
+  }
+]

@@ -3,11 +3,19 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import tsConfigPaths from "vite-tsconfig-paths";
 import path from "path";
+import fs from "fs";
 
 function apiServerMiddlewarePlugin(): Plugin {
   return {
     name: "api-server-middleware",
     configureServer(server) {
+      // Also watch root .env files so updating root .env automatically triggers reload
+      const rootDir = path.resolve(__dirname, "../../..");
+      const rootEnvPath = path.join(rootDir, ".env");
+      const rootEnvLocalPath = path.join(rootDir, ".env.local");
+      if (fs.existsSync(rootEnvPath)) server.watcher.add(rootEnvPath);
+      if (fs.existsSync(rootEnvLocalPath)) server.watcher.add(rootEnvLocalPath);
+
       server.middlewares.use(async (req, res, next) => {
         if (req.url && (req.url === "/api" || req.url.startsWith("/api/"))) {
           try {
@@ -26,8 +34,19 @@ function apiServerMiddlewarePlugin(): Plugin {
 }
 
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), "");
-  Object.assign(process.env, env);
+  const rootDir = path.resolve(__dirname, "../../..");
+  const innerEnv = loadEnv(mode, __dirname, "");
+  const rootEnv = fs.existsSync(rootDir) ? loadEnv(mode, rootDir, "") : {};
+  const cwdEnv =
+    process.cwd() !== __dirname && process.cwd() !== rootDir ? loadEnv(mode, process.cwd(), "") : {};
+
+  // Merge envs: inner project defaults first, then cwd, and root directory overrides so root .env edits take immediate effect
+  const mergedEnv = {
+    ...innerEnv,
+    ...cwdEnv,
+    ...rootEnv,
+  };
+  Object.assign(process.env, mergedEnv);
 
   return {
     plugins: [tailwindcss(), tsConfigPaths(), react(), apiServerMiddlewarePlugin()],

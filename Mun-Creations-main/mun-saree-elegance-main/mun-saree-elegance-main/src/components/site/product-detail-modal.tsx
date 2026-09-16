@@ -19,7 +19,6 @@ import {
 import type { Product } from "@/lib/products";
 import { useI18n } from "@/lib/i18n";
 import { useCart } from "@/lib/cart";
-import { AITryOnModal } from "./ai-try-on/AITryOnModal";
 
 export function ProductDetailModal({
   product,
@@ -37,7 +36,6 @@ export function ProductDetailModal({
     "specs",
   );
   const [wishlistAdded, setWishlistAdded] = useState(false);
-  const [showTryOnModal, setShowTryOnModal] = useState(false);
 
   // Gallery items array
   const gallery =
@@ -175,15 +173,6 @@ export function ProductDetailModal({
 
               {/* Action Buttons */}
               <div className="space-y-2.5 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowTryOnModal(true)}
-                  className="w-full bg-gradient-to-r from-[#1c0812] via-[#2f0c1e] to-[#1c0812] text-[var(--gold)] border border-[var(--gold)]/50 py-3.5 px-4 text-xs font-bold uppercase tracking-[0.22em] rounded-sm hover:border-[var(--gold)] hover:shadow-[0_0_20px_rgba(212,175,55,0.3)] transition-all flex items-center justify-center gap-2 group cursor-pointer shadow-md"
-                >
-                  <Sparkles className="h-4 w-4 text-[var(--gold)] group-hover:rotate-12 transition-transform" />
-                  <span>✦ AI Virtual Try-On — See On You</span>
-                </button>
-
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <button
                     onClick={() => add(product)}
@@ -403,15 +392,6 @@ export function ProductDetailModal({
           </div>
         </div>
       </div>
-
-      {/* AI Try-On Modal */}
-      {showTryOnModal && (
-        <AITryOnModal
-          product={product}
-          isOpen={showTryOnModal}
-          onClose={() => setShowTryOnModal(false)}
-        />
-      )}
     </div>
   );
 }

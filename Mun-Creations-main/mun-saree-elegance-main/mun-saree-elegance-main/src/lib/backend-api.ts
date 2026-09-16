@@ -196,13 +196,15 @@ const PINCODE_DATABASE: Record<string, PincodeServiceability> = {
   },
 };
 
+import { productDatabase } from "./server/productDatabase";
+
 class BackendDatabase {
-  private products: Product[] = [...PRODUCTS];
   private orders: Order[] = [...initialOrders];
   private coupons: Coupon[] = [...initialCoupons];
   private sources: WeaverSource[] = [...initialSources];
 
   getHealthStatus() {
+    const adminQuery = productDatabase.getAdminProducts();
     return {
       status: "ok",
       uptime: typeof process !== "undefined" && process.uptime ? process.uptime() : 3600,
@@ -210,7 +212,7 @@ class BackendDatabase {
       databaseState: "Connected",
       version: "v3.4.0",
       dbConnected: true,
-      productCount: this.products.length,
+      productCount: adminQuery.total,
       orderCount: this.orders.length,
       timestamp: new Date().toISOString(),
     };
@@ -218,51 +220,35 @@ class BackendDatabase {
 
   // Product Methods
   getProducts(filter?: { category?: string; search?: string }): Product[] {
-    let list = this.products;
-    if (filter?.category) {
-      list = list.filter((p) => p.category.toLowerCase() === filter.category?.toLowerCase());
-    }
-    if (filter?.search) {
-      const q = filter.search.toLowerCase();
-      list = list.filter(
-        (p) => p.name.toLowerCase().includes(q) || p.fabric.toLowerCase().includes(q),
-      );
-    }
-    return list;
+    const res = productDatabase.getPublicProducts({
+      category: filter?.category,
+      search: filter?.search,
+    });
+    return res.products;
   }
 
   getProductById(id: string): Product | undefined {
-    return this.products.find((p) => p.id === id);
+    return productDatabase.getProductById(id);
   }
 
   getProductBySlug(slug: string): Product | undefined {
-    return this.products.find((p) => p.slug === slug);
+    return productDatabase.getProductBySlug(slug);
   }
 
   addProduct(newProduct: Omit<Product, "id">): Product {
-    const created: Product = {
-      ...newProduct,
-      id: `p_${Date.now()}`,
-      stockQuantity: newProduct.stockQuantity ?? 1,
-      availability: newProduct.availability ?? "Available",
-      inStock: newProduct.inStock ?? true,
-      vendor: newProduct.vendor ?? "Ethnic Boutique",
-    };
-    this.products.unshift(created);
-    return created;
+    return productDatabase.addProduct(newProduct);
   }
 
   updateProduct(id: string, updates: Partial<Product>): Product | undefined {
-    const idx = this.products.findIndex((p) => p.id === id);
-    if (idx === -1) return undefined;
-    this.products[idx] = { ...this.products[idx], ...updates };
-    return this.products[idx];
+    try {
+      return productDatabase.updateProduct(id, updates);
+    } catch {
+      return undefined;
+    }
   }
 
   deleteProduct(id: string): boolean {
-    const initialLen = this.products.length;
-    this.products = this.products.filter((p) => p.id !== id);
-    return this.products.length < initialLen;
+    return productDatabase.deleteProduct(id, false);
   }
 
   // Authoritative Inventory Adjustment Engine
@@ -271,66 +257,41 @@ class BackendDatabase {
     deltaQuantity: number,
     reason: string = "manual adjustment",
   ): { product?: Product; success: boolean; newStock: number; message: string } {
-    const prod = this.getProductById(productId);
-    if (!prod) {
-      return { success: false, newStock: 0, message: `Product ${productId} not found` };
+    try {
+      const res = productDatabase.adjustStock(productId, deltaQuantity, reason);
+      return {
+        product: res.product,
+        success: true,
+        newStock: res.newStock,
+        message: `Stock updated for ${res.product.name}: ${res.previousStock} -> ${res.newStock} (${reason})`,
+      };
+    } catch (err: any) {
+      return { success: false, newStock: 0, message: err.message || `Product ${productId} not found` };
     }
-
-    const currentStock = prod.stockQuantity ?? prod.stock ?? 0;
-    const newStock = Math.max(0, currentStock + deltaQuantity);
-    const inStock = newStock > 0;
-    const availability = newStock > 0 ? "Available" : "Out of Stock";
-
-    const updated = this.updateProduct(productId, {
-      stockQuantity: newStock,
-      stock: newStock,
-      inStock,
-      active: inStock,
-      availability,
-    });
-
-    return {
-      product: updated,
-      success: true,
-      newStock,
-      message: `Stock updated for ${prod.name}: ${currentStock} -> ${newStock} (${reason})`,
-    };
   }
 
   // Categories Hierarchy Engine
   getCategories(): Array<{ name: string; slug: string; count: number; subcategories: string[] }> {
-    const catMap = new Map<string, { count: number; subcategories: Set<string> }>();
-
-    this.products.forEach((p) => {
-      const cat = p.category || "Uncategorized";
-      if (!catMap.has(cat)) {
-        catMap.set(cat, { count: 0, subcategories: new Set() });
-      }
-      const entry = catMap.get(cat)!;
-      entry.count += 1;
-      if (p.subcategory) entry.subcategories.add(p.subcategory);
+    const cats = productDatabase.getCategories();
+    return cats.map((c) => {
+      const prods = productDatabase.getPublicProducts({ category: c.name }).products;
+      return {
+        name: c.name,
+        slug: c.slug,
+        count: prods.length,
+        subcategories: c.subcategories,
+      };
     });
-
-    return Array.from(catMap.entries()).map(([name, data]) => ({
-      name,
-      slug: name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-      count: data.count,
-      subcategories: Array.from(data.subcategories),
-    }));
   }
 
   getCategoryBySlug(slug: string): { name: string; products: Product[] } | null {
     const clean = slug.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-    const matched = this.products.filter(
-      (p) =>
-        p.category.toLowerCase().replace(/[^a-z0-9]+/g, "-") === clean ||
-        p.subcategory?.toLowerCase().replace(/[^a-z0-9]+/g, "-") === clean ||
-        p.group?.toLowerCase().replace(/[^a-z0-9]+/g, "-") === clean,
-    );
+    const cat = productDatabase.getCategoryBySlug(clean);
+    const matched = productDatabase.getPublicProducts({ category: cat ? cat.name : slug }).products;
 
-    if (matched.length === 0) return null;
+    if (matched.length === 0 && !cat) return null;
     return {
-      name: matched[0].category,
+      name: cat ? cat.name : slug,
       products: matched,
     };
   }
@@ -354,8 +315,16 @@ class BackendDatabase {
 
     const calculatedItems = items.map((it) => {
       const prod = this.getProductById(it.productId);
-      if (!prod) {
-        throw new Error(`Product with ID "${it.productId}" does not exist in catalog.`);
+      if (
+        !prod ||
+        (prod as any).deletedAt ||
+        (prod as any).archivedAt ||
+        (prod as any).published === false ||
+        (prod as any).active === false ||
+        (prod as any).status === "archived" ||
+        (prod as any).status === "draft"
+      ) {
+        throw new Error(`Product "${prod?.name || it.productId}" is no longer available in the catalog.`);
       }
       const stock = prod.stockQuantity ?? prod.stock ?? 1;
       if (stock < it.quantity) {

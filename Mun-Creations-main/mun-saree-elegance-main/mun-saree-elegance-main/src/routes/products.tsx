@@ -6,7 +6,7 @@ import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/footer";
 import { CartDrawer } from "@/components/site/cart-drawer";
 import { ProductCard } from "@/components/site/product";
-import { PRODUCTS } from "@/lib/products";
+import { useCatalogProducts } from "@/lib/catalog-client";
 import { CATEGORY_FILTERS, FABRIC_FILTERS, PRICE_TIERS } from "@/lib/catalog";
 import { SlidersHorizontal, X, Sparkles, Search } from "lucide-react";
 
@@ -51,8 +51,10 @@ function ProductsContent() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
+  const { data: products = [] } = useCatalogProducts();
+
   const filteredProducts = useMemo(() => {
-    return PRODUCTS.filter((p) => {
+    return products.filter((p) => {
       if (
         selectedCategory &&
         p.category.toLowerCase() !== selectedCategory.toLowerCase() &&

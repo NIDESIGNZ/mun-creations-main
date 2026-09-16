@@ -105,57 +105,74 @@ export function CartDrawer() {
 
               {/* Items List */}
               <ul className="divide-y divide-border">
-                {items.map(({ product, qty }) => (
-                  <li key={product.id} className="py-4 flex gap-3 sm:gap-4 first:pt-0">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="h-22 w-18 sm:h-24 sm:w-20 object-cover shrink-0 rounded-xs border border-border"
-                    />
-                    <div className="flex-1 min-w-0 flex flex-col justify-between">
-                      <div>
-                        <div className="font-serif text-sm sm:text-[15px] leading-snug font-bold text-foreground line-clamp-2">
-                          {product.name}
-                        </div>
-                        <div className="text-xs text-muted-foreground mt-0.5">{product.fabric}</div>
-                        <div className="text-sm font-bold text-[var(--wine-deep)] mt-1">
-                          {formatPrice(product.priceUsd)}
-                        </div>
-                      </div>
+                {items.map(({ product, qty }) => {
+                  const isUnavailable =
+                    product.active === false ||
+                    product.published === false ||
+                    product.availability === "Out of Stock" ||
+                    (product.stockQuantity !== undefined && product.stockQuantity <= 0);
 
-                      <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/40">
-                        <div className="flex items-center border border-border bg-white rounded-xs">
+                  return (
+                    <li key={product.id} className="py-4 flex gap-3 sm:gap-4 first:pt-0">
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className={`h-22 w-18 sm:h-24 sm:w-20 object-cover shrink-0 rounded-xs border ${
+                          isUnavailable ? "border-red-300 opacity-60 grayscale-50" : "border-border"
+                        }`}
+                      />
+                      <div className="flex-1 min-w-0 flex flex-col justify-between">
+                        <div>
+                          <div className="font-serif text-sm sm:text-[15px] leading-snug font-bold text-foreground line-clamp-2">
+                            {product.name}
+                          </div>
+                          <div className="text-xs text-muted-foreground mt-0.5">{product.fabric}</div>
+                          {isUnavailable ? (
+                            <div className="text-[11px] font-bold text-red-700 bg-red-50 border border-red-200 px-2 py-0.5 rounded-xs mt-1 inline-block">
+                              Unavailable in Catalog
+                            </div>
+                          ) : (
+                            <div className="text-sm font-bold text-[var(--wine-deep)] mt-1">
+                              {formatPrice(product.priceUsd)}
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="flex items-center justify-between mt-2 pt-2 border-t border-border/40">
+                          <div className="flex items-center border border-border bg-white rounded-xs">
+                            <button
+                              type="button"
+                              onClick={() => setQty(product.id, qty - 1)}
+                              className="h-7 w-7 grid place-items-center hover:bg-secondary text-foreground cursor-pointer"
+                              aria-label="Decrease"
+                            >
+                              <Minus className="h-3 w-3" />
+                            </button>
+                            <span className="w-8 text-center text-xs font-bold">{qty}</span>
+                            <button
+                              type="button"
+                              onClick={() => setQty(product.id, qty + 1)}
+                              disabled={isUnavailable}
+                              className="h-7 w-7 grid place-items-center hover:bg-secondary text-foreground cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                              aria-label="Increase"
+                            >
+                              <Plus className="h-3 w-3" />
+                            </button>
+                          </div>
                           <button
                             type="button"
-                            onClick={() => setQty(product.id, qty - 1)}
-                            className="h-7 w-7 grid place-items-center hover:bg-secondary text-foreground cursor-pointer"
-                            aria-label="Decrease"
+                            onClick={() => remove(product.id)}
+                            className="text-muted-foreground hover:text-[var(--wine)] p-1 text-xs flex items-center gap-1 font-medium cursor-pointer"
+                            aria-label="Remove"
                           >
-                            <Minus className="h-3 w-3" />
-                          </button>
-                          <span className="w-8 text-center text-xs font-bold">{qty}</span>
-                          <button
-                            type="button"
-                            onClick={() => setQty(product.id, qty + 1)}
-                            className="h-7 w-7 grid place-items-center hover:bg-secondary text-foreground cursor-pointer"
-                            aria-label="Increase"
-                          >
-                            <Plus className="h-3 w-3" />
+                            <Trash2 className="h-3.5 w-3.5" />
+                            <span>Remove</span>
                           </button>
                         </div>
-                        <button
-                          type="button"
-                          onClick={() => remove(product.id)}
-                          className="text-muted-foreground hover:text-[var(--wine)] p-1 text-xs flex items-center gap-1 font-medium cursor-pointer"
-                          aria-label="Remove"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                          <span>Remove</span>
-                        </button>
                       </div>
-                    </div>
-                  </li>
-                ))}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           )}
@@ -164,6 +181,18 @@ export function CartDrawer() {
         {/* ALWAYS PINNED STICKY FOOTER CHECKOUT BOX */}
         {items.length > 0 && (
           <div className="shrink-0 bg-[var(--ivory)] border-t border-border px-4 sm:px-6 py-4 sm:py-5 space-y-3 z-10 shadow-[0_-8px_20px_rgba(0,0,0,0.08)] safe-bottom">
+            {items.some(
+              (i) =>
+                i.product.active === false ||
+                i.product.published === false ||
+                i.product.availability === "Out of Stock" ||
+                (i.product.stockQuantity !== undefined && i.product.stockQuantity <= 0)
+            ) && (
+              <div className="p-2 rounded-xs bg-red-50 border border-red-200 text-[11px] text-red-700 font-medium text-center">
+                One or more items are unavailable. Please remove them before checkout.
+              </div>
+            )}
+
             <div className="flex items-center justify-between text-xs">
               <span className="uppercase tracking-wider text-muted-foreground font-semibold">
                 {t("cart.subtotal")} ({items.reduce((acc, item) => acc + item.qty, 0)} items)
@@ -182,14 +211,31 @@ export function CartDrawer() {
               >
                 <span>View Full Bag</span>
               </Link>
-              <Link
-                to="/checkout"
-                onClick={() => setOpen(false)}
-                className="w-full bg-[var(--gold)] text-[var(--wine-deep)] py-3 text-[11px] font-bold uppercase tracking-wider rounded-xs hover:bg-[var(--gold)]/90 text-center flex items-center justify-center gap-1.5 font-bold shadow-sm"
-              >
-                <Lock className="h-3.5 w-3.5" />
-                <span>Checkout</span>
-              </Link>
+              {items.some(
+                (i) =>
+                  i.product.active === false ||
+                  i.product.published === false ||
+                  i.product.availability === "Out of Stock" ||
+                  (i.product.stockQuantity !== undefined && i.product.stockQuantity <= 0)
+              ) ? (
+                <button
+                  type="button"
+                  disabled
+                  className="w-full bg-slate-300 text-slate-500 py-3 text-[11px] font-bold uppercase tracking-wider rounded-xs cursor-not-allowed text-center flex items-center justify-center gap-1.5"
+                >
+                  <Lock className="h-3.5 w-3.5" />
+                  <span>Unavailable</span>
+                </button>
+              ) : (
+                <Link
+                  to="/checkout"
+                  onClick={() => setOpen(false)}
+                  className="w-full bg-[var(--gold)] text-[var(--wine-deep)] py-3 text-[11px] font-bold uppercase tracking-wider rounded-xs hover:bg-[var(--gold)]/90 text-center flex items-center justify-center gap-1.5 font-bold shadow-sm"
+                >
+                  <Lock className="h-3.5 w-3.5" />
+                  <span>Checkout</span>
+                </Link>
+              )}
             </div>
 
             <div className="flex items-center justify-center gap-2 text-[10px] text-muted-foreground tracking-wider uppercase pt-0.5">

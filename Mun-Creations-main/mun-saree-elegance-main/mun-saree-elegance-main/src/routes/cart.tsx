@@ -205,9 +205,18 @@ function CartContent() {
                 >
                   {product.name}
                 </Link>
-                <div className="text-sm font-bold text-[var(--wine)]">
-                  {formatPrice(product.priceUsd)}
-                </div>
+                {product.active === false ||
+                product.published === false ||
+                product.availability === "Out of Stock" ||
+                (product.stockQuantity !== undefined && product.stockQuantity <= 0) ? (
+                  <div className="text-[11px] font-bold text-red-700 bg-red-50 border border-red-200 px-2 py-0.5 rounded mt-1 inline-block">
+                    Unavailable / Archived in Catalog
+                  </div>
+                ) : (
+                  <div className="text-sm font-bold text-[var(--wine)]">
+                    {formatPrice(product.priceUsd)}
+                  </div>
+                )}
               </div>
 
               {/* Quantity Stepper & Stock Limit */}
@@ -327,12 +336,51 @@ function CartContent() {
             </div>
           </div>
 
+          {items.some(
+            (i) =>
+              i.product.active === false ||
+              i.product.published === false ||
+              i.product.availability === "Out of Stock" ||
+              (i.product.stockQuantity !== undefined && i.product.stockQuantity <= 0)
+          ) && (
+            <p className="text-[11px] text-red-600 font-medium text-center">
+              Please remove unavailable or archived items from your bag to proceed.
+            </p>
+          )}
+
           <button
             type="button"
+            disabled={items.some(
+              (i) =>
+                i.product.active === false ||
+                i.product.published === false ||
+                i.product.availability === "Out of Stock" ||
+                (i.product.stockQuantity !== undefined && i.product.stockQuantity <= 0)
+            )}
             onClick={() => navigate({ to: "/checkout" })}
-            className="w-full bg-[var(--wine)] text-white py-3.5 px-6 rounded text-xs font-bold uppercase tracking-wider hover:bg-[var(--wine-deep)] transition-colors shadow-md flex items-center justify-center gap-2 cursor-pointer"
+            className={`w-full py-3.5 px-6 rounded text-xs font-bold uppercase tracking-wider transition-colors shadow-md flex items-center justify-center gap-2 ${
+              items.some(
+                (i) =>
+                  i.product.active === false ||
+                  i.product.published === false ||
+                  i.product.availability === "Out of Stock" ||
+                  (i.product.stockQuantity !== undefined && i.product.stockQuantity <= 0)
+              )
+                ? "bg-slate-300 text-slate-500 cursor-not-allowed"
+                : "bg-[var(--wine)] text-white hover:bg-[var(--wine-deep)] cursor-pointer"
+            }`}
           >
-            <span>Proceed to Checkout</span>
+            <span>
+              {items.some(
+                (i) =>
+                  i.product.active === false ||
+                  i.product.published === false ||
+                  i.product.availability === "Out of Stock" ||
+                  (i.product.stockQuantity !== undefined && i.product.stockQuantity <= 0)
+              )
+                ? "Unavailable Items in Bag"
+                : "Proceed to Checkout"}
+            </span>
             <ArrowRight className="h-4 w-4" />
           </button>
 

@@ -17,7 +17,7 @@ import { CatalogFilterSidebar, FilterState } from "@/components/site/catalog-fil
 import { Footer } from "@/components/site/footer";
 import { CartDrawer } from "@/components/site/cart-drawer";
 import { WavySection } from "@/components/site/reveal";
-import { PRODUCTS } from "@/lib/products";
+import { useCatalogProducts } from "@/lib/catalog-client";
 import { Sparkle, X, SlidersHorizontal } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -56,6 +56,9 @@ function Home() {
   const [activeSelectionTitle, setActiveSelectionTitle] = useState<string>("All Catalog Weaves");
   const [showMobileFilters, setShowMobileFilters] = useState<boolean>(false);
 
+  const { data: allCatalogProducts = [] } = useCatalogProducts();
+  const catalogPool = allCatalogProducts;
+
   const handleNavFilterSelect = (label: string) => {
     setActiveSelectionTitle(label);
     const query = label.toLowerCase();
@@ -70,7 +73,7 @@ function Home() {
       query.includes("banarasi") ||
       query.includes("kanjivaram")
     ) {
-      const match = PRODUCTS.find(
+      const match = catalogPool.find(
         (p) => p.category.toLowerCase().includes(query) || p.group?.toLowerCase().includes(query),
       );
       if (match) {
@@ -83,7 +86,7 @@ function Home() {
     } else if (query === "blouses") {
       setFilters({ ...INITIAL_FILTER_STATE, categories: ["Blouse"] });
     } else {
-      const match = PRODUCTS.find(
+      const match = catalogPool.find(
         (p) =>
           p.category.toLowerCase().includes(query) ||
           p.subcategory?.toLowerCase().includes(query) ||
@@ -104,7 +107,7 @@ function Home() {
   };
 
   // Multi-faceted filtering logic
-  const filteredProducts = PRODUCTS.filter((p) => {
+  const filteredProducts = catalogPool.filter((p) => {
     // Category check
     if (filters.categories.length > 0) {
       const matchesCat = filters.categories.some(

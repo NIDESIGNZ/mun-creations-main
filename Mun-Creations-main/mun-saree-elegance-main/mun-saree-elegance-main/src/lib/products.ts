@@ -38,6 +38,18 @@ import paithaniTripleMuniaRed1 from "@/assets/paithani-triple-munia-red-1.jpg";
 import paithaniTripleMuniaRed2 from "@/assets/paithani-triple-munia-red-2.jpg";
 import paithaniTripleMuniaRed3 from "@/assets/paithani-triple-munia-red-3.jpg";
 import paithaniTripleMuniaRed4 from "@/assets/paithani-triple-munia-red-4.jpg";
+import kanjivaramMagentaGoldZari1 from "@/assets/kanjivaram-magenta-gold-zari-1.jpg";
+import kanjivaramMagentaGoldZari2 from "@/assets/kanjivaram-magenta-gold-zari-2.jpg";
+import kanjivaramMagentaGoldZari3 from "@/assets/kanjivaram-magenta-gold-zari-3.jpg";
+import kanjivaramMagentaGoldZari4 from "@/assets/kanjivaram-magenta-gold-zari-4.jpg";
+import kanjivaramMagentaGoldZari5 from "@/assets/kanjivaram-magenta-gold-zari-5.jpg";
+import kanchipuram2gVintage1 from "@/assets/kanchipuram-2g-vintage-1.jpg";
+import kanchipuram2gVintage2 from "@/assets/kanchipuram-2g-vintage-2.jpg";
+import kanchipuram2gVintage3 from "@/assets/kanchipuram-2g-vintage-3.jpg";
+import kanchipuram2gVintage4 from "@/assets/kanchipuram-2g-vintage-4.jpg";
+import organza5plyKoaGoldZari1 from "@/assets/organza-5ply-koa-gold-zari-1.jpg";
+import organza5plyKoaGoldZari2 from "@/assets/organza-5ply-koa-gold-zari-2.jpg";
+
 
 export {
   heroSaree,
@@ -80,6 +92,11 @@ export {
   paithaniTripleMuniaRed2,
   paithaniTripleMuniaRed3,
   paithaniTripleMuniaRed4,
+  kanjivaramMagentaGoldZari1,
+  kanjivaramMagentaGoldZari2,
+  kanjivaramMagentaGoldZari3,
+  kanjivaramMagentaGoldZari4,
+  kanjivaramMagentaGoldZari5,
 };
 
 export type ProductFAQ = {
@@ -140,10 +157,26 @@ export type Product = {
   originRegion?: string;
   craftType?: string;
   handloomOrPowerloom?: "Handloom" | "Powerloom";
-  availability?: "Available" | "Out of Stock" | "Pre-Order";
-  priceTier?: "Budget Collection" | "Mid Range" | "Premium" | "Luxury";
+  availability?: "Available" | "Out of Stock" | "Pre-Order" | "In Stock" | string;
+  priceTier?: "Budget Collection" | "Mid Range" | "Premium" | "Luxury" | string;
   vendor?: string;
   badge?: "new" | "bestseller";
+  published?: boolean;
+  status?: string;
+  bestSeller?: boolean;
+  priceInr?: number;
+  originalPriceUsd?: number;
+  costPriceUsd?: number;
+  barcode?: string;
+  allowBackorders?: boolean;
+  craftStory?: string;
+  weavingTechnique?: string;
+  lowStockThreshold?: number;
+  shortSummary?: string;
+  loomOrigin?: string;
+  zariType?: string;
+  seoKeywords?: string[];
+
   galleryImages?: {
     front?: string;
     back?: string;
@@ -169,9 +202,11 @@ export type Product = {
   returnExchangeInfo?: string;
   faqs?: ProductFAQ[];
   seoTitle?: string;
+  seoDescription?: string;
   metaDescription?: string;
   focusKeyword?: string;
 };
+
 
 export function normalizeProduct(p: Partial<Product> & { id: string; name: string; category: string; fabric?: string; color?: string }): Product {
   const price = p.price ?? p.priceUsd ?? 0;
@@ -1143,7 +1178,281 @@ export const PRODUCTS: Product[] = [
       "Price: 35500 INR. Free Shipping within India included. Dispatched within 24 hours via insured express air courier.",
     returnExchangeInfo: "7-day authentication and exchange guarantee.",
   },
+
+  // 15. MAGENTA PINK KANJIVARAM PURE SILK SAREE WITH 1 GRAM GOLD ZARI
+  {
+    id: "p15",
+    sku: "MC-KANJI-1G-01",
+    name: "Kanjivaram Pure Silk Saree – Magenta Pink with 1 Gram Gold Zari",
+    slug: "magenta-pink-kanjivaram-pure-silk-gold-zari-saree",
+    category: "Kanjeevaram",
+    subcategory: "1 Gram Gold Zari Kanjivaram",
+    mainCategory: "sarees",
+    group: "Kanjeevaram",
+    collection: "Heritage Kanjivaram 1 Gram Gold Collection",
+    productType: "Pure Kanjivaram Silk",
+    fabric: "Pure Kanjivaram Silk with 1 Gram Gold Zari",
+    color: "Magenta Pink",
+    secondaryColor: "Rich Gold Zari",
+    occasion: ["Wedding", "Bridal", "Reception", "Grand Festive", "Traditional Celebrations"],
+    workType: "All-Over 1 Gram Gold Zari Weaving, Zari Checks & Elephant Motif Borders",
+    designPattern:
+      "Zari Checks with Button-Inspired Designs, 5+5 Inch Equal-Sized Elephant Motif Borders & Grand Rich Pallu",
+    weave: "Exclusive Handwoven Pure Silk with 1 Gram Gold Zari Weaving",
+    borderType: "5+5 Inch Equal-Sized Elephant Motif Gold Zari Borders",
+    palluType: "Grand Rich Gold Zari Pallu with Intricate Brocade Weave",
+    blousePiece: true,
+    blouseColor: "Plain Magenta Pink with Matching Gold Zari Border",
+    sareeLength: "5.5 meters",
+    sareeWidth: "48 inches",
+    blouseLength: "0.8 meters (Unstitched)",
+    weight: "850 grams",
+    transparency: "Opaque",
+    texture: "Rich, Lustrous Pure Silk with Heavy Metallic Sheen",
+    drape: "Classic Stately Structured Drape",
+    originRegion: "Kanchipuram, Tamil Nadu",
+    craftType: "Traditional Handwoven Kanjivaram Silk Weaving with 1 Gram Gold Zari",
+    handloomOrPowerloom: "Handloom",
+    availability: "Available",
+    inStock: true,
+    stockQuantity: 2,
+    priceUsd: 1495,
+    compareAtUsd: 1850,
+    priceTier: "Luxury",
+    vendor: "Mun Creations",
+    badge: "bestseller",
+    image: kanjivaramMagentaGoldZari1,
+    images: [
+      kanjivaramMagentaGoldZari1,
+      kanjivaramMagentaGoldZari2,
+      kanjivaramMagentaGoldZari3,
+      kanjivaramMagentaGoldZari4,
+      kanjivaramMagentaGoldZari5,
+    ],
+    galleryImages: {
+      front: kanjivaramMagentaGoldZari1,
+      pallu: kanjivaramMagentaGoldZari2,
+      border: kanjivaramMagentaGoldZari3,
+      closeUp: kanjivaramMagentaGoldZari4,
+      model: kanjivaramMagentaGoldZari1,
+    },
+    swatches: ["#c2185b", "#d4af37", "#880e4f"],
+    shortDescription:
+      "An exclusive handwoven Kanjivaram Pure Silk Saree featuring all-over 1 gram gold zari weaving, traditional elephant motif borders, zari-check body and a grand rich pallu. A classic choice for weddings and traditional celebrations. Price: ₹124,500.",
+    fullDescription:
+      "Kanjivaram Pure Silk Saree – Magenta Pink with 1 Gram Gold Zari\n\nAn exclusive handwoven Kanjivaram Pure Silk Saree featuring all-over 1 gram gold zari weaving, traditional elephant motif borders, zari-check body and a grand rich pallu. A classic choice for weddings and traditional celebrations.\n\nProduct Highlights:\n• Pure Kanjivaram Silk\n• Premium Quality Handwoven Saree\n• All-Over 1 Gram Gold Zari Weaving\n• Magenta Pink Colour\n• 5+5 Inch Equal-Sized Elephant Motif Borders\n• Zari Checks with Button-Inspired Designs\n• Grand Rich Pallu\n• Plain Blouse with Border\n• Traditional Wedding Design\n\nSilk Mark Certified for guaranteed 100% natural pure silk and genuine zari artistry. Price: ₹124,500.",
+    keyFeatures: [
+      "Pure Kanjivaram Silk (Silk Mark Certified)",
+      "All-Over 1 Gram Gold Zari Weaving",
+      "5+5 Inch Equal-Sized Elephant Motif Borders",
+      "Zari Checks with Button-Inspired Designs",
+      "Grand Rich Pallu with Intricate Brocade Weave",
+      "Includes Matching Plain Magenta Pink Blouse Piece with Border",
+      "Price: ₹124,500 (Free Express Insured Shipping Included)",
+    ],
+    fabricDescription:
+      "Woven from purest mulberry silk threads intertwined with authentic 1 gram gold zari, yielding a heavy, royal texture, exceptional heirloom longevity, and breathtaking luminosity.",
+    craftDescription:
+      "Handcrafted by master Kanchipuram artisans utilizing age-old pit loom techniques, each square check and miniature button motif is meticulously formed alongside grand elephant border relief.",
+    careInstructions:
+      "Dry clean only by silk specialists. Protect from harsh sunlight and moisture. Press on lowest heat on reverse side under protective muslin cloth.",
+    storageInstructions:
+      "Store wrapped inside unbleached pure cotton or muslin cloth. Refold periodically to preserve gold zari and silk grain.",
+    shippingInformation:
+      "Price: ₹124,500. Complimentary insured express worldwide courier dispatch. Handled with white-glove packaging.",
+    returnExchangeInfo: "7-day authentication and exchange guarantee.",
+  },
+
+  // 16. PURE KANCHIPURAM SILK SAREE – 2G PURE VINTAGE COLLECTION
+  {
+    id: "p16",
+    sku: "MC-KANJI-2G-VINTAGE",
+    name: "Pure Kanchipuram Silk Saree – 2G Pure Vintage Collection",
+    slug: "pure-kanchipuram-silk-2g-vintage-saree",
+    category: "Kanjeevaram",
+    subcategory: "2G Pure Vintage Collection",
+    mainCategory: "sarees",
+    group: "Kanjeevaram",
+    collection: "2G Pure Vintage Collection",
+    productType: "Pure Kanchipuram Silk",
+    fabric: "Pure Kanchipuram Silk with 2G Pure Zari",
+    color: "Pastel Rose Pink",
+    secondaryColor: "Multi-Color Check & 2G Gold Zari",
+    occasion: ["Wedding", "Festive", "Bridal", "Traditional Celebrations", "Special Occasions"],
+    workType: "Handwoven 2G Pure Zari Motifs with Multi-Tone Check Pallu",
+    designPattern:
+      "Vintage-Inspired Bird & Peacock Buttas, Subtle Border & Multi-Color Checkered Pallu",
+    weave: "Authentic Handwoven Kanchipuram Pit Loom Weave",
+    borderType: "Traditional 2G Pure Gold Zari Border",
+    palluType: "Vintage Multi-Color Checkered Pallu with Rich Zari Motifs",
+    blousePiece: true,
+    blouseColor: "Matching Pink with Zari Border",
+    sareeLength: "5.5 meters",
+    sareeWidth: "48 inches",
+    blouseLength: "0.8 meters (Unstitched)",
+    weight: "750 grams",
+    transparency: "Opaque",
+    texture: "Soft, Lustrous Pure Silk with Vintage Sheen",
+    drape: "Fluid, Elegant Traditional Drape",
+    originRegion: "Kanchipuram, Tamil Nadu",
+    craftType: "Traditional Handwoven Kanchipuram Silk Weaving with 2G Pure Zari",
+    handloomOrPowerloom: "Handloom",
+    availability: "Available",
+    inStock: true,
+    stockQuantity: 5,
+    priceUsd: 200,
+    compareAtUsd: 250,
+    priceTier: "Mid",
+    vendor: "Mun Creations",
+    badge: "new",
+    image: kanchipuram2gVintage1,
+    images: [
+      kanchipuram2gVintage1,
+      kanchipuram2gVintage3,
+      kanchipuram2gVintage4,
+      kanchipuram2gVintage2,
+    ],
+    galleryImages: {
+      front: kanchipuram2gVintage1,
+      pallu: kanchipuram2gVintage3,
+      border: kanchipuram2gVintage4,
+      closeUp: kanchipuram2gVintage4,
+      model: kanchipuram2gVintage1,
+    },
+    swatches: ["#f4a6b8", "#1a237e", "#4a154b", "#1b5e20", "#f5f5dc"],
+    tags: [
+      "Kanchipuram Silk",
+      "Kanjeevaram Saree",
+      "2G Zari",
+      "Pure Silk Saree",
+      "Handwoven Saree",
+      "Vintage Saree",
+      "Bridal Saree",
+      "Traditional Saree",
+    ],
+    shortDescription:
+      "Handwoven Pure Kanchipuram Silk Saree featuring 2G pure zari and a timeless vintage-inspired design. A luxurious traditional choice for weddings, festive occasions and special celebrations. Pricing: Rs.16,700.00.",
+    fullDescription:
+      "Pure Kanchipuram Silk Saree – 2G Pure Vintage Collection\n\nHandwoven Pure Kanchipuram Silk Saree featuring 2G pure zari and a timeless vintage-inspired design. A luxurious traditional choice for weddings, festive occasions and special celebrations.\n\nProduct Highlights:\n• Pure Kanchipuram Silk\n• Handwoven craftsmanship\n• 2G pure zari\n• Vintage-inspired design\n• Traditional Kanchipuram heritage\n• Suitable for weddings and festive occasions\n\nCrafted with traditional master artistry from Kanchipuram, bringing timeless heritage elegance to your heirloom wardrobe. Price: Rs.16,700.00.",
+    keyFeatures: [
+      "Pure Kanchipuram Silk with Silk Mark Assurance",
+      "2G Pure Gold Zari Weaving",
+      "Vintage-Inspired Bird & Peacock Buttas",
+      "Exquisite Multi-Color Checkered Pallu",
+      "Authentic Handloom Pit-Loom Craftsmanship",
+      "Includes Matching Unstitched Blouse Piece (0.8m)",
+      "Price: Rs.16,700.00 (Complimentary Express Shipping)",
+    ],
+    fabricDescription:
+      "Woven from high-grade pure mulberry silk combined with 2G pure zari, imparting a luxurious drape, tactile softness, and heirloom-quality endurance.",
+    craftDescription:
+      "Handcrafted by master Kanchipuram weavers using time-honored pit looms, featuring intricately placed zari buttas and a vibrant checkered pallu reflecting authentic vintage heritage.",
+    careInstructions:
+      "Dry clean only. Store wrapped in pure unbleached cotton or muslin. Avoid spray perfumes directly on the zari.",
+    storageInstructions:
+      "Keep folded in breathable muslin or cotton covers. Periodically change fold lines to preserve zari longevity.",
+    shippingInformation:
+      "Price: Rs.16,700.00. Complimentary insured express delivery across India and worldwide.",
+    returnExchangeInfo: "7-day easy exchange and authenticity guarantee.",
+    seoTitle: "Pure Kanchipuram Silk Saree | 2G Pure Vintage Collection",
+    seoDescription:
+      "Shop our Pure Kanchipuram Silk Saree, handwoven with 2G pure zari and a timeless vintage-inspired design. Perfect for weddings and festive occasions.",
+  },
+
+  // 17. 5-PLY KOA ORGANZA SAREE WITH PREMIUM GOLD ZARI
+  {
+    id: "p17",
+    sku: "MC-ORG-5PLY-01",
+    name: "5-Ply Koa Organza Saree with Premium Gold Zari",
+    slug: "5-ply-koa-organza-gold-zari-saree",
+    category: "Organza",
+    subcategory: "5-Ply Koa Organza",
+    mainCategory: "sarees",
+    group: "Organza",
+    collection: "5-Ply Koa Organza Gold Zari Collection",
+    productType: "5-Ply Koa Organza Saree",
+    fabric: "5-Ply Koa Organza with Premium Gold Zari",
+    color: "Seafoam Sky Blue",
+    secondaryColor: "Pastel Ombre Pink & Broad Gold Zari",
+    occasion: ["Festive", "Wedding Guest", "Cocktail", "Day Wedding", "Special Occasions"],
+    workType: "Woven Floral Buttas with Broad Premium Gold Zari Borders",
+    designPattern:
+      "Delicate Floral Stem Motifs with Broad Solid Gold Zari Border and Ombre Palette",
+    weave: "Fine 5-Ply Koa Organza Pit Loom Weave",
+    borderType: "Broad Premium Gold Zari Border",
+    palluType: "Richly Woven Gold Zari Pallu with Sheer Elegance",
+    blousePiece: true,
+    blouseColor: "Attached Blouse Included with Gold Zari Border (Customisation Available)",
+    sareeLength: "5.5 meters",
+    sareeWidth: "46 inches",
+    blouseLength: "0.8 meters (Attached)",
+    weight: "480 grams",
+    transparency: "Semi-Sheer Crisp Organza",
+    texture: "Crisp, Airy, Lightweight Silk Organza with Glossy Gold Zari",
+    drape: "Structured Sculptural Silhouette",
+    originRegion: "Varanasi / Kanchipuram Artisanal Clusters",
+    craftType: "Traditional 5-Ply Organza Silk Weaving with Gold Zari",
+    handloomOrPowerloom: "Handloom",
+    availability: "Available",
+    inStock: true,
+    stockQuantity: 6,
+    priceUsd: 165,
+    compareAtUsd: 210,
+    priceTier: "Classic",
+    vendor: "Mun Creations",
+    badge: "new",
+    image: organza5plyKoaGoldZari1,
+    images: [
+      organza5plyKoaGoldZari1,
+      organza5plyKoaGoldZari2,
+    ],
+    galleryImages: {
+      front: organza5plyKoaGoldZari1,
+      pallu: organza5plyKoaGoldZari1,
+      border: organza5plyKoaGoldZari2,
+      closeUp: organza5plyKoaGoldZari1,
+      model: organza5plyKoaGoldZari2,
+    },
+    swatches: ["#76c7c0", "#f8bbd0", "#d4af37", "#a5d6a7"],
+    tags: [
+      "Koa Organza",
+      "Organza Saree",
+      "Gold Zari Saree",
+      "Silk Mark Saree",
+      "Designer Saree",
+      "Premium Saree",
+      "Handwoven Saree",
+    ],
+    shortDescription:
+      "Exclusive 5-ply Koa Organza saree woven with broad premium gold zari. Rich, classy and elegant, featuring an attached blouse and customisation options. Price: Rs.13,500 (Free Shipping).",
+    fullDescription:
+      "5-Ply Koa Organza Saree with Premium Gold Zari\n\nExclusive 5-ply Koa Organza saree woven with broad premium gold zari. Rich, classy and elegant, featuring an attached blouse and customisation options.\n\nProduct Highlights:\n• 5-Ply Koa Organza\n• Broad Premium Gold Zari\n• Rich & Exclusive Quality\n• Classy, Elegant Look\n• Silk Mark Certified\n• Attached Blouse\n• Customisation Available\n\nCarefully woven with fine 5-ply organza silk threads to achieve the perfect balance of structured drape and ethereal lightness. Price: Rs.13,500 (Free Shipping).",
+    keyFeatures: [
+      "5-Ply Koa Organza Silk (Silk Mark Certified)",
+      "Broad Premium Gold Zari Borders",
+      "Delicate Woven Floral Buttas",
+      "Attached Matching Blouse Piece with Zari Border",
+      "Customisation Options Available on Request",
+      "Price: Rs.13,500 (Free Shipping Included)",
+    ],
+    fabricDescription:
+      "Crafted from premium 5-ply mulberry silk organza, providing structural hold and gentle sheer sheen, complemented by broad lustrous gold zari edges.",
+    craftDescription:
+      "Woven by skilled artisanal weavers featuring precision zari borders and floral accent buttas, creating a quintessential contemporary-meets-heritage silhouette.",
+    careInstructions:
+      "Dry clean only. Roll or hang with padded hangers to maintain organza crispness. Never wring or twist.",
+    storageInstructions:
+      "Store unfolded or softly folded with tissue paper in a breathable cotton saree bag.",
+    shippingInformation:
+      "Price: Rs.13,500. Complimentary free express shipping included across India and worldwide.",
+    returnExchangeInfo: "7-day exchange and authenticity guarantee.",
+    seoTitle: "5-Ply Koa Organza Saree with Premium Gold Zari",
+    seoDescription:
+      "Shop exclusive 5-ply Koa Organza sarees woven with broad premium gold zari. Silk Mark certified, with attached blouse and customisation options.",
+  },
 ];
+
+
 
 export const NEW_ARRIVALS = PRODUCTS.filter((p) => p.badge === "new")
   .concat(PRODUCTS)

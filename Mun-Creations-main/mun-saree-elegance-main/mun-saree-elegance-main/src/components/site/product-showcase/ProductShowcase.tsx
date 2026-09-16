@@ -13,10 +13,9 @@ import {
 } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useCart } from "@/lib/cart";
-import { PRODUCTS, type Product } from "@/lib/products";
+import type { Product } from "@/lib/products";
 import DepthCarousel, { type NormalizedItem } from "@/components/ui/DepthCarousel";
 import { ProductDetailModal } from "@/components/site/product-detail-modal";
-import { AITryOnModal } from "@/components/site/ai-try-on/AITryOnModal";
 import { SectionHeading } from "@/components/site/product";
 import "./ProductShowcase.css";
 
@@ -29,9 +28,9 @@ export interface ProductShowcaseProps {
   className?: string;
 }
 
-const CATEGORY_TABS = [
-  { id: "all", label: "All Signature Weaves" },
-  { id: "banarasi", label: "Banarasi Heritage" },
+export const CATEGORY_TABS = [
+  { id: "all", label: "All Masterpieces" },
+  { id: "banarasi", label: "Heritage Banarasi" },
   { id: "kanjivaram", label: "Pure Kanjivaram" },
   { id: "paithani", label: "Royal Paithani" },
   { id: "tussar", label: "Award Tussar" },
@@ -39,7 +38,7 @@ const CATEGORY_TABS = [
 ];
 
 export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
-  products = PRODUCTS,
+  products = [],
   title = "Curated Couture Showcase",
   subtitle = "Experience the tactile elegance, rich zari, and fine textures of our master-woven sarees in interactive 3D depth.",
   eyebrow = "Interactive 3D Experience",
@@ -51,7 +50,6 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
 
   const [activeTab, setActiveTab] = useState<string>(defaultCategory);
   const [modalProduct, setModalProduct] = useState<Product | null>(null);
-  const [tryOnProduct, setTryOnProduct] = useState<Product | null>(null);
   const [addedToast, setAddedToast] = useState<boolean>(false);
 
   // Filter products based on selected tab
@@ -338,18 +336,8 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
               <div className="product-showcase__actions">
                 <button
                   type="button"
-                  onClick={() => setTryOnProduct(displayedProduct)}
-                  className="product-showcase__btn-primary bg-gradient-to-r from-[#d4af37] via-[#ffe5a3] to-[#d4af37] text-[#1a0812] shadow-[0_0_15px_rgba(212,175,55,0.4)]"
-                  aria-label={`AI Virtual Try-On for ${displayedProduct.name}`}
-                >
-                  <Sparkles className="h-4 w-4" />
-                  <span>✦ AI Try-On</span>
-                </button>
-
-                <button
-                  type="button"
                   onClick={() => setModalProduct(displayedProduct)}
-                  className="product-showcase__btn-secondary"
+                  className="product-showcase__btn-primary bg-gradient-to-r from-[#d4af37] via-[#ffe5a3] to-[#d4af37] text-[#1a0812] shadow-[0_0_15px_rgba(212,175,55,0.4)]"
                   aria-label={`View full details of ${displayedProduct.name}`}
                 >
                   <Eye className="h-4 w-4" />
@@ -439,15 +427,6 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
       {/* Interactive Detail Modal */}
       {modalProduct && (
         <ProductDetailModal product={modalProduct} onClose={() => setModalProduct(null)} />
-      )}
-
-      {/* AI Virtual Try-On Modal */}
-      {tryOnProduct && (
-        <AITryOnModal
-          product={tryOnProduct}
-          isOpen={!!tryOnProduct}
-          onClose={() => setTryOnProduct(null)}
-        />
       )}
     </section>
   );

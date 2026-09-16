@@ -8,7 +8,6 @@ import { CartDrawer } from "@/components/site/cart-drawer";
 import { backendDB, WeaverSource, CustomerOrder } from "@/lib/backend-api";
 import {
   Product,
-  PRODUCTS,
   heroSaree,
   catSilk,
   catPredraped,

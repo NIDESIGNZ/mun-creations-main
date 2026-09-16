@@ -32,3 +32,10 @@ pnpm-debug.log*
 .DS_Store
 *.suo
 scratch/
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/

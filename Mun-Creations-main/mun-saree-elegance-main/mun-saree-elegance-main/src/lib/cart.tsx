@@ -40,6 +40,74 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [items]);
 
+  // Authoritative Revalidation: Sync live prices, stock levels & detect deleted/archived items
+  useEffect(() => {
+    if (items.length === 0 || typeof window === "undefined") return;
+
+    let isMounted = true;
+    const revalidateCartItems = async () => {
+      try {
+        let changed = false;
+        const updatedList: CartItem[] = [];
+
+        for (const item of items) {
+          try {
+            const res = await fetch(`/api/products/${encodeURIComponent(item.product.id)}`);
+            if (res.status === 404 || !res.ok) {
+              // Product was deleted, archived, or unpublished
+              changed = true;
+              updatedList.push({
+                ...item,
+                product: {
+                  ...item.product,
+                  availability: "Out of Stock",
+                  stockQuantity: 0,
+                  inStock: false,
+                  active: false,
+                  published: false,
+                },
+              });
+            } else {
+              const liveProduct: Product = await res.json();
+              const priceMismatch = liveProduct.priceUsd !== item.product.priceUsd;
+              const stockMismatch = liveProduct.stockQuantity !== item.product.stockQuantity;
+              const statusMismatch =
+                liveProduct.active !== item.product.active ||
+                liveProduct.published !== item.product.published;
+              const nameMismatch = liveProduct.name !== item.product.name;
+              const imageMismatch = liveProduct.image !== item.product.image;
+
+              if (priceMismatch || stockMismatch || statusMismatch || nameMismatch || imageMismatch) {
+                changed = true;
+                const effectiveStock = liveProduct.stockQuantity ?? (liveProduct as any).stock ?? 1;
+                updatedList.push({
+                  product: liveProduct,
+                  qty: Math.min(item.qty, Math.max(1, effectiveStock)),
+                });
+              } else {
+                updatedList.push(item);
+              }
+            }
+          } catch {
+            updatedList.push(item);
+          }
+        }
+
+        if (changed && isMounted) {
+          setItems(updatedList);
+        }
+      } catch {
+        // Network error; retain current items
+      }
+    };
+
+    revalidateCartItems();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [open]);
+
   const value = useMemo<Ctx>(() => {
     const add = (p: Product) => {
       const stock = p.stockQuantity ?? (p as any).stock ?? 10;

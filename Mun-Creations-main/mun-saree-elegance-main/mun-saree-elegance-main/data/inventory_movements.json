@@ -1,0 +1,50 @@
+[
+  {
+    "id": "mov_1789534773142_646",
+    "productId": "p_1789534773114_373",
+    "productName": "Automated Acceptance Royal Gold Katan Saree",
+    "sku": "TEST-MUN-1789534773113",
+    "deltaQuantity": -2,
+    "previousStock": 6,
+    "newStock": 4,
+    "reason": "Automated test deduction",
+    "adminUser": "admin",
+    "timestamp": "2026-09-16T04:59:33.142Z"
+  },
+  {
+    "id": "mov_1789534773115_873",
+    "productId": "p_1789534773114_373",
+    "productName": "Automated Acceptance Royal Gold Katan Saree",
+    "sku": "TEST-MUN-1789534773113",
+    "deltaQuantity": 6,
+    "previousStock": 0,
+    "newStock": 6,
+    "reason": "Initial product creation",
+    "adminUser": "admin",
+    "timestamp": "2026-09-16T04:59:33.115Z"
+  },
+  {
+    "id": "mov_1789534734709_935",
+    "productId": "p_1789534734665_253",
+    "productName": "Automated Acceptance Royal Gold Katan Saree",
+    "sku": "TEST-MUN-1789534734650",
+    "deltaQuantity": -2,
+    "previousStock": 6,
+    "newStock": 4,
+    "reason": "Automated test deduction",
+    "adminUser": "admin",
+    "timestamp": "2026-09-16T04:58:54.709Z"
+  },
+  {
+    "id": "mov_1789534734667_58",
+    "productId": "p_1789534734665_253",
+    "productName": "Automated Acceptance Royal Gold Katan Saree",
+    "sku": "TEST-MUN-1789534734650",
+    "deltaQuantity": 6,
+    "previousStock": 0,
+    "newStock": 6,
+    "reason": "Initial product creation",
+    "adminUser": "admin",
+    "timestamp": "2026-09-16T04:58:54.667Z"
+  }
+]

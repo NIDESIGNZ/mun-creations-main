@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { I18nProvider, useI18n } from "@/lib/i18n";
 import { CartProvider, useCart } from "@/lib/cart";
@@ -6,8 +6,8 @@ import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/footer";
 import { CartDrawer } from "@/components/site/cart-drawer";
 import { ProductCard } from "@/components/site/product";
-import { AITryOnModal } from "@/components/site/ai-try-on/AITryOnModal";
-import { PRODUCTS, type Product } from "@/lib/products";
+import type { Product } from "@/lib/products";
+import { useCatalogProduct, useCatalogProducts } from "@/lib/catalog-client";
 import {
   Sparkles,
   ShoppingBag,
@@ -27,7 +27,19 @@ export const Route = createFileRoute("/product/$id")({
 
 function ProductDetailPage() {
   const { id } = Route.useParams();
-  const product = PRODUCTS.find((p) => p.id === id || p.slug === id) || PRODUCTS[0];
+  const { data: product, isLoading, isError } = useCatalogProduct(id);
+
+  useEffect(() => {
+    if (product) {
+      document.title = `${product.seoTitle || product.name} — Mun Creations`;
+      const metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc && product.seoDescription) {
+        metaDesc.setAttribute("content", product.seoDescription);
+      }
+    } else {
+      document.title = `Product Not Found — Mun Creations`;
+    }
+  }, [product]);
 
   return (
     <I18nProvider>
@@ -35,7 +47,46 @@ function ProductDetailPage() {
         <div className="min-h-screen bg-background text-foreground flex flex-col">
           <Header />
           <main className="flex-1 pt-28 sm:pt-36 md:pt-48 lg:pt-56 pb-14 sm:pb-20 md:pb-24 bg-secondary/20">
-            <ProductDetailContent product={product} />
+            {isLoading ? (
+              <div className="container-boutique py-20 flex flex-col items-center justify-center text-center space-y-4">
+                <div className="h-10 w-10 border-2 border-[var(--wine)] border-t-transparent rounded-full animate-spin" />
+                <div className="text-xs uppercase tracking-widest text-muted-foreground font-mono">
+                  Loading Handcrafted Saree...
+                </div>
+              </div>
+            ) : !product || isError ? (
+              <div className="container-boutique py-16 sm:py-24 max-w-xl mx-auto text-center space-y-6">
+                <div className="h-20 w-20 rounded-full bg-[var(--wine)]/10 text-[var(--wine)] flex items-center justify-center mx-auto border border-[var(--wine)]/20 shadow-inner">
+                  <ShoppingBag className="h-10 w-10 text-[var(--gold)]" />
+                </div>
+                <div className="space-y-2">
+                  <div className="eyebrow text-[var(--gold)]">Archived or Unavailable</div>
+                  <h1 className="font-serif text-3xl sm:text-4xl font-bold text-[var(--wine-deep)]">
+                    Product Not Found
+                  </h1>
+                  <p className="text-sm text-muted-foreground leading-relaxed max-w-md mx-auto">
+                    The saree or couture piece you requested is no longer available in our active collection, or has been archived from our master catalog.
+                  </p>
+                </div>
+                <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+                  <Link
+                    to="/products"
+                    className="inline-flex items-center gap-2 bg-[var(--wine)] text-white px-6 py-3 text-xs font-bold uppercase tracking-wider rounded-sm hover:bg-[var(--wine-deep)] transition-colors shadow-sm w-full sm:w-auto justify-center"
+                  >
+                    <span>Browse All Sarees</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                  <Link
+                    to="/"
+                    className="inline-flex items-center gap-2 border border-border bg-white text-foreground px-6 py-3 text-xs font-bold uppercase tracking-wider rounded-sm hover:bg-secondary transition-colors w-full sm:w-auto justify-center"
+                  >
+                    <span>Return to Home</span>
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <ProductDetailContent product={product} />
+            )}
           </main>
           <Footer />
           <CartDrawer />
@@ -56,13 +107,17 @@ function ProductDetailContent({ product }: { product: Product }) {
       : [product.image];
 
   const [activeImage, setActiveImage] = useState(allPhotos[0]);
-  const [showTryOn, setShowTryOn] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [addedToast, setAddedToast] = useState(false);
 
-  const relatedProducts = PRODUCTS.filter(
-    (p) => p.id !== product.id && (p.category === product.category || p.fabric === product.fabric),
-  ).slice(0, 3);
+  useEffect(() => {
+    setActiveImage(allPhotos[0]);
+  }, [product.id, allPhotos[0]]);
+
+  const { data: allCatalogProducts = [] } = useCatalogProducts();
+  const relatedProducts = allCatalogProducts
+    .filter((p) => p.id !== product.id && (p.category === product.category || p.fabric === product.fabric))
+    .slice(0, 3);
 
   const handleAddToCart = () => {
     add(product);
@@ -177,15 +232,6 @@ function ProductDetailContent({ product }: { product: Product }) {
 
           {/* Action CTAs */}
           <div className="space-y-3 pt-4">
-            <button
-              type="button"
-              onClick={() => setShowTryOn(true)}
-              className="w-full bg-[var(--wine-deep)]/10 text-[var(--wine-deep)] border border-[var(--gold)]/40 hover:border-[var(--gold)] py-3 px-4 rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer"
-            >
-              <Sparkles className="h-4 w-4 text-[var(--gold)]" />
-              <span>Try on in AI Virtual Dressing Room</span>
-            </button>
-
             {/* Action buttons */}
             <div className="flex flex-col sm:flex-row gap-3">
               <button
@@ -241,10 +287,6 @@ function ProductDetailContent({ product }: { product: Product }) {
             ))}
           </div>
         </div>
-      )}
-
-      {showTryOn && (
-        <AITryOnModal product={product} isOpen={showTryOn} onClose={() => setShowTryOn(false)} />
       )}
     </div>
   );

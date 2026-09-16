@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Sparkles, RotateCcw, Plane, Award, Sparkle, Gem, ShoppingBag } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Sparkles, RotateCcw, Plane, Award, Sparkle, Gem, ShoppingBag, Play, Pause, Volume2, VolumeX } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useCart } from "@/lib/cart";
 import {
@@ -11,9 +11,9 @@ import {
   productPink,
   heroSaree,
   tussarTribalFusion,
-  PRODUCTS,
   type Product,
 } from "@/lib/products";
+import { useCatalogProducts } from "@/lib/catalog-client";
 import { SectionHeading } from "./product";
 import { ProductDetailModal } from "./product-detail-modal";
 import {
@@ -98,13 +98,16 @@ export function TussarShowcaseBlock({ onSelectFilter }: FilterCallbackProps) {
   const { add } = useCart();
   const { formatPrice } = useI18n();
 
+  const { data: allProducts = [] } = useCatalogProducts();
   const awardWinningSaree =
-    (PRODUCTS.find((p) => p.id === "p5" || p.sku === "TFH-TUSSAR-01") || PRODUCTS[0]) as Product;
+    allProducts.find((p) => p.id === "p5" || p.sku === "TFH-TUSSAR-01" || p.category.toLowerCase().includes("tussar")) || allProducts[0];
   const allPhotos =
-    awardWinningSaree.images && awardWinningSaree.images.length > 0
+    awardWinningSaree?.images && awardWinningSaree.images.length > 0
       ? awardWinningSaree.images
-      : [awardWinningSaree.image || tussarTribalFusion];
+      : [awardWinningSaree?.image || tussarTribalFusion];
   const [activeSpotlightImg, setActiveSpotlightImg] = useState<string>(allPhotos[0]);
+
+  if (!awardWinningSaree) return null;
 
   const handleAddToCart = () => {
     add(awardWinningSaree);
@@ -318,20 +321,171 @@ export function PressStrip() {
 
 export function StoryBanner() {
   const { t } = useI18n();
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const hasStartedRef = useRef(false);
+  const isManuallyPausedRef = useRef(false);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    const container = containerRef.current;
+    if (!video) return;
+
+    // Explicitly set DOM properties for reliable autoplay
+    video.defaultMuted = true;
+    video.muted = true;
+    video.playsInline = true;
+    video.setAttribute("muted", "");
+    video.setAttribute("playsinline", "");
+    video.setAttribute("webkit-playsinline", "");
+
+    const handlePlayState = () => {
+      hasStartedRef.current = true;
+      setIsPlaying(true);
+    };
+    const handlePauseState = () => setIsPlaying(false);
+    const handleVolumeState = () => setIsMuted(video.muted);
+
+    video.addEventListener("play", handlePlayState);
+    video.addEventListener("pause", handlePauseState);
+    video.addEventListener("volumechange", handleVolumeState);
+
+    const playVideo = () => {
+      if (!video || isManuallyPausedRef.current) return;
+      video.muted = true;
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            hasStartedRef.current = true;
+            setIsPlaying(true);
+          })
+          .catch((err) => {
+            console.log("Story video playback waiting for interaction:", err?.message || err);
+            setIsPlaying(false);
+          });
+      }
+    };
+
+    const pauseVideo = () => {
+      if (!video) return;
+      video.pause();
+      setIsPlaying(false);
+    };
+
+    // Automatically plays when scrolled into view, pauses when scrolled out
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            if (!isManuallyPausedRef.current) {
+              playVideo();
+            }
+          } else {
+            pauseVideo();
+          }
+        });
+      },
+      { threshold: 0.15 }
+    );
+
+    if (container) observer.observe(container);
+
+    // Scroll & interaction fallback so user scrolling satisfies gesture requirement
+    const onInteraction = () => {
+      if (!hasStartedRef.current && !isManuallyPausedRef.current && video.paused && container) {
+        const rect = container.getBoundingClientRect();
+        if (rect.top < window.innerHeight && rect.bottom > 0) {
+          playVideo();
+        }
+      }
+    };
+
+    window.addEventListener("scroll", onInteraction, { passive: true });
+    window.addEventListener("click", onInteraction);
+    window.addEventListener("touchstart", onInteraction, { passive: true });
+
+    return () => {
+      video.removeEventListener("play", handlePlayState);
+      video.removeEventListener("pause", handlePauseState);
+      video.removeEventListener("volumechange", handleVolumeState);
+      if (container) observer.unobserve(container);
+      observer.disconnect();
+      window.removeEventListener("scroll", onInteraction);
+      window.removeEventListener("click", onInteraction);
+      window.removeEventListener("touchstart", onInteraction);
+    };
+  }, []);
+
+  const togglePlay = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    const video = videoRef.current;
+    if (!video) return;
+    if (video.paused) {
+      isManuallyPausedRef.current = false;
+      video.play().then(() => setIsPlaying(true)).catch(() => {});
+    } else {
+      isManuallyPausedRef.current = true;
+      video.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  const toggleMute = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    const video = videoRef.current;
+    if (!video) return;
+    video.muted = !video.muted;
+    setIsMuted(video.muted);
+  };
+
   return (
     <section className="py-14 sm:py-20 md:py-24 bg-[var(--secondary)]/40">
       <div className="container-boutique grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 items-center">
-        <div className="relative aspect-[4/5] overflow-hidden rounded-sm shadow-xl bg-[var(--wine-deep)]">
+        <div
+          ref={containerRef}
+          onClick={() => togglePlay()}
+          className="relative aspect-[4/5] overflow-hidden rounded-sm shadow-xl bg-[var(--wine-deep)] cursor-pointer group"
+        >
           <video
+            ref={videoRef}
             autoPlay
             muted
             loop
             playsInline
+            preload="metadata"
             poster={storyWeaver}
-            src="/story-video.mp4"
             className="h-full w-full object-cover"
-          />
-          <div className="absolute -bottom-4 -right-4 sm:-bottom-6 sm:-right-6 hidden sm:block bg-[var(--ivory)] px-6 sm:px-8 py-4 sm:py-6 shadow-xl z-10 border border-border">
+          >
+            <source src="/story-video.mp4" type="video/mp4" />
+          </video>
+
+          {/* Discreet luxury playback controls */}
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="absolute top-4 right-4 z-20 flex items-center gap-2 bg-black/40 backdrop-blur-md p-1.5 rounded-full border border-white/20 opacity-90 group-hover:opacity-100 transition-opacity shadow-lg"
+          >
+            <button
+              type="button"
+              onClick={togglePlay}
+              aria-label={isPlaying ? "Pause craft story video" : "Play craft story video"}
+              className="h-7 w-7 rounded-full bg-white/10 hover:bg-white/25 text-[var(--ivory)] hover:text-[var(--gold)] flex items-center justify-center transition-all cursor-pointer"
+            >
+              {isPlaying ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5 ml-0.5" />}
+            </button>
+            <button
+              type="button"
+              onClick={toggleMute}
+              aria-label={isMuted ? "Unmute craft story video" : "Mute craft story video"}
+              className="h-7 w-7 rounded-full bg-white/10 hover:bg-white/25 text-[var(--ivory)] hover:text-[var(--gold)] flex items-center justify-center transition-all cursor-pointer"
+            >
+              {isMuted ? <VolumeX className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5" />}
+            </button>
+          </div>
+
+          <div className="absolute -bottom-4 -right-4 sm:-bottom-6 sm:-right-6 hidden sm:block bg-[var(--ivory)] px-6 sm:px-8 py-4 sm:py-6 shadow-xl z-10 border border-border pointer-events-none">
             <div className="font-serif text-3xl sm:text-4xl text-[var(--wine)]">240+</div>
             <div className="eyebrow mt-1">Weaving Families</div>
           </div>
