@@ -19,6 +19,7 @@ import {
 import type { Product } from "@/lib/products";
 import { useI18n } from "@/lib/i18n";
 import { useCart } from "@/lib/cart";
+import { resolveProductImageUrl, handleProductImageError } from "@/lib/image-utils";
 
 export function ProductDetailModal({
   product,
@@ -30,8 +31,10 @@ export function ProductDetailModal({
   const { formatPrice, currency } = useI18n();
   const { add } = useCart();
 
+  const primaryImg = resolveProductImageUrl(product.image);
+
   // Active Image & Tab States
-  const [activeImage, setActiveImage] = useState<string>(product.image);
+  const [activeImage, setActiveImage] = useState<string>(primaryImg);
   const [activeTab, setActiveTab] = useState<"specs" | "craft" | "care" | "shipping" | "faq">(
     "specs",
   );
@@ -40,20 +43,20 @@ export function ProductDetailModal({
   // Gallery items array
   const gallery =
     product.images && product.images.length > 0
-      ? product.images.map((src, idx) => ({ label: `View ${idx + 1}`, src }))
+      ? product.images.map((src, idx) => ({ label: `View ${idx + 1}`, src: resolveProductImageUrl(src) }))
       : [
-          { label: "Primary View", src: product.image },
+          { label: "Primary View", src: primaryImg },
           ...(product.galleryImages?.pallu
-            ? [{ label: "Pallu View", src: product.galleryImages.pallu }]
+            ? [{ label: "Pallu View", src: resolveProductImageUrl(product.galleryImages.pallu) }]
             : []),
           ...(product.galleryImages?.border
-            ? [{ label: "Border View", src: product.galleryImages.border }]
+            ? [{ label: "Border View", src: resolveProductImageUrl(product.galleryImages.border) }]
             : []),
           ...(product.galleryImages?.closeUp
-            ? [{ label: "Close Up", src: product.galleryImages.closeUp }]
+            ? [{ label: "Close Up", src: resolveProductImageUrl(product.galleryImages.closeUp) }]
             : []),
           ...(product.galleryImages?.model
-            ? [{ label: "Model View", src: product.galleryImages.model }]
+            ? [{ label: "Model View", src: resolveProductImageUrl(product.galleryImages.model) }]
             : []),
         ];
 
@@ -85,6 +88,7 @@ export function ProductDetailModal({
               <img
                 src={activeImage}
                 alt={product.name}
+                onError={handleProductImageError}
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
               <span className="absolute top-3 left-3 bg-black/70 text-white text-[10px] uppercase font-mono px-2.5 py-1 rounded">
@@ -105,7 +109,7 @@ export function ProductDetailModal({
                         : "border-border opacity-70 hover:opacity-100"
                     }`}
                   >
-                    <img src={g.src} alt={g.label} className="w-full h-full object-cover" />
+                    <img src={g.src} alt={g.label} onError={handleProductImageError} className="w-full h-full object-cover" />
                   </button>
                 ))}
               </div>

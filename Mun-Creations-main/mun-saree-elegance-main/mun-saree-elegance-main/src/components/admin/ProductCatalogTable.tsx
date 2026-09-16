@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import type { Product } from "@/lib/products";
 import { invalidateCatalogCache } from "@/lib/catalog-client";
 import { getColorHex } from "@/lib/colors";
+import { resolveProductImageUrl, handleProductImageError } from "@/lib/image-utils";
 import {
   getAdminProducts,
   publishAdminProduct,
@@ -561,12 +562,10 @@ export function ProductCatalogTable({
                       <td className="p-3.5">
                         <div className="h-12 w-10 rounded bg-slate-950 overflow-hidden border border-slate-800 shrink-0">
                           <img
-                            src={product.image || "/images/placeholder.jpg"}
+                            src={resolveProductImageUrl(product.image)}
                             alt={product.name}
                             className="h-full w-full object-cover"
-                            onError={(e) => {
-                              (e.target as HTMLElement).style.display = "none";
-                            }}
+                            onError={handleProductImageError}
                           />
                         </div>
                       </td>

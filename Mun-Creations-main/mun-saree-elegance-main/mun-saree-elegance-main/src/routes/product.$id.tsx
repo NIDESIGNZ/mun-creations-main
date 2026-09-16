@@ -8,6 +8,7 @@ import { CartDrawer } from "@/components/site/cart-drawer";
 import { ProductCard } from "@/components/site/product";
 import type { Product } from "@/lib/products";
 import { useCatalogProduct, useCatalogProducts } from "@/lib/catalog-client";
+import { resolveProductImageUrl, handleProductImageError } from "@/lib/image-utils";
 import {
   Sparkles,
   ShoppingBag,
@@ -101,10 +102,11 @@ function ProductDetailContent({ product }: { product: Product }) {
   const { add } = useCart();
   const navigate = useNavigate();
 
-  const allPhotos =
+  const allPhotos = (
     product.images && product.images.length > 0
       ? product.images
-      : [product.image];
+      : [product.image]
+  ).map((p) => resolveProductImageUrl(p));
 
   const [activeImage, setActiveImage] = useState(allPhotos[0]);
   const [isWishlisted, setIsWishlisted] = useState(false);
@@ -149,6 +151,7 @@ function ProductDetailContent({ product }: { product: Product }) {
             <img
               src={activeImage}
               alt={product.name}
+              onError={handleProductImageError}
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
             {product.badge && (
@@ -181,7 +184,7 @@ function ProductDetailContent({ product }: { product: Product }) {
                     activeImage === img ? "border-[var(--wine)] ring-2 ring-[var(--wine)]/30" : "border-border opacity-70 hover:opacity-100"
                   }`}
                 >
-                  <img src={img} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
+                  <img src={img} alt={`Thumbnail ${idx + 1}`} onError={handleProductImageError} className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>

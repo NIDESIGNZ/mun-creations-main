@@ -4,6 +4,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { backendDB, type Order, type OrderStatus } from "@/lib/backend-api";
 import type { Product } from "@/lib/products";
 import { invalidateCatalogCache } from "@/lib/catalog-client";
+import { resolveProductImageUrl, handleProductImageError } from "@/lib/image-utils";
 import { CATEGORY_FILTERS } from "@/lib/catalog";
 import {
   adminLogin,
@@ -1120,8 +1121,9 @@ function POSTerminal({
                 >
                   <div className="relative w-full aspect-[3/4] rounded overflow-hidden mb-2 bg-slate-950">
                     <img
-                      src={product.image || "/images/placeholder.jpg"}
+                      src={resolveProductImageUrl(product.image)}
                       alt={product.name}
+                      onError={handleProductImageError}
                       className="w-full h-full object-cover"
                     />
                     <span
@@ -1235,8 +1237,9 @@ function POSTerminal({
                   <div key={product.id} className="py-2.5 flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2.5 min-w-0">
                       <img
-                        src={product.image || "/images/placeholder.jpg"}
+                        src={resolveProductImageUrl(product.image)}
                         alt={product.name}
+                        onError={handleProductImageError}
                         className="h-10 w-8 object-cover rounded border border-slate-800 shrink-0"
                       />
                       <div className="min-w-0">

@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, Heart, Sparkles, ShoppingBag } from "lucide-
 import { useI18n } from "@/lib/i18n";
 import { useCart } from "@/lib/cart";
 import type { Product } from "@/lib/products";
+import { resolveProductImageUrl, handleProductImageError } from "@/lib/image-utils";
 import { ProductDetailModal } from "@/components/site/product-detail-modal";
 
 export function SectionHeading({
@@ -53,9 +54,10 @@ export function ProductCard({ product }: { product: Product }) {
           className="relative overflow-hidden bg-[var(--muted)] aspect-[4/5] cursor-pointer rounded-xs"
         >
           <img
-            src={product.image}
+            src={resolveProductImageUrl(product.image)}
             alt={product.name}
             loading="lazy"
+            onError={handleProductImageError}
             className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105"
           />
           {product.badge && (

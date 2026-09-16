@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { Link } from "@tanstack/react-router";
 import { useCart } from "@/lib/cart";
 import { useI18n } from "@/lib/i18n";
+import { resolveProductImageUrl, handleProductImageError } from "@/lib/image-utils";
 
 export function CartDrawer() {
   const { open, setOpen, items, setQty, remove, subtotalUsd } = useCart();
@@ -115,8 +116,9 @@ export function CartDrawer() {
                   return (
                     <li key={product.id} className="py-4 flex gap-3 sm:gap-4 first:pt-0">
                       <img
-                        src={product.image}
+                        src={resolveProductImageUrl(product.image)}
                         alt={product.name}
+                        onError={handleProductImageError}
                         className={`h-22 w-18 sm:h-24 sm:w-20 object-cover shrink-0 rounded-xs border ${
                           isUnavailable ? "border-red-300 opacity-60 grayscale-50" : "border-border"
                         }`}

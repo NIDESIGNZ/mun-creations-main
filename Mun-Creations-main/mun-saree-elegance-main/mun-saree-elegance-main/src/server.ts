@@ -11,6 +11,12 @@ async function handleApiRequests(request: Request): Promise<Response | null> {
   const url = new URL(request.url);
   const path = url.pathname;
 
+  // Static redirect fallback for legacy /src/assets/* requests
+  if (path.startsWith("/src/assets/")) {
+    const filename = pathModule.basename(path);
+    return Response.redirect(new URL(`/images/products/${filename}`, request.url), 301);
+  }
+
   if (!path.startsWith("/api/")) return null;
 
   ensureEnvLoaded();

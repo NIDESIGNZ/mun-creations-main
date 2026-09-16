@@ -205,6 +205,43 @@ class ProductDatabaseService {
     this.initialized = true;
   }
 
+  public normalizeImageUrl(url?: string | null): string {
+    if (!url || typeof url !== "string") return "/images/products/hero-saree.jpg";
+    const trimmed = url.trim();
+    if (!trimmed) return "/images/products/hero-saree.jpg";
+    if (trimmed.startsWith("http://") || trimmed.startsWith("https://") || trimmed.startsWith("data:")) return trimmed;
+    if (trimmed.startsWith("/src/assets/")) return trimmed.replace("/src/assets/", "/images/products/");
+    if (trimmed.startsWith("src/assets/")) return trimmed.replace("src/assets/", "/images/products/");
+    if (trimmed.startsWith("/assets/") && !trimmed.startsWith("/assets/index-")) return trimmed.replace("/assets/", "/images/products/");
+    return trimmed;
+  }
+
+  public sanitizeProductImages(p: MasterProduct): MasterProduct {
+    const rawImage = p.image || p.thumbnail || "/images/products/hero-saree.jpg";
+    const image = this.normalizeImageUrl(rawImage);
+    const thumbnail = p.thumbnail ? this.normalizeImageUrl(p.thumbnail) : image;
+    const images = (p.images && p.images.length > 0 ? p.images : [image]).map((img) => this.normalizeImageUrl(img));
+    
+    let galleryImages = p.galleryImages;
+    if (galleryImages) {
+      galleryImages = {
+        front: galleryImages.front ? this.normalizeImageUrl(galleryImages.front) : undefined,
+        model: galleryImages.model ? this.normalizeImageUrl(galleryImages.model) : undefined,
+        pallu: galleryImages.pallu ? this.normalizeImageUrl(galleryImages.pallu) : undefined,
+        border: galleryImages.border ? this.normalizeImageUrl(galleryImages.border) : undefined,
+        closeUp: galleryImages.closeUp ? this.normalizeImageUrl(galleryImages.closeUp) : undefined,
+      };
+    }
+
+    return {
+      ...p,
+      image,
+      thumbnail,
+      images,
+      galleryImages,
+    };
+  }
+
   private loadAll() {
     // 1. Categories
     try {
@@ -225,7 +262,10 @@ class ProductDatabaseService {
       if (fs.existsSync(this.productsFile)) {
         const raw = fs.readFileSync(this.productsFile, "utf-8");
         const list: MasterProduct[] = JSON.parse(raw);
-        list.forEach((p) => this.products.set(p.id, p));
+        list.forEach((p) => {
+          const sanitized = this.sanitizeProductImages(p);
+          this.products.set(sanitized.id, sanitized);
+        });
       } else {
         this.seedFromInitialProducts();
       }
@@ -801,7 +841,8 @@ class ProductDatabaseService {
       updatedBy: user,
     };
 
-    this.products.set(id, product);
+    const sanitized = this.sanitizeProductImages(product);
+    this.products.set(id, sanitized);
     this.saveProducts();
 
     // Log initial inventory movement if stock > 0
@@ -895,11 +936,12 @@ class ProductDatabaseService {
       updatedBy: user,
     };
 
-    this.products.set(id, merged);
+    const sanitized = this.sanitizeProductImages(merged);
+    this.products.set(id, sanitized);
     this.saveProducts();
 
-    this.logAudit("PRODUCT_UPDATED", "product", `Updated product "${merged.name}" (SKU: ${merged.sku})`, id, user);
-    return merged;
+    this.logAudit("PRODUCT_UPDATED", "product", `Updated product "${sanitized.name}" (SKU: ${sanitized.sku})`, id, user);
+    return sanitized;
   }
 
   public deleteProduct(id: string, hardDelete: boolean = false, user: string = "admin"): boolean {

@@ -25,9 +25,39 @@ function apiServerMiddlewarePlugin(): Plugin {
             console.error("Vite API Server Error:", err);
             next(err);
           }
-        } else {
-          next();
+          return;
         }
+
+        // Static image fallback for /src/assets/* or /assets/* image requests in dev
+        if (req.url && (req.url.startsWith("/src/assets/") || req.url.startsWith("/assets/"))) {
+          const rawPath = req.url.split("?")[0];
+          const filename = path.basename(rawPath);
+          const candidates = [
+            path.join(__dirname, "public", "images", "products", filename),
+            path.join(__dirname, "public", "images", filename),
+            path.join(__dirname, "public", "assets", filename),
+            path.join(__dirname, "src", "assets", filename),
+          ];
+          const found = candidates.find((p) => fs.existsSync(p));
+          if (found) {
+            const ext = path.extname(found).toLowerCase();
+            const mimeTypes: Record<string, string> = {
+              ".jpg": "image/jpeg",
+              ".jpeg": "image/jpeg",
+              ".png": "image/png",
+              ".webp": "image/webp",
+              ".svg": "image/svg+xml",
+              ".mp4": "video/mp4",
+            };
+            const contentType = mimeTypes[ext] || "application/octet-stream";
+            res.setHeader("Content-Type", contentType);
+            res.setHeader("Cache-Control", "public, max-age=3600");
+            fs.createReadStream(found).pipe(res);
+            return;
+          }
+        }
+
+        next();
       });
     },
   };

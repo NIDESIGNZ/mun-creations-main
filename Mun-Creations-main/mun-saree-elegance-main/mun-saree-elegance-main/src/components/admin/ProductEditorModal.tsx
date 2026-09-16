@@ -8,6 +8,7 @@ import {
   updateAdminProduct,
   uploadAdminImage,
 } from "@/lib/admin-client";
+import { resolveProductImageUrl, handleProductImageError } from "@/lib/image-utils";
 import {
   X,
   Save,
@@ -140,7 +141,8 @@ export function ProductEditorModal({
         priceInr: inrPrice,
         basePriceINR: inrPrice,
         priceUsd: usdPrice,
-        images: product.images && product.images.length > 0 ? product.images : [product.image],
+        image: resolveProductImageUrl(product.image),
+        images: (product.images && product.images.length > 0 ? product.images : [product.image]).map(img => resolveProductImageUrl(img)),
         status: product.status || (product.active ? "active" : "draft"),
       });
     } else {
@@ -901,7 +903,12 @@ export function ProductEditorModal({
                           }`}
                         >
                           <div className="h-32 rounded overflow-hidden bg-black flex items-center justify-center">
-                            <img src={img} alt="Product view" className="h-full w-full object-cover" />
+                            <img
+                              src={resolveProductImageUrl(img)}
+                              alt="Product view"
+                              onError={handleProductImageError}
+                              className="h-full w-full object-cover"
+                            />
                           </div>
 
                           <div className="flex items-center justify-between text-[10px]">
@@ -1424,8 +1431,9 @@ export function ProductEditorModal({
               <div className="max-w-xs mx-auto bg-white text-slate-900 rounded-sm overflow-hidden shadow-xl border border-border">
                 <div className="h-72 bg-secondary/30 relative">
                   <img
-                    src={formData.image || formData.images?.[0] || "/images/placeholder.jpg"}
+                    src={resolveProductImageUrl(formData.image || formData.images?.[0])}
                     alt={formData.name}
+                    onError={handleProductImageError}
                     className="h-full w-full object-cover"
                   />
                   {formData.badge && (

@@ -5,6 +5,7 @@ import { CartProvider, useCart } from "@/lib/cart";
 import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/footer";
 import { backendDB } from "@/lib/backend-api";
+import { resolveProductImageUrl, handleProductImageError } from "@/lib/image-utils";
 import {
   ShoppingBag,
   Trash2,
@@ -188,8 +189,9 @@ function CartContent() {
             <div key={product.id} className="p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
               <Link to="/product/$id" params={{ id: product.id }} className="shrink-0">
                 <img
-                  src={product.image}
+                  src={resolveProductImageUrl(product.image)}
                   alt={product.name}
+                  onError={handleProductImageError}
                   className="h-24 w-20 sm:h-28 sm:w-24 object-cover rounded-xs border border-border"
                 />
               </Link>

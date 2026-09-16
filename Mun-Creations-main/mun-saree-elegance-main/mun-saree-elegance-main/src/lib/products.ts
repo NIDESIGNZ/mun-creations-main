@@ -1,103 +1,54 @@
-import heroSaree from "@/assets/hero-saree.jpg";
-import catSilk from "@/assets/cat-silk.jpg";
-import catBridal from "@/assets/cat-bridal.jpg";
-import catPredraped from "@/assets/cat-predraped.jpg";
-import catCotton from "@/assets/cat-cotton.jpg";
-import productTeal from "@/assets/product-teal.jpg";
-import productPink from "@/assets/product-pink.jpg";
-import storyWeaver from "@/assets/story-weaver.jpg";
-import accBlouse from "@/assets/acc-blouse.jpg";
-import accDupatta from "@/assets/acc-dupatta.jpg";
-import accJewelry from "@/assets/acc-jewelry.jpg";
-import accPotli from "@/assets/acc-potli.jpg";
-import tussarTribalFusion from "@/assets/tussar-tribal-fusion.jpg";
-import tussarTribalFusion2 from "@/assets/tussar-tribal-fusion-2.jpg";
-import tussarTribalFusion3 from "@/assets/tussar-tribal-fusion-3.jpg";
-import tussarTribalFusion4 from "@/assets/tussar-tribal-fusion-4.jpg";
-import tussarTribalFusion5 from "@/assets/tussar-tribal-fusion-5.jpg";
-import tussarTribalFusion6 from "@/assets/tussar-tribal-fusion-6.jpg";
-import kanjeevaramImperialRose1 from "@/assets/kanjeevaram-imperial-rose-1.jpg";
-import kanjeevaramImperialRose2 from "@/assets/kanjeevaram-imperial-rose-2.jpg";
-import kanjeevaram2gRichBorder1 from "@/assets/kanjeevaram-2g-rich-border-1.jpg";
-import kanjeevaram2gRichBorder2 from "@/assets/kanjeevaram-2g-rich-border-2.jpg";
-import kanjeevaram2gRichBorder3 from "@/assets/kanjeevaram-2g-rich-border-3.jpg";
-import kanjeevaram2gRichBorder4 from "@/assets/kanjeevaram-2g-rich-border-4.jpg";
-import paithaniGaumata1 from "@/assets/paithani-gaumata-pure-silk-1.jpg";
-import paithaniGaumata2 from "@/assets/paithani-gaumata-pure-silk-2.jpg";
-import paithaniGaumata3 from "@/assets/paithani-gaumata-pure-silk-3.jpg";
-import paithaniGaumata4 from "@/assets/paithani-gaumata-pure-silk-4.jpg";
-import bandhaniPaithaniMagenta from "@/assets/bandhani-paithani-magenta.jpg";
-import bandhaniPaithaniNavy from "@/assets/bandhani-paithani-navy.jpg";
-import bandhaniPaithaniSkyBlue from "@/assets/bandhani-paithani-skyblue.jpg";
-import bandhaniPaithaniRed from "@/assets/bandhani-paithani-red.jpg";
-import paithaniTripleMunia1 from "@/assets/paithani-triple-munia-1.jpg";
-import paithaniTripleMunia2 from "@/assets/paithani-triple-munia-2.jpg";
-import paithaniTripleMunia3 from "@/assets/paithani-triple-munia-3.jpg";
-import paithaniTripleMunia4 from "@/assets/paithani-triple-munia-4.jpg";
-import paithaniTripleMuniaRed1 from "@/assets/paithani-triple-munia-red-1.jpg";
-import paithaniTripleMuniaRed2 from "@/assets/paithani-triple-munia-red-2.jpg";
-import paithaniTripleMuniaRed3 from "@/assets/paithani-triple-munia-red-3.jpg";
-import paithaniTripleMuniaRed4 from "@/assets/paithani-triple-munia-red-4.jpg";
-import kanjivaramMagentaGoldZari1 from "@/assets/kanjivaram-magenta-gold-zari-1.jpg";
-import kanjivaramMagentaGoldZari2 from "@/assets/kanjivaram-magenta-gold-zari-2.jpg";
-import kanjivaramMagentaGoldZari3 from "@/assets/kanjivaram-magenta-gold-zari-3.jpg";
-import kanjivaramMagentaGoldZari4 from "@/assets/kanjivaram-magenta-gold-zari-4.jpg";
-import kanjivaramMagentaGoldZari5 from "@/assets/kanjivaram-magenta-gold-zari-5.jpg";
-import kanchipuram2gVintage1 from "@/assets/kanchipuram-2g-vintage-1.jpg";
-import kanchipuram2gVintage2 from "@/assets/kanchipuram-2g-vintage-2.jpg";
-import kanchipuram2gVintage3 from "@/assets/kanchipuram-2g-vintage-3.jpg";
-import kanchipuram2gVintage4 from "@/assets/kanchipuram-2g-vintage-4.jpg";
-import organza5plyKoaGoldZari1 from "@/assets/organza-5ply-koa-gold-zari-1.jpg";
-import organza5plyKoaGoldZari2 from "@/assets/organza-5ply-koa-gold-zari-2.jpg";
-
-
-export {
-  heroSaree,
-  catSilk,
-  catBridal,
-  catPredraped,
-  catCotton,
-  productTeal,
-  productPink,
-  storyWeaver,
-  accBlouse,
-  accDupatta,
-  accJewelry,
-  accPotli,
-  tussarTribalFusion,
-  tussarTribalFusion2,
-  tussarTribalFusion3,
-  tussarTribalFusion4,
-  tussarTribalFusion5,
-  tussarTribalFusion6,
-  kanjeevaramImperialRose1,
-  kanjeevaramImperialRose2,
-  kanjeevaram2gRichBorder1,
-  kanjeevaram2gRichBorder2,
-  kanjeevaram2gRichBorder3,
-  kanjeevaram2gRichBorder4,
-  paithaniGaumata1,
-  paithaniGaumata2,
-  paithaniGaumata3,
-  paithaniGaumata4,
-  bandhaniPaithaniMagenta,
-  bandhaniPaithaniNavy,
-  bandhaniPaithaniSkyBlue,
-  bandhaniPaithaniRed,
-  paithaniTripleMunia1,
-  paithaniTripleMunia2,
-  paithaniTripleMunia3,
-  paithaniTripleMunia4,
-  paithaniTripleMuniaRed1,
-  paithaniTripleMuniaRed2,
-  paithaniTripleMuniaRed3,
-  paithaniTripleMuniaRed4,
-  kanjivaramMagentaGoldZari1,
-  kanjivaramMagentaGoldZari2,
-  kanjivaramMagentaGoldZari3,
-  kanjivaramMagentaGoldZari4,
-  kanjivaramMagentaGoldZari5,
-};
+export const heroSaree = "/images/products/hero-saree.jpg";
+export const catSilk = "/images/products/cat-silk.jpg";
+export const catBridal = "/images/products/cat-bridal.jpg";
+export const catPredraped = "/images/products/cat-predraped.jpg";
+export const catCotton = "/images/products/cat-cotton.jpg";
+export const productTeal = "/images/products/product-teal.jpg";
+export const productPink = "/images/products/product-pink.jpg";
+export const storyWeaver = "/images/products/story-weaver.jpg";
+export const accBlouse = "/images/products/acc-blouse.jpg";
+export const accDupatta = "/images/products/acc-dupatta.jpg";
+export const accJewelry = "/images/products/acc-jewelry.jpg";
+export const accPotli = "/images/products/acc-potli.jpg";
+export const tussarTribalFusion = "/images/products/tussar-tribal-fusion.jpg";
+export const tussarTribalFusion2 = "/images/products/tussar-tribal-fusion-2.jpg";
+export const tussarTribalFusion3 = "/images/products/tussar-tribal-fusion-3.jpg";
+export const tussarTribalFusion4 = "/images/products/tussar-tribal-fusion-4.jpg";
+export const tussarTribalFusion5 = "/images/products/tussar-tribal-fusion-5.jpg";
+export const tussarTribalFusion6 = "/images/products/tussar-tribal-fusion-6.jpg";
+export const kanjeevaramImperialRose1 = "/images/products/kanjeevaram-imperial-rose-1.jpg";
+export const kanjeevaramImperialRose2 = "/images/products/kanjeevaram-imperial-rose-2.jpg";
+export const kanjeevaram2gRichBorder1 = "/images/products/kanjeevaram-2g-rich-border-1.jpg";
+export const kanjeevaram2gRichBorder2 = "/images/products/kanjeevaram-2g-rich-border-2.jpg";
+export const kanjeevaram2gRichBorder3 = "/images/products/kanjeevaram-2g-rich-border-3.jpg";
+export const kanjeevaram2gRichBorder4 = "/images/products/kanjeevaram-2g-rich-border-4.jpg";
+export const paithaniGaumata1 = "/images/products/paithani-gaumata-pure-silk-1.jpg";
+export const paithaniGaumata2 = "/images/products/paithani-gaumata-pure-silk-2.jpg";
+export const paithaniGaumata3 = "/images/products/paithani-gaumata-pure-silk-3.jpg";
+export const paithaniGaumata4 = "/images/products/paithani-gaumata-pure-silk-4.jpg";
+export const bandhaniPaithaniMagenta = "/images/products/bandhani-paithani-magenta.jpg";
+export const bandhaniPaithaniNavy = "/images/products/bandhani-paithani-navy.jpg";
+export const bandhaniPaithaniSkyBlue = "/images/products/bandhani-paithani-skyblue.jpg";
+export const bandhaniPaithaniRed = "/images/products/bandhani-paithani-red.jpg";
+export const paithaniTripleMunia1 = "/images/products/paithani-triple-munia-1.jpg";
+export const paithaniTripleMunia2 = "/images/products/paithani-triple-munia-2.jpg";
+export const paithaniTripleMunia3 = "/images/products/paithani-triple-munia-3.jpg";
+export const paithaniTripleMunia4 = "/images/products/paithani-triple-munia-4.jpg";
+export const paithaniTripleMuniaRed1 = "/images/products/paithani-triple-munia-red-1.jpg";
+export const paithaniTripleMuniaRed2 = "/images/products/paithani-triple-munia-red-2.jpg";
+export const paithaniTripleMuniaRed3 = "/images/products/paithani-triple-munia-red-3.jpg";
+export const paithaniTripleMuniaRed4 = "/images/products/paithani-triple-munia-red-4.jpg";
+export const kanjivaramMagentaGoldZari1 = "/images/products/kanjivaram-magenta-gold-zari-1.jpg";
+export const kanjivaramMagentaGoldZari2 = "/images/products/kanjivaram-magenta-gold-zari-2.jpg";
+export const kanjivaramMagentaGoldZari3 = "/images/products/kanjivaram-magenta-gold-zari-3.jpg";
+export const kanjivaramMagentaGoldZari4 = "/images/products/kanjivaram-magenta-gold-zari-4.jpg";
+export const kanjivaramMagentaGoldZari5 = "/images/products/kanjivaram-magenta-gold-zari-5.jpg";
+export const kanchipuram2gVintage1 = "/images/products/kanchipuram-2g-vintage-1.jpg";
+export const kanchipuram2gVintage2 = "/images/products/kanchipuram-2g-vintage-2.jpg";
+export const kanchipuram2gVintage3 = "/images/products/kanchipuram-2g-vintage-3.jpg";
+export const kanchipuram2gVintage4 = "/images/products/kanchipuram-2g-vintage-4.jpg";
+export const organza5plyKoaGoldZari1 = "/images/products/organza-5ply-koa-gold-zari-1.jpg";
+export const organza5plyKoaGoldZari2 = "/images/products/organza-5ply-koa-gold-zari-2.jpg";
 
 import { normalizeColor } from "./colors";
 

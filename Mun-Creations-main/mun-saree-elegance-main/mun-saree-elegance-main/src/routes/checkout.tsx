@@ -5,6 +5,7 @@ import { CartProvider, useCart } from "@/lib/cart";
 import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/footer";
 import { CartDrawer } from "@/components/site/cart-drawer";
+import { resolveProductImageUrl, handleProductImageError } from "@/lib/image-utils";
 import {
   ShieldCheck,
   Lock,
@@ -841,8 +842,9 @@ function CheckoutContent() {
               {items.map((item) => (
                 <div key={item.product.id} className="pt-3 first:pt-0 flex gap-3 items-center">
                   <img
-                    src={item.product.images?.[0] || item.product.image}
+                    src={resolveProductImageUrl(item.product.images?.[0] || item.product.image)}
                     alt={item.product.name}
+                    onError={handleProductImageError}
                     className="w-14 h-18 object-cover rounded-xs border border-border/60 shrink-0"
                   />
                   <div className="flex-1 min-w-0">

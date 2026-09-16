@@ -44,17 +44,17 @@
     "priceTier": "Luxury",
     "vendor": "Mun Creations",
     "badge": "bestseller",
-    "image": "/src/assets/kanjeevaram-imperial-rose-1.jpg",
+    "image": "/images/products/kanjeevaram-imperial-rose-1.jpg",
     "images": [
-      "/src/assets/kanjeevaram-imperial-rose-1.jpg",
-      "/src/assets/kanjeevaram-imperial-rose-2.jpg"
+      "/images/products/kanjeevaram-imperial-rose-1.jpg",
+      "/images/products/kanjeevaram-imperial-rose-2.jpg"
     ],
     "galleryImages": {
-      "front": "/src/assets/kanjeevaram-imperial-rose-1.jpg",
-      "model": "/src/assets/kanjeevaram-imperial-rose-1.jpg",
-      "pallu": "/src/assets/kanjeevaram-imperial-rose-2.jpg",
-      "border": "/src/assets/kanjeevaram-imperial-rose-1.jpg",
-      "closeUp": "/src/assets/kanjeevaram-imperial-rose-2.jpg"
+      "front": "/images/products/kanjeevaram-imperial-rose-1.jpg",
+      "model": "/images/products/kanjeevaram-imperial-rose-1.jpg",
+      "pallu": "/images/products/kanjeevaram-imperial-rose-2.jpg",
+      "border": "/images/products/kanjeevaram-imperial-rose-1.jpg",
+      "closeUp": "/images/products/kanjeevaram-imperial-rose-2.jpg"
     },
     "swatches": [
       "#b76e79",
@@ -75,7 +75,7 @@
     "trackInventory": true,
     "published": true,
     "active": true,
-    "thumbnail": "/src/assets/kanjeevaram-imperial-rose-1.jpg",
+    "thumbnail": "/images/products/kanjeevaram-imperial-rose-1.jpg",
     "featured": true,
     "bestSeller": true,
     "newArrival": false,
@@ -137,22 +137,22 @@
     "priceTier": "Luxury",
     "vendor": "Mun Creations",
     "badge": "bestseller",
-    "image": "/src/assets/tussar-tribal-fusion.jpg",
+    "image": "/images/products/tussar-tribal-fusion.jpg",
     "images": [
-      "/src/assets/tussar-tribal-fusion.jpg",
-      "/src/assets/tussar-tribal-fusion-2.jpg",
-      "/src/assets/tussar-tribal-fusion-3.jpg",
-      "/src/assets/tussar-tribal-fusion-4.jpg",
-      "/src/assets/tussar-tribal-fusion-5.jpg",
-      "/src/assets/tussar-tribal-fusion-6.jpg"
+      "/images/products/tussar-tribal-fusion.jpg",
+      "/images/products/tussar-tribal-fusion-2.jpg",
+      "/images/products/tussar-tribal-fusion-3.jpg",
+      "/images/products/tussar-tribal-fusion-4.jpg",
+      "/images/products/tussar-tribal-fusion-5.jpg",
+      "/images/products/tussar-tribal-fusion-6.jpg"
     ],
     "galleryImages": {
-      "model": "/src/assets/tussar-tribal-fusion.jpg",
-      "pallu": "/src/assets/tussar-tribal-fusion-2.jpg",
-      "border": "/src/assets/tussar-tribal-fusion-3.jpg",
-      "fabricDetail": "/src/assets/tussar-tribal-fusion-4.jpg",
-      "closeUp": "/src/assets/tussar-tribal-fusion-5.jpg",
-      "front": "/src/assets/tussar-tribal-fusion-6.jpg"
+      "model": "/images/products/tussar-tribal-fusion.jpg",
+      "pallu": "/images/products/tussar-tribal-fusion-2.jpg",
+      "border": "/images/products/tussar-tribal-fusion-3.jpg",
+      "fabricDetail": "/images/products/tussar-tribal-fusion-4.jpg",
+      "closeUp": "/images/products/tussar-tribal-fusion-5.jpg",
+      "front": "/images/products/tussar-tribal-fusion-6.jpg"
     },
     "swatches": [
       "#800020",
@@ -171,7 +171,7 @@
     "trackInventory": true,
     "published": true,
     "active": true,
-    "thumbnail": "/src/assets/tussar-tribal-fusion.jpg",
+    "thumbnail": "/images/products/tussar-tribal-fusion.jpg",
     "featured": true,
     "bestSeller": true,
     "newArrival": false,
@@ -235,19 +235,19 @@
     "priceTier": "Premium",
     "vendor": "Mun Creations",
     "badge": "new",
-    "image": "/src/assets/kanjeevaram-2g-rich-border-1.jpg",
+    "image": "/images/products/kanjeevaram-2g-rich-border-1.jpg",
     "images": [
-      "/src/assets/kanjeevaram-2g-rich-border-1.jpg",
-      "/src/assets/kanjeevaram-2g-rich-border-2.jpg",
-      "/src/assets/kanjeevaram-2g-rich-border-3.jpg",
-      "/src/assets/kanjeevaram-2g-rich-border-4.jpg"
+      "/images/products/kanjeevaram-2g-rich-border-1.jpg",
+      "/images/products/kanjeevaram-2g-rich-border-2.jpg",
+      "/images/products/kanjeevaram-2g-rich-border-3.jpg",
+      "/images/products/kanjeevaram-2g-rich-border-4.jpg"
     ],
     "galleryImages": {
-      "front": "/src/assets/kanjeevaram-2g-rich-border-1.jpg",
-      "pallu": "/src/assets/kanjeevaram-2g-rich-border-3.jpg",
-      "border": "/src/assets/kanjeevaram-2g-rich-border-2.jpg",
-      "closeUp": "/src/assets/kanjeevaram-2g-rich-border-4.jpg",
-      "model": "/src/assets/kanjeevaram-2g-rich-border-1.jpg"
+      "front": "/images/products/kanjeevaram-2g-rich-border-1.jpg",
+      "pallu": "/images/products/kanjeevaram-2g-rich-border-3.jpg",
+      "border": "/images/products/kanjeevaram-2g-rich-border-2.jpg",
+      "closeUp": "/images/products/kanjeevaram-2g-rich-border-4.jpg",
+      "model": "/images/products/kanjeevaram-2g-rich-border-1.jpg"
     },
     "swatches": [
       "#d9531e",
@@ -277,7 +277,7 @@
     "trackInventory": true,
     "published": true,
     "active": true,
-    "thumbnail": "/src/assets/kanjeevaram-2g-rich-border-1.jpg",
+    "thumbnail": "/images/products/kanjeevaram-2g-rich-border-1.jpg",
     "featured": false,
     "bestSeller": false,
     "newArrival": true,
@@ -342,19 +342,19 @@
     "priceTier": "Premium",
     "vendor": "Mun Creations",
     "badge": "new",
-    "image": "/src/assets/paithani-gaumata-pure-silk-1.jpg",
+    "image": "/images/products/paithani-gaumata-pure-silk-1.jpg",
     "images": [
-      "/src/assets/paithani-gaumata-pure-silk-1.jpg",
-      "/src/assets/paithani-gaumata-pure-silk-2.jpg",
-      "/src/assets/paithani-gaumata-pure-silk-3.jpg",
-      "/src/assets/paithani-gaumata-pure-silk-4.jpg"
+      "/images/products/paithani-gaumata-pure-silk-1.jpg",
+      "/images/products/paithani-gaumata-pure-silk-2.jpg",
+      "/images/products/paithani-gaumata-pure-silk-3.jpg",
+      "/images/products/paithani-gaumata-pure-silk-4.jpg"
     ],
     "galleryImages": {
-      "front": "/src/assets/paithani-gaumata-pure-silk-1.jpg",
-      "pallu": "/src/assets/paithani-gaumata-pure-silk-2.jpg",
-      "border": "/src/assets/paithani-gaumata-pure-silk-3.jpg",
-      "closeUp": "/src/assets/paithani-gaumata-pure-silk-4.jpg",
-      "model": "/src/assets/paithani-gaumata-pure-silk-1.jpg"
+      "front": "/images/products/paithani-gaumata-pure-silk-1.jpg",
+      "pallu": "/images/products/paithani-gaumata-pure-silk-2.jpg",
+      "border": "/images/products/paithani-gaumata-pure-silk-3.jpg",
+      "closeUp": "/images/products/paithani-gaumata-pure-silk-4.jpg",
+      "model": "/images/products/paithani-gaumata-pure-silk-1.jpg"
     },
     "swatches": [
       "#fbf8f0",
@@ -386,7 +386,7 @@
     "trackInventory": true,
     "published": true,
     "active": true,
-    "thumbnail": "/src/assets/paithani-gaumata-pure-silk-1.jpg",
+    "thumbnail": "/images/products/paithani-gaumata-pure-silk-1.jpg",
     "featured": false,
     "bestSeller": false,
     "newArrival": true,
@@ -451,19 +451,19 @@
     "priceTier": "Luxury",
     "vendor": "Mun Creations",
     "badge": "bestseller",
-    "image": "/src/assets/bandhani-paithani-magenta.jpg",
+    "image": "/images/products/bandhani-paithani-magenta.jpg",
     "images": [
-      "/src/assets/bandhani-paithani-magenta.jpg",
-      "/src/assets/bandhani-paithani-navy.jpg",
-      "/src/assets/bandhani-paithani-skyblue.jpg",
-      "/src/assets/bandhani-paithani-red.jpg"
+      "/images/products/bandhani-paithani-magenta.jpg",
+      "/images/products/bandhani-paithani-navy.jpg",
+      "/images/products/bandhani-paithani-skyblue.jpg",
+      "/images/products/bandhani-paithani-red.jpg"
     ],
     "galleryImages": {
-      "front": "/src/assets/bandhani-paithani-magenta.jpg",
-      "pallu": "/src/assets/bandhani-paithani-navy.jpg",
-      "border": "/src/assets/bandhani-paithani-skyblue.jpg",
-      "closeUp": "/src/assets/bandhani-paithani-red.jpg",
-      "model": "/src/assets/bandhani-paithani-magenta.jpg"
+      "front": "/images/products/bandhani-paithani-magenta.jpg",
+      "pallu": "/images/products/bandhani-paithani-navy.jpg",
+      "border": "/images/products/bandhani-paithani-skyblue.jpg",
+      "closeUp": "/images/products/bandhani-paithani-red.jpg",
+      "model": "/images/products/bandhani-paithani-magenta.jpg"
     },
     "swatches": [
       "#7a1863",
@@ -497,7 +497,7 @@
     "trackInventory": true,
     "published": true,
     "active": true,
-    "thumbnail": "/src/assets/bandhani-paithani-magenta.jpg",
+    "thumbnail": "/images/products/bandhani-paithani-magenta.jpg",
     "featured": true,
     "bestSeller": true,
     "newArrival": false,
@@ -562,19 +562,19 @@
     "priceTier": "Luxury",
     "vendor": "Mun Creations",
     "badge": "new",
-    "image": "/src/assets/paithani-triple-munia-3.jpg",
+    "image": "/images/products/paithani-triple-munia-3.jpg",
     "images": [
-      "/src/assets/paithani-triple-munia-3.jpg",
-      "/src/assets/paithani-triple-munia-1.jpg",
-      "/src/assets/paithani-triple-munia-2.jpg",
-      "/src/assets/paithani-triple-munia-4.jpg"
+      "/images/products/paithani-triple-munia-3.jpg",
+      "/images/products/paithani-triple-munia-1.jpg",
+      "/images/products/paithani-triple-munia-2.jpg",
+      "/images/products/paithani-triple-munia-4.jpg"
     ],
     "galleryImages": {
-      "front": "/src/assets/paithani-triple-munia-3.jpg",
-      "pallu": "/src/assets/paithani-triple-munia-1.jpg",
-      "border": "/src/assets/paithani-triple-munia-2.jpg",
-      "closeUp": "/src/assets/paithani-triple-munia-4.jpg",
-      "model": "/src/assets/paithani-triple-munia-3.jpg"
+      "front": "/images/products/paithani-triple-munia-3.jpg",
+      "pallu": "/images/products/paithani-triple-munia-1.jpg",
+      "border": "/images/products/paithani-triple-munia-2.jpg",
+      "closeUp": "/images/products/paithani-triple-munia-4.jpg",
+      "model": "/images/products/paithani-triple-munia-3.jpg"
     },
     "swatches": [
       "#e0007b",
@@ -606,7 +606,7 @@
     "trackInventory": true,
     "published": true,
     "active": true,
-    "thumbnail": "/src/assets/paithani-triple-munia-3.jpg",
+    "thumbnail": "/images/products/paithani-triple-munia-3.jpg",
     "featured": true,
     "bestSeller": false,
     "newArrival": true,
@@ -671,19 +671,19 @@
     "priceTier": "Luxury",
     "vendor": "Mun Creations",
     "badge": "new",
-    "image": "/src/assets/paithani-triple-munia-red-1.jpg",
+    "image": "/images/products/paithani-triple-munia-red-1.jpg",
     "images": [
-      "/src/assets/paithani-triple-munia-red-1.jpg",
-      "/src/assets/paithani-triple-munia-red-2.jpg",
-      "/src/assets/paithani-triple-munia-red-3.jpg",
-      "/src/assets/paithani-triple-munia-red-4.jpg"
+      "/images/products/paithani-triple-munia-red-1.jpg",
+      "/images/products/paithani-triple-munia-red-2.jpg",
+      "/images/products/paithani-triple-munia-red-3.jpg",
+      "/images/products/paithani-triple-munia-red-4.jpg"
     ],
     "galleryImages": {
-      "front": "/src/assets/paithani-triple-munia-red-1.jpg",
-      "pallu": "/src/assets/paithani-triple-munia-red-2.jpg",
-      "border": "/src/assets/paithani-triple-munia-red-3.jpg",
-      "closeUp": "/src/assets/paithani-triple-munia-red-4.jpg",
-      "model": "/src/assets/paithani-triple-munia-red-1.jpg"
+      "front": "/images/products/paithani-triple-munia-red-1.jpg",
+      "pallu": "/images/products/paithani-triple-munia-red-2.jpg",
+      "border": "/images/products/paithani-triple-munia-red-3.jpg",
+      "closeUp": "/images/products/paithani-triple-munia-red-4.jpg",
+      "model": "/images/products/paithani-triple-munia-red-1.jpg"
     },
     "swatches": [
       "#d50000",
@@ -715,7 +715,7 @@
     "trackInventory": true,
     "published": true,
     "active": true,
-    "thumbnail": "/src/assets/paithani-triple-munia-red-1.jpg",
+    "thumbnail": "/images/products/paithani-triple-munia-red-1.jpg",
     "featured": true,
     "bestSeller": false,
     "newArrival": true,
@@ -870,20 +870,20 @@
     "priceTier": "Luxury",
     "vendor": "Mun Creations",
     "badge": "bestseller",
-    "image": "/src/assets/kanjivaram-magenta-gold-zari-1.jpg",
+    "image": "/images/products/kanjivaram-magenta-gold-zari-1.jpg",
     "images": [
-      "/src/assets/kanjivaram-magenta-gold-zari-1.jpg",
-      "/src/assets/kanjivaram-magenta-gold-zari-2.jpg",
-      "/src/assets/kanjivaram-magenta-gold-zari-3.jpg",
-      "/src/assets/kanjivaram-magenta-gold-zari-4.jpg",
-      "/src/assets/kanjivaram-magenta-gold-zari-5.jpg"
+      "/images/products/kanjivaram-magenta-gold-zari-1.jpg",
+      "/images/products/kanjivaram-magenta-gold-zari-2.jpg",
+      "/images/products/kanjivaram-magenta-gold-zari-3.jpg",
+      "/images/products/kanjivaram-magenta-gold-zari-4.jpg",
+      "/images/products/kanjivaram-magenta-gold-zari-5.jpg"
     ],
     "galleryImages": {
-      "front": "/src/assets/kanjivaram-magenta-gold-zari-1.jpg",
-      "pallu": "/src/assets/kanjivaram-magenta-gold-zari-2.jpg",
-      "border": "/src/assets/kanjivaram-magenta-gold-zari-3.jpg",
-      "closeUp": "/src/assets/kanjivaram-magenta-gold-zari-4.jpg",
-      "model": "/src/assets/kanjivaram-magenta-gold-zari-1.jpg"
+      "front": "/images/products/kanjivaram-magenta-gold-zari-1.jpg",
+      "pallu": "/images/products/kanjivaram-magenta-gold-zari-2.jpg",
+      "border": "/images/products/kanjivaram-magenta-gold-zari-3.jpg",
+      "closeUp": "/images/products/kanjivaram-magenta-gold-zari-4.jpg",
+      "model": "/images/products/kanjivaram-magenta-gold-zari-1.jpg"
     },
     "swatches": [
       "#c2185b",
@@ -915,7 +915,7 @@
     "trackInventory": true,
     "published": true,
     "active": true,
-    "thumbnail": "/src/assets/kanjivaram-magenta-gold-zari-1.jpg",
+    "thumbnail": "/images/products/kanjivaram-magenta-gold-zari-1.jpg",
     "featured": true,
     "bestSeller": true,
     "newArrival": true,
@@ -980,19 +980,19 @@
     "priceTier": "Mid",
     "vendor": "Mun Creations",
     "badge": "new",
-    "image": "/src/assets/kanchipuram-2g-vintage-1.jpg",
+    "image": "/images/products/kanchipuram-2g-vintage-1.jpg",
     "images": [
-      "/src/assets/kanchipuram-2g-vintage-1.jpg",
-      "/src/assets/kanchipuram-2g-vintage-3.jpg",
-      "/src/assets/kanchipuram-2g-vintage-4.jpg",
-      "/src/assets/kanchipuram-2g-vintage-2.jpg"
+      "/images/products/kanchipuram-2g-vintage-1.jpg",
+      "/images/products/kanchipuram-2g-vintage-3.jpg",
+      "/images/products/kanchipuram-2g-vintage-4.jpg",
+      "/images/products/kanchipuram-2g-vintage-2.jpg"
     ],
     "galleryImages": {
-      "front": "/src/assets/kanchipuram-2g-vintage-1.jpg",
-      "pallu": "/src/assets/kanchipuram-2g-vintage-3.jpg",
-      "border": "/src/assets/kanchipuram-2g-vintage-4.jpg",
-      "closeUp": "/src/assets/kanchipuram-2g-vintage-4.jpg",
-      "model": "/src/assets/kanchipuram-2g-vintage-1.jpg"
+      "front": "/images/products/kanchipuram-2g-vintage-1.jpg",
+      "pallu": "/images/products/kanchipuram-2g-vintage-3.jpg",
+      "border": "/images/products/kanchipuram-2g-vintage-4.jpg",
+      "closeUp": "/images/products/kanchipuram-2g-vintage-4.jpg",
+      "model": "/images/products/kanchipuram-2g-vintage-1.jpg"
     },
     "swatches": [
       "#f4a6b8",
@@ -1036,7 +1036,7 @@
     "trackInventory": true,
     "published": true,
     "active": true,
-    "thumbnail": "/src/assets/kanchipuram-2g-vintage-1.jpg",
+    "thumbnail": "/images/products/kanchipuram-2g-vintage-1.jpg",
     "featured": true,
     "bestSeller": false,
     "newArrival": true,
@@ -1101,17 +1101,17 @@
     "priceTier": "Classic",
     "vendor": "Mun Creations",
     "badge": "new",
-    "image": "/src/assets/organza-5ply-koa-gold-zari-1.jpg",
+    "image": "/images/products/organza-5ply-koa-gold-zari-1.jpg",
     "images": [
-      "/src/assets/organza-5ply-koa-gold-zari-1.jpg",
-      "/src/assets/organza-5ply-koa-gold-zari-2.jpg"
+      "/images/products/organza-5ply-koa-gold-zari-1.jpg",
+      "/images/products/organza-5ply-koa-gold-zari-2.jpg"
     ],
     "galleryImages": {
-      "front": "/src/assets/organza-5ply-koa-gold-zari-1.jpg",
-      "pallu": "/src/assets/organza-5ply-koa-gold-zari-1.jpg",
-      "border": "/src/assets/organza-5ply-koa-gold-zari-2.jpg",
-      "closeUp": "/src/assets/organza-5ply-koa-gold-zari-1.jpg",
-      "model": "/src/assets/organza-5ply-koa-gold-zari-2.jpg"
+      "front": "/images/products/organza-5ply-koa-gold-zari-1.jpg",
+      "pallu": "/images/products/organza-5ply-koa-gold-zari-1.jpg",
+      "border": "/images/products/organza-5ply-koa-gold-zari-2.jpg",
+      "closeUp": "/images/products/organza-5ply-koa-gold-zari-1.jpg",
+      "model": "/images/products/organza-5ply-koa-gold-zari-2.jpg"
     },
     "swatches": [
       "#76c7c0",
@@ -1152,7 +1152,7 @@
     "trackInventory": true,
     "published": true,
     "active": true,
-    "thumbnail": "/src/assets/organza-5ply-koa-gold-zari-1.jpg",
+    "thumbnail": "/images/products/organza-5ply-koa-gold-zari-1.jpg",
     "featured": true,
     "bestSeller": false,
     "newArrival": true,
