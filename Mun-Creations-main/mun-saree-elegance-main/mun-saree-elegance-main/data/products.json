@@ -67,7 +67,7 @@
     "storageInstructions": "Store wrapped in muslin cloth to preserve metallic tissue sheen.",
     "shippingInformation": "Free insured worldwide courier dispatch with Silk Mark Certification.",
     "returnExchangeInfo": "Insured returns and 7-day exchange window.",
-    "price": 200,
+    "price": 16500,
     "compareAtPrice": 260,
     "currency": "USD",
     "stock": 2,
@@ -85,7 +85,14 @@
     "createdAt": "2026-09-05T04:58:54.618Z",
     "updatedAt": "2026-09-16T04:58:54.618Z",
     "createdBy": "system_seed",
-    "updatedBy": "system_seed"
+    "updatedBy": "system_seed",
+    "colors": [
+      "Rose Gold",
+      "Gold"
+    ],
+    "colorCombination": "Imperial Rose / Metallic Rose Gold",
+    "priceInr": 16500,
+    "basePriceINR": 16500
   },
   {
     "id": "p5",
@@ -157,7 +164,7 @@
     "storageInstructions": "Store wrapped in muslin cloth away from direct sunlight.",
     "shippingInformation": "Free insured worldwide shipping with Silk Mark Certificate.",
     "returnExchangeInfo": "Insured returns and 7-day exchange window.",
-    "price": 350,
+    "price": 29000,
     "currency": "USD",
     "stock": 1,
     "lowStockThreshold": 2,
@@ -174,7 +181,14 @@
     "createdAt": "2026-09-06T04:58:54.618Z",
     "updatedAt": "2026-09-16T04:58:54.618Z",
     "createdBy": "system_seed",
-    "updatedBy": "system_seed"
+    "updatedBy": "system_seed",
+    "colors": [
+      "Maroon",
+      "Blue"
+    ],
+    "colorCombination": "Reddish-Maroon & Blue",
+    "priceInr": 29000,
+    "basePriceINR": 29000
   },
   {
     "id": "p10",
@@ -255,7 +269,7 @@
     "storageInstructions": "Wrap in unbleached pure cotton or muslin fabric. Change folds periodically to preserve zari luster.",
     "shippingInformation": "Free Shipping within India (26,500 INR). Dispatched within 24 hours via insured express air courier.",
     "returnExchangeInfo": "7-day authentication and exchange guarantee.",
-    "price": 318,
+    "price": 26500,
     "compareAtPrice": 395,
     "currency": "USD",
     "stock": 2,
@@ -273,7 +287,14 @@
     "createdAt": "2026-09-11T04:58:54.618Z",
     "updatedAt": "2026-09-16T04:58:54.618Z",
     "createdBy": "system_seed",
-    "updatedBy": "system_seed"
+    "updatedBy": "system_seed",
+    "colors": [
+      "Orange",
+      "Gold"
+    ],
+    "colorCombination": "Rust Orange & Gold",
+    "priceInr": 26500,
+    "basePriceINR": 26500
   },
   {
     "id": "p11",
@@ -357,7 +378,7 @@
     "storageInstructions": "Wrap in a breathable soft cotton or muslin cloth. Periodically air and change folds to maintain silk fibers and weave luster.",
     "shippingInformation": "Pricing: 28,500/- INR. Free Shipping within India included. Dispatched within 24 hours via insured express courier.",
     "returnExchangeInfo": "7-day authentication and exchange guarantee.",
-    "price": 341.32,
+    "price": 28500,
     "compareAtPrice": 420,
     "currency": "USD",
     "stock": 2,
@@ -375,7 +396,14 @@
     "createdAt": "2026-09-12T04:58:54.618Z",
     "updatedAt": "2026-09-16T04:58:54.618Z",
     "createdBy": "system_seed",
-    "updatedBy": "system_seed"
+    "updatedBy": "system_seed",
+    "colors": [
+      "Off-White",
+      "Gold"
+    ],
+    "colorCombination": "Cream / Off-White",
+    "priceInr": 28500,
+    "basePriceINR": 28500
   },
   {
     "id": "p12",
@@ -461,7 +489,7 @@
     "storageInstructions": "Store wrapped in pure unbleached cotton or muslin. Roll or refold periodically along fresh fold lines.",
     "shippingInformation": "Price : Rs.43990/- (Including Roll Press & Shipping within India). Dispatched within 24-48 hours via insured express air courier.",
     "returnExchangeInfo": "7-day authentication and exchange guarantee.",
-    "price": 526.83,
+    "price": 44000,
     "compareAtPrice": 640,
     "currency": "USD",
     "stock": 4,
@@ -479,7 +507,14 @@
     "createdAt": "2026-09-13T04:58:54.618Z",
     "updatedAt": "2026-09-16T04:58:54.618Z",
     "createdBy": "system_seed",
-    "updatedBy": "system_seed"
+    "updatedBy": "system_seed",
+    "colors": [
+      "Pink",
+      "Yellow"
+    ],
+    "colorCombination": "Royal Magenta & Mustard Yellow",
+    "priceInr": 44000,
+    "basePriceINR": 44000
   },
   {
     "id": "p13",
@@ -563,7 +598,7 @@
     "storageInstructions": "Store wrapped inside a soft cotton or muslin cloth. Refold periodically to safeguard silk fibers and metallic zari weave.",
     "shippingInformation": "Price: 35500/- INR. Free Shipping within India included. Dispatched within 24 hours via insured express air courier.",
     "returnExchangeInfo": "7-day authentication and exchange guarantee.",
-    "price": 425.15,
+    "price": 35500,
     "compareAtPrice": 520,
     "currency": "USD",
     "stock": 3,
@@ -581,7 +616,14 @@
     "createdAt": "2026-09-14T04:58:54.618Z",
     "updatedAt": "2026-09-16T04:58:54.618Z",
     "createdBy": "system_seed",
-    "updatedBy": "system_seed"
+    "updatedBy": "system_seed",
+    "colors": [
+      "Pink",
+      "Gold"
+    ],
+    "colorCombination": "Rani Pink & Gold",
+    "priceInr": 35500,
+    "basePriceINR": 35500
   },
   {
     "id": "p14",
@@ -665,7 +707,7 @@
     "storageInstructions": "Store wrapped inside a soft cotton or muslin cloth. Refold periodically to safeguard silk fibers and metallic zari weave.",
     "shippingInformation": "Price: 35500 INR. Free Shipping within India included. Dispatched within 24 hours via insured express air courier.",
     "returnExchangeInfo": "7-day authentication and exchange guarantee.",
-    "price": 425.15,
+    "price": 35500,
     "compareAtPrice": 520,
     "currency": "USD",
     "stock": 3,
@@ -683,7 +725,14 @@
     "createdAt": "2026-09-15T04:58:54.618Z",
     "updatedAt": "2026-09-16T04:58:54.618Z",
     "createdBy": "system_seed",
-    "updatedBy": "system_seed"
+    "updatedBy": "system_seed",
+    "colors": [
+      "Red",
+      "Gold"
+    ],
+    "colorCombination": "Crimson Red & Gold",
+    "priceInr": 35500,
+    "basePriceINR": 35500
   },
   {
     "name": "Automated Acceptance Royal Gold Katan Saree",
@@ -711,7 +760,7 @@
     "seoDescription": "Authentic royal blue handwoven Banarasi saree.",
     "id": "p_1789534734665_253",
     "slug": "automated-acceptance-royal-gold-katan-saree",
-    "price": 450,
+    "price": 37575,
     "currency": "USD",
     "stock": 4,
     "trackInventory": true,
@@ -722,7 +771,8 @@
       "/images/products/hero-saree.webp"
     ],
     "colors": [
-      "Peacock Royal Blue"
+      "Blue",
+      "Gold"
     ],
     "occasion": [
       "Wedding",
@@ -770,7 +820,9 @@
     "createdBy": "admin",
     "updatedBy": "admin",
     "archivedAt": "2026-09-16T05:25:13.483Z",
-    "deletedAt": "2026-09-16T05:25:13.483Z"
+    "deletedAt": "2026-09-16T05:25:13.483Z",
+    "colorCombination": "Peacock Royal Blue & Gold",
+    "basePriceINR": 37575
   },
   {
     "id": "p15",
@@ -855,7 +907,7 @@
     "storageInstructions": "Store wrapped inside unbleached pure cotton or muslin cloth. Refold periodically to preserve gold zari and silk grain.",
     "shippingInformation": "Price: ₹124,500. Complimentary insured express worldwide courier dispatch. Handled with white-glove packaging.",
     "returnExchangeInfo": "7-day authentication and exchange guarantee.",
-    "price": 1495,
+    "price": 125000,
     "compareAtPrice": 1850,
     "currency": "USD",
     "stock": 2,
@@ -873,7 +925,14 @@
     "createdAt": "2026-09-16T12:00:00.000Z",
     "updatedAt": "2026-09-16T12:00:00.000Z",
     "createdBy": "admin_upload",
-    "updatedBy": "admin_upload"
+    "updatedBy": "admin_upload",
+    "colors": [
+      "Pink",
+      "Gold"
+    ],
+    "colorCombination": "Magenta Pink & 1 Gram Gold Zari",
+    "priceInr": 125000,
+    "basePriceINR": 125000
   },
   {
     "id": "p16",
@@ -969,7 +1028,7 @@
     "storageInstructions": "Keep folded in breathable muslin or cotton covers. Periodically change fold lines to preserve zari longevity.",
     "shippingInformation": "Price: Rs.16,700.00. Complimentary insured express delivery across India and worldwide.",
     "returnExchangeInfo": "7-day easy exchange and authenticity guarantee.",
-    "price": 200,
+    "price": 16500,
     "compareAtPrice": 250,
     "currency": "USD",
     "stock": 5,
@@ -987,7 +1046,14 @@
     "createdAt": "2026-09-16T12:55:00.000Z",
     "updatedAt": "2026-09-16T12:55:00.000Z",
     "createdBy": "admin_upload",
-    "updatedBy": "admin_upload"
+    "updatedBy": "admin_upload",
+    "colors": [
+      "Pink",
+      "Silver"
+    ],
+    "colorCombination": "Pastel Rose Pink & Silver",
+    "priceInr": 16500,
+    "basePriceINR": 16500
   },
   {
     "id": "p17",
@@ -1078,7 +1144,7 @@
     "storageInstructions": "Store unfolded or softly folded with tissue paper in a breathable cotton saree bag.",
     "shippingInformation": "Price: Rs.13,500. Complimentary free express shipping included across India and worldwide.",
     "returnExchangeInfo": "7-day exchange and authenticity guarantee.",
-    "price": 165,
+    "price": 13500,
     "compareAtPrice": 210,
     "currency": "USD",
     "stock": 6,
@@ -1096,6 +1162,13 @@
     "createdAt": "2026-09-16T13:20:00.000Z",
     "updatedAt": "2026-09-16T13:20:00.000Z",
     "createdBy": "admin_upload",
-    "updatedBy": "admin_upload"
+    "updatedBy": "admin_upload",
+    "colors": [
+      "Blue",
+      "Gold"
+    ],
+    "colorCombination": "Seafoam Sky Blue & Gold Zari",
+    "priceInr": 13500,
+    "basePriceINR": 13500
   }
 ]

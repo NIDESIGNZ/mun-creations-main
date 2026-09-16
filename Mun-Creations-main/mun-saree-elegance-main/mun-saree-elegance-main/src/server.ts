@@ -673,7 +673,12 @@ async function handleApiRequests(request: Request): Promise<Response | null> {
         const subcategory = url.searchParams.get("subcategory") || undefined;
         const fabric = url.searchParams.get("fabric") || undefined;
         const color = url.searchParams.get("color") || undefined;
+        const colors = url.searchParams.get("colors") || undefined;
         const tier = url.searchParams.get("tier") || undefined;
+        const minPriceStr = url.searchParams.get("minPrice");
+        const maxPriceStr = url.searchParams.get("maxPrice");
+        const minPrice = minPriceStr ? parseFloat(minPriceStr) : undefined;
+        const maxPrice = maxPriceStr ? parseFloat(maxPriceStr) : undefined;
         const search = url.searchParams.get("search") || url.searchParams.get("q") || undefined;
         const sort = url.searchParams.get("sort") || "featured";
         const limitStr = url.searchParams.get("limit");
@@ -686,7 +691,10 @@ async function handleApiRequests(request: Request): Promise<Response | null> {
           subcategory,
           fabric,
           color,
+          colors,
           tier,
+          minPrice,
+          maxPrice,
           search,
           sort,
           limit,

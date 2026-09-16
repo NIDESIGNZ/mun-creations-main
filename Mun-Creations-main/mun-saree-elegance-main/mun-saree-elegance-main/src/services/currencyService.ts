@@ -372,27 +372,77 @@ export async function detectCountryFromIP(): Promise<CurrencyCode | null> {
 
 // 6. Price Conversion & Formatting Engine
 export function convertPrice(
-  baseAmountUsd: number,
+  amount: number,
   targetCurrency: CurrencyCode,
   rates: Record<string, number>,
+  sourceCurrency?: "INR" | "USD",
 ): number {
-  const rate = rates[targetCurrency] || DEFAULT_FALLBACK_RATES[targetCurrency] || 1;
-  const rawConverted = baseAmountUsd * rate;
+  const effectiveRates = rates && Object.keys(rates).length > 0 ? rates : DEFAULT_FALLBACK_RATES;
+  const inrToUsdRate = effectiveRates.INR || DEFAULT_FALLBACK_RATES.INR || 83.5;
+  const targetRate = effectiveRates[targetCurrency] || DEFAULT_FALLBACK_RATES[targetCurrency] || 1;
 
-  const info = SUPPORTED_CURRENCIES[targetCurrency] || SUPPORTED_CURRENCIES.USD;
+  // Determine source currency if not explicitly passed:
+  // Luxury handwoven sarees in INR are typically >= 1000 (e.g. ₹18,500, ₹32,000).
+  // Legacy USD prices are < 1000 (e.g. $280, $350).
+  const isSourceInr = sourceCurrency === "INR" || (sourceCurrency === undefined && amount >= 1000);
+
+  let rawConverted: number;
+  if (isSourceInr) {
+    if (targetCurrency === "INR") {
+      rawConverted = amount;
+    } else {
+      const amountUsd = amount / inrToUsdRate;
+      rawConverted = amountUsd * targetRate;
+    }
+  } else {
+    // Source is USD
+    if (targetCurrency === "USD") {
+      rawConverted = amount;
+    } else {
+      rawConverted = amount * targetRate;
+    }
+  }
+
+  const info = SUPPORTED_CURRENCIES[targetCurrency] || SUPPORTED_CURRENCIES.INR;
   if (info.decimalPlaces === 0) {
     return Math.round(rawConverted);
   }
   return Math.round(rawConverted * 100) / 100;
 }
 
+export type PriceInput = number | { priceInr?: number; basePriceINR?: number; priceUsd?: number; price?: number };
+
 export function formatCurrency(
-  baseAmountUsd: number,
+  input: PriceInput,
   targetCurrency: CurrencyCode,
   rates: Record<string, number>,
+  sourceCurrency?: "INR" | "USD",
 ): string {
   const info = SUPPORTED_CURRENCIES[targetCurrency] || SUPPORTED_CURRENCIES.INR;
-  const converted = convertPrice(baseAmountUsd, targetCurrency, rates);
+  
+  let numericAmount = 0;
+  let detectedSource: "INR" | "USD" = sourceCurrency || "INR";
+
+  if (typeof input === "object" && input !== null) {
+    if (typeof input.priceInr === "number" && input.priceInr > 0) {
+      numericAmount = input.priceInr;
+      detectedSource = "INR";
+    } else if (typeof input.basePriceINR === "number" && input.basePriceINR > 0) {
+      numericAmount = input.basePriceINR;
+      detectedSource = "INR";
+    } else if (typeof input.priceUsd === "number" && input.priceUsd > 0) {
+      numericAmount = input.priceUsd;
+      detectedSource = "USD";
+    } else if (typeof input.price === "number") {
+      numericAmount = input.price;
+      detectedSource = numericAmount >= 1000 ? "INR" : "USD";
+    }
+  } else {
+    numericAmount = Number(input) || 0;
+    detectedSource = sourceCurrency || (numericAmount >= 1000 ? "INR" : "USD");
+  }
+
+  const converted = convertPrice(numericAmount, targetCurrency, rates, detectedSource);
 
   try {
     return new Intl.NumberFormat(undefined, {
@@ -410,3 +460,4 @@ export function formatCurrency(
     return `${info.symbol} ${formattedNum}`;
   }
 }
+

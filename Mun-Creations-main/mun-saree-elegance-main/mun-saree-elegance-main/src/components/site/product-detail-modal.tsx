@@ -153,11 +153,11 @@ export function ProductDetailModal({
               {/* Pricing Box */}
               <div className="flex items-baseline gap-3 pt-1">
                 <span className="font-serif text-2xl font-bold text-[var(--wine-deep)]">
-                  {formatPrice(product.priceUsd)}
+                  {formatPrice(product)}
                 </span>
                 {product.compareAtUsd && (
                   <span className="text-sm text-muted-foreground line-through">
-                    {formatPrice(product.compareAtUsd)}
+                    {formatPrice(product.compareAtUsd, "USD")}
                   </span>
                 )}
                 {product.compareAtUsd && (

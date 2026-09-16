@@ -99,6 +99,8 @@ export {
   kanjivaramMagentaGoldZari5,
 };
 
+import { normalizeColor } from "./colors";
+
 export type ProductFAQ = {
   question: string;
   answer: string;
@@ -121,6 +123,11 @@ export type Product = {
   thumbnail?: string;
   fabric: string;
   color: string;
+  colors?: string[]; // Canonical color tags
+  colorCombination?: string; // e.g. "Reddish-Maroon & Blue"
+  primaryColor?: string;
+  priceInr?: number; // Canonical Base Price in INR
+  basePriceINR?: number;
   occasion?: string[];
   tags?: string[];
   featured?: boolean;
@@ -216,6 +223,16 @@ export function normalizeProduct(p: Partial<Product> & { id: string; name: strin
   const thumbnail = p.thumbnail ?? p.image ?? "";
   const images = p.images && p.images.length > 0 ? p.images : (thumbnail ? [thumbnail] : []);
   const description = p.description ?? p.shortDescription ?? p.fullDescription ?? "";
+  const colorStr = p.color || "Multicolor";
+  const colors = Array.isArray(p.colors) && p.colors.length > 0 ? p.colors : normalizeColor(colorStr);
+  const colorCombination = p.colorCombination || colorStr;
+  const priceInr = typeof p.priceInr === "number" && p.priceInr > 0
+    ? p.priceInr
+    : typeof p.basePriceINR === "number" && p.basePriceINR > 0
+      ? p.basePriceINR
+      : price > 1500
+        ? price
+        : Math.round(price * 83.5);
 
   return {
     ...p,
@@ -233,7 +250,11 @@ export function normalizeProduct(p: Partial<Product> & { id: string; name: strin
     images,
     thumbnail,
     fabric: p.fabric || "Silk",
-    color: p.color || "Multicolor",
+    color: colorStr,
+    colors,
+    colorCombination,
+    priceInr,
+    basePriceINR: priceInr,
     occasion: Array.isArray(p.occasion) ? p.occasion : (p.occasion ? [p.occasion] : []),
     tags: Array.isArray(p.tags) ? p.tags : [p.category, p.fabric].filter(Boolean) as string[],
     featured: p.featured ?? (p.badge === "bestseller" || p.priceTier === "Luxury"),

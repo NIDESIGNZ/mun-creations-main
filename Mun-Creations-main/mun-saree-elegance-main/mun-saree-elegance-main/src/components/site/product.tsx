@@ -129,11 +129,11 @@ export function ProductCard({ product }: { product: Product }) {
 
           <div className="flex items-baseline gap-2 pt-0.5">
             <span className="text-xs sm:text-sm text-[var(--wine)] font-semibold tracking-wide">
-              {formatPrice(product.priceUsd)}
+              {formatPrice(product)}
             </span>
             {product.compareAtUsd && (
               <span className="text-[10px] sm:text-xs text-muted-foreground line-through">
-                {formatPrice(product.compareAtUsd)}
+                {formatPrice(product.compareAtUsd, "USD")}
               </span>
             )}
           </div>

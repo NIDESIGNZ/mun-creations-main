@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import type { Product } from "@/lib/products";
 import { invalidateCatalogCache } from "@/lib/catalog-client";
+import { CANONICAL_COLORS, getColorHex } from "@/lib/colors";
 import {
   createAdminProduct,
   updateAdminProduct,
@@ -59,10 +60,14 @@ export function ProductEditorModal({
     subcategory: "",
     group: "",
     fabric: "Pure Katan Silk",
-    color: "Crimson Red",
-    priceUsd: 280,
-    priceInr: 23380,
-    originalPriceUsd: 350,
+    primaryColor: "Red",
+    colors: ["Red"],
+    colorCombination: "Royal Crimson & Antique Gold Zari",
+    color: "Royal Crimson & Antique Gold Zari",
+    priceInr: 28500,
+    basePriceINR: 28500,
+    priceUsd: 341,
+    originalPriceUsd: 420,
     stockQuantity: 10,
     lowStockThreshold: 2,
     inStock: true,
@@ -108,7 +113,7 @@ export function ProductEditorModal({
   // Live Preview Modal State
   const [showLivePreview, setShowLivePreview] = useState(false);
 
-  // Auto-sync INR price toggle
+  // Auto-sync INR / USD price toggle
   const [autoSyncInr, setAutoSyncInr] = useState(true);
 
   // Temporary Media inputs
@@ -118,8 +123,23 @@ export function ProductEditorModal({
   // Initialize form
   useEffect(() => {
     if (product) {
+      const primary = product.primaryColor || (product.colors && product.colors[0]) || "Red";
+      const colors = product.colors && product.colors.length > 0 ? product.colors : [primary];
+      const inrPrice =
+        product.priceInr ||
+        product.basePriceINR ||
+        (product.priceUsd ? Math.round(product.priceUsd * 83.5) : 25000);
+      const usdPrice =
+        product.priceUsd || Math.round((inrPrice / 83.5) * 100) / 100;
+
       setFormData({
         ...product,
+        primaryColor: primary,
+        colors,
+        colorCombination: product.colorCombination || product.color || "",
+        priceInr: inrPrice,
+        basePriceINR: inrPrice,
+        priceUsd: usdPrice,
         images: product.images && product.images.length > 0 ? product.images : [product.image],
         status: product.status || (product.active ? "active" : "draft"),
       });
@@ -133,9 +153,13 @@ export function ProductEditorModal({
         category: categories[0] || "Banarasi",
         subcategory: "Katan Silk",
         fabric: "Pure Katan Silk",
-        color: "Royal Red",
-        priceUsd: 350,
-        priceInr: Math.round(350 * 83.5),
+        primaryColor: "Red",
+        colors: ["Red"],
+        colorCombination: "Royal Red & Gold Zari",
+        color: "Royal Red & Gold Zari",
+        priceInr: 28500,
+        basePriceINR: 28500,
+        priceUsd: 341,
         originalPriceUsd: 420,
         stockQuantity: 5,
         lowStockThreshold: 2,
@@ -176,10 +200,16 @@ export function ProductEditorModal({
           .replace(/^-+|-+$/g, "");
       }
 
-      // Auto-sync INR price
+      // Auto-sync INR / USD price bidirectionally
+      if (field === "priceInr" && autoSyncInr) {
+        const numInr = parseFloat(value) || 0;
+        updated.priceUsd = Math.round((numInr / 83.5) * 100) / 100;
+        updated.basePriceINR = numInr;
+      }
       if (field === "priceUsd" && autoSyncInr) {
-        const num = parseFloat(value) || 0;
-        updated.priceInr = Math.round(num * 83.5);
+        const numUsd = parseFloat(value) || 0;
+        updated.priceInr = Math.round(numUsd * 83.5);
+        updated.basePriceINR = updated.priceInr;
       }
 
       // Auto-sync stock status
@@ -190,6 +220,40 @@ export function ProductEditorModal({
       }
 
       return updated;
+    });
+  };
+
+  const handlePrimaryColorChange = (col: string) => {
+    setIsDirty(true);
+    setFormData((prev) => {
+      const currentColors = prev.colors && prev.colors.length > 0 ? prev.colors : [];
+      const filtered = currentColors.filter((c) => c !== prev.primaryColor && c !== col);
+      const newColors = [col, ...filtered];
+      return {
+        ...prev,
+        primaryColor: col,
+        colors: newColors,
+        color: prev.colorCombination || col,
+      };
+    });
+  };
+
+  const handleToggleAdditionalColor = (col: string) => {
+    setIsDirty(true);
+    setFormData((prev) => {
+      const primary = prev.primaryColor || "Red";
+      if (col === primary) return prev; // Cannot toggle off the primary color
+      const currentColors = prev.colors && prev.colors.length > 0 ? prev.colors : [primary];
+      let newColors: string[];
+      if (currentColors.includes(col)) {
+        newColors = currentColors.filter((c) => c !== col);
+      } else {
+        newColors = [...currentColors, col];
+      }
+      return {
+        ...prev,
+        colors: newColors,
+      };
     });
   };
 
@@ -298,23 +362,56 @@ export function ProductEditorModal({
       setActiveSection("basic");
       return;
     }
-    if ((formData.priceUsd ?? 0) <= 0) {
-      setErrorMsg("Price (USD) must be greater than $0.");
+    if ((formData.priceInr ?? 0) <= 0 && (formData.priceUsd ?? 0) <= 0) {
+      setErrorMsg("Base Retail Price must be greater than 0.");
       setActiveSection("pricing");
       return;
     }
 
     try {
       setSaving(true);
+
+      const priceInr =
+        formData.priceInr && formData.priceInr > 0
+          ? formData.priceInr
+          : formData.priceUsd
+            ? Math.round(formData.priceUsd * 83.5)
+            : 25000;
+      const priceUsd =
+        formData.priceUsd && formData.priceUsd > 0
+          ? formData.priceUsd
+          : Math.round((priceInr / 83.5) * 100) / 100;
+
+      const primaryColor =
+        formData.primaryColor || (formData.colors && formData.colors[0]) || "Red";
+      const colors =
+        formData.colors && formData.colors.length > 0 ? formData.colors : [primaryColor];
+      const colorCombination =
+        formData.colorCombination || formData.color || primaryColor;
+
+      const payload: Partial<Product> = {
+        ...formData,
+        priceInr,
+        basePriceINR: priceInr,
+        price: priceInr,
+        priceUsd,
+        primaryColor,
+        colors,
+        colorCombination,
+        color: colorCombination,
+      };
+
       let saved: Product;
       if (isEditing && product?.id) {
-        saved = await updateAdminProduct(product.id, formData);
+        saved = await updateAdminProduct(product.id, payload);
       } else {
-        saved = await createAdminProduct(formData);
+        saved = await createAdminProduct(payload);
       }
 
-      // Invalidate public storefront queries immediately
+      // Invalidate public storefront & admin queries immediately
       invalidateCatalogCache(queryClient);
+      queryClient.invalidateQueries({ queryKey: ["admin-products"] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
 
       setSuccessMsg("Product saved successfully to database!");
       setIsDirty(false);
@@ -574,22 +671,27 @@ export function ProductEditorModal({
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-1">
-                  <label className="font-bold text-slate-300">Retail Price (USD $) *</label>
+                  <div className="flex items-center justify-between">
+                    <label className="font-bold text-slate-300">Base Retail Price (INR ₹) *</label>
+                    <span className="text-[10px] text-[var(--gold)] font-mono">Canonical Base</span>
+                  </div>
                   <input
                     type="number"
-                    min="1"
-                    step="1"
+                    min="100"
+                    step="50"
                     required
-                    value={formData.priceUsd || ""}
-                    onChange={(e) => handleChange("priceUsd", parseFloat(e.target.value) || 0)}
+                    value={formData.priceInr || ""}
+                    onChange={(e) => handleChange("priceInr", parseInt(e.target.value, 10) || 0)}
+                    placeholder="e.g. 28500"
                     className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded font-mono text-emerald-400 font-bold text-base focus:outline-none focus:border-[var(--gold)]"
                   />
+                  <div className="text-[10px] text-slate-400">Database single source of truth for payments and conversions.</div>
                 </div>
 
                 <div className="space-y-1">
                   <div className="flex items-center justify-between">
-                    <label className="font-bold text-slate-300">Retail Price (INR ₹)</label>
-                    <label className="text-[10px] text-slate-400 flex items-center gap-1">
+                    <label className="font-bold text-slate-300">International Price (USD $)</label>
+                    <label className="text-[10px] text-slate-400 flex items-center gap-1 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={autoSyncInr}
@@ -602,11 +704,13 @@ export function ProductEditorModal({
                   <input
                     type="number"
                     min="1"
+                    step="1"
                     disabled={autoSyncInr}
-                    value={formData.priceInr || ""}
-                    onChange={(e) => handleChange("priceInr", parseInt(e.target.value, 10) || 0)}
+                    value={formData.priceUsd || ""}
+                    onChange={(e) => handleChange("priceUsd", parseFloat(e.target.value) || 0)}
                     className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded font-mono text-white focus:outline-none focus:border-[var(--gold)] disabled:opacity-60"
                   />
+                  <div className="text-[10px] text-slate-400">Calculated international display estimate.</div>
                 </div>
 
                 <div className="space-y-1">
@@ -910,15 +1014,120 @@ export function ProductEditorModal({
                   />
                 </div>
 
-                <div className="space-y-1">
-                  <label className="font-bold text-slate-300">Color / Palette</label>
-                  <input
-                    type="text"
-                    value={formData.color || ""}
-                    onChange={(e) => handleChange("color", e.target.value)}
-                    placeholder="e.g. Royal Crimson, Peacock Teal, Emerald"
-                    className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded text-white focus:outline-none focus:border-[var(--gold)]"
-                  />
+                {/* CANONICAL COLOR SELECTION & MANAGEMENT */}
+                <div className="md:col-span-2 space-y-4 p-4 rounded-sm border border-slate-800 bg-slate-950/60">
+                  <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                    <div>
+                      <h4 className="font-serif text-sm font-bold text-[var(--gold)]">
+                        Color Recognition & Taxonomy (21 Standard Colors)
+                      </h4>
+                      <p className="text-[11px] text-slate-400">
+                        Select a primary color for catalog swatches and multiple accent colors for multi-color search recognition.
+                      </p>
+                    </div>
+
+                    {/* Active Selected Colors Preview */}
+                    <div className="flex items-center gap-1.5 bg-slate-900 px-3 py-1.5 rounded-sm border border-slate-800">
+                      <span className="text-[10px] uppercase font-bold text-slate-400">Preview:</span>
+                      {(formData.colors || [formData.primaryColor || "Red"]).map((c) => (
+                        <span
+                          key={c}
+                          className="h-3.5 w-3.5 rounded-full border border-slate-700 inline-block shrink-0 shadow-xs"
+                          style={{ backgroundColor: getColorHex(c) }}
+                          title={c}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Primary Color Selector */}
+                    <div className="space-y-1">
+                      <label className="font-bold text-slate-300 block text-xs">
+                        Primary Color * (Main Catalog Filter Swatch)
+                      </label>
+                      <select
+                        value={formData.primaryColor || (formData.colors && formData.colors[0]) || "Red"}
+                        onChange={(e) => handlePrimaryColorChange(e.target.value)}
+                        className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded text-white focus:outline-none focus:border-[var(--gold)] text-xs font-semibold cursor-pointer"
+                      >
+                        {CANONICAL_COLORS.map((c) => (
+                          <option key={c.name} value={c.name}>
+                            {c.name}
+                          </option>
+                        ))}
+                      </select>
+                      <div className="text-[10px] text-slate-400">
+                        The dominant base color used for primary search filtering.
+                      </div>
+                    </div>
+
+                    {/* Customer-Facing Color Combination Text */}
+                    <div className="space-y-1">
+                      <label className="font-bold text-slate-300 block text-xs">
+                        Color Combination / Display Shade
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.colorCombination || formData.color || ""}
+                        onChange={(e) => {
+                          handleChange("colorCombination", e.target.value);
+                          handleChange("color", e.target.value);
+                        }}
+                        placeholder="e.g. Royal Crimson & Antique Gold Zari"
+                        className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded text-white focus:outline-none focus:border-[var(--gold)] text-xs"
+                      />
+                      <div className="text-[10px] text-slate-400">
+                        Luxury customer-facing shade name shown on product detail page.
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Additional Accent Colors Multi-Selector */}
+                  <div className="space-y-2 pt-2 border-t border-slate-800">
+                    <label className="font-bold text-slate-300 block text-xs">
+                      Additional Colors in Design (Multi-Select for Pattern & Border Recognition)
+                    </label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {CANONICAL_COLORS.map((c) => {
+                        const isPrimary = (formData.primaryColor || (formData.colors && formData.colors[0])) === c.name;
+                        const isSelected = (formData.colors || []).includes(c.name);
+                        const hex = c.hex;
+                        const isLight = c.name === "White" || c.name === "Off-White" || c.name === "Silver";
+
+                        return (
+                          <button
+                            key={c.name}
+                            type="button"
+                            onClick={() => handleToggleAdditionalColor(c.name)}
+                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-[11px] font-medium transition-all border ${
+                              isPrimary
+                                ? "bg-[var(--gold)] text-slate-950 border-[var(--gold)] font-bold shadow-xs cursor-default"
+                                : isSelected
+                                  ? "bg-[var(--wine)] text-white border-[var(--wine)] font-semibold shadow-xs"
+                                  : "border-slate-800 bg-slate-900/80 text-slate-300 hover:border-slate-700 hover:text-white"
+                            }`}
+                          >
+                            <span
+                              className={`h-2.5 w-2.5 rounded-full shrink-0 ${
+                                isLight ? "border border-slate-600" : ""
+                              }`}
+                              style={{ backgroundColor: hex }}
+                            />
+                            <span>{c.name}</span>
+                            {isPrimary ? (
+                              <span className="text-[9px] uppercase font-bold opacity-80">(Primary)</span>
+                            ) : isSelected ? (
+                              <Check className="h-3 w-3" />
+                            ) : null}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <div className="text-[10px] text-slate-400">
+                      Customers filtering by ANY of these colors will find this product (e.g. Maroon + Blue saree).
+                    </div>
+                  </div>
                 </div>
 
                 <div className="space-y-1">

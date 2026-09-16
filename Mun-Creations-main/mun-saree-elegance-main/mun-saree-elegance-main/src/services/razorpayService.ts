@@ -29,13 +29,17 @@ export interface AuthoritativePriceCalculation {
     productName: string;
     quantity: number;
     priceUsd: number;
+    priceInr: number;
   }>;
   subtotalUsd: number;
+  subtotalInr: number;
   discountUsd: number;
+  discountInr: number;
   shippingFeeUsd: number;
   shippingCostInr?: number;
   shippingProvider?: string;
   finalTotalUsd: number;
+  finalTotalInr: number;
   amountPaise: number;
   currency: string;
 }
@@ -123,21 +127,37 @@ export class RazorpayService {
         throw err;
       }
 
-      const authoritativePrice =
-        typeof product.priceUsd === "number"
+      const priceInr =
+        typeof (product as any).priceInr === "number" && (product as any).priceInr > 0
+          ? (product as any).priceInr
+          : typeof (product as any).basePriceINR === "number" && (product as any).basePriceINR > 0
+            ? (product as any).basePriceINR
+            : typeof product.priceUsd === "number"
+              ? Math.round(product.priceUsd * 83.5)
+              : typeof (product as any).price === "number"
+                ? (product as any).price >= 1000
+                  ? (product as any).price
+                  : Math.round((product as any).price * 83.5)
+                : 0;
+
+      const priceUsd =
+        typeof product.priceUsd === "number" && product.priceUsd > 0
           ? product.priceUsd
-          : typeof (product as any).price === "number"
-            ? (product as any).price
-            : 0;
+          : Math.round((priceInr / 83.5) * 100) / 100;
 
       return {
         productId: product.id,
         productName: product.name,
         quantity: Math.floor(qty),
-        priceUsd: authoritativePrice,
+        priceUsd,
+        priceInr,
       };
     });
 
+    const subtotalInr = calculatedItems.reduce(
+      (sum, item) => sum + item.priceInr * item.quantity,
+      0,
+    );
     const subtotalUsd = calculatedItems.reduce(
       (sum, item) => sum + item.priceUsd * item.quantity,
       0,
@@ -145,34 +165,38 @@ export class RazorpayService {
 
     // Validate and calculate discount authoritatively via DB Coupon Engine
     let discountUsd = 0;
+    let discountInr = 0;
     if (promoCode && typeof promoCode === "string" && promoCode.trim()) {
       const validation = backendDB.validateCoupon(promoCode, subtotalUsd);
       if (validation.valid) {
         discountUsd = validation.discountAmountUsd;
+        discountInr = Math.round(discountUsd * 83.5);
       }
     }
 
     // Calculate authoritative shipping rules:
-    // Free shipping if subtotal >= $500 or subtotal in INR >= 40000, else standard insured shipping ($25 / ₹199)
-    const isFreeShipping = subtotalUsd >= 500 || subtotalUsd * 83.5 >= 40000;
+    // Free shipping if subtotalInr >= 40000 or subtotalUsd >= 500, else standard insured shipping (₹199 / $25)
+    const isFreeShipping = subtotalInr >= 40000 || subtotalUsd >= 500;
     const shippingFeeUsd = isFreeShipping ? 0 : 25;
     const effectiveShippingInr = isFreeShipping ? 0 : 199;
 
     const finalTotalUsd = Math.max(0, subtotalUsd - discountUsd + shippingFeeUsd);
+    const finalTotalInr = Math.max(0, subtotalInr - discountInr + effectiveShippingInr);
 
-    // Convert to INR paise: subtotal and discount in USD converted to INR + domestic shipping in INR
-    const netUsd = Math.max(0, subtotalUsd - discountUsd);
-    const effectiveInr = netUsd * 83.5 + effectiveShippingInr;
-    const amountPaise = Math.max(100, Math.round(effectiveInr * 100));
+    // Authoritative amount in paise (1 INR = 100 Paise)
+    const amountPaise = Math.max(100, Math.round(finalTotalInr * 100));
 
     return {
       items: calculatedItems,
       subtotalUsd,
+      subtotalInr,
       discountUsd,
+      discountInr,
       shippingFeeUsd,
       shippingCostInr: effectiveShippingInr,
       shippingProvider,
       finalTotalUsd,
+      finalTotalInr,
       amountPaise,
       currency: "INR",
     };

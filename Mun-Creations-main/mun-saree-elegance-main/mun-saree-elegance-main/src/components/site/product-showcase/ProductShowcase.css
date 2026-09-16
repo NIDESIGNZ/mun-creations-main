@@ -88,7 +88,7 @@
   transition: all 0.25s ease;
   cursor: pointer;
   white-space: nowrap;
-  shrink: 0;
+  flex-shrink: 0;
 }
 
 @media (min-width: 640px) {

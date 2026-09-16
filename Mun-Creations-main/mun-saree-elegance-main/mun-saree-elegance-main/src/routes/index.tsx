@@ -18,6 +18,8 @@ import { Footer } from "@/components/site/footer";
 import { CartDrawer } from "@/components/site/cart-drawer";
 import { WavySection } from "@/components/site/reveal";
 import { useCatalogProducts } from "@/lib/catalog-client";
+import { normalizeColor, matchesSelectedColors, getColorHex } from "@/lib/colors";
+import { matchesPriceTier } from "@/lib/pricing-config";
 import { Sparkle, X, SlidersHorizontal } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -108,40 +110,39 @@ function Home() {
 
   // Multi-faceted filtering logic
   const filteredProducts = catalogPool.filter((p) => {
-    // Category check
+    // 1. Category check
     if (filters.categories.length > 0) {
       const matchesCat = filters.categories.some(
         (cat) =>
           p.category.toLowerCase().includes(cat.toLowerCase()) ||
           p.group?.toLowerCase().includes(cat.toLowerCase()) ||
-          p.subcategory?.toLowerCase().includes(cat.toLowerCase()),
+          p.subcategory?.toLowerCase().includes(cat.toLowerCase()) ||
+          p.mainCategory?.toLowerCase() === cat.toLowerCase(),
       );
       if (!matchesCat) return false;
     }
 
-    // Fabric check
+    // 2. Fabric check
     if (filters.fabrics.length > 0) {
-      if (!p.fabric || !filters.fabrics.includes(p.fabric)) return false;
-    }
-
-    // Color check
-    if (filters.colors.length > 0) {
-      if (!p.color || !filters.colors.includes(p.color)) return false;
-    }
-
-    // Price check
-    if (p.priceUsd > filters.maxPrice) return false;
-
-    // Price tier check
-    if (filters.priceTier) {
-      if (filters.priceTier === "Budget Collection" && p.priceUsd > 150) return false;
-      if (filters.priceTier === "Mid Range" && (p.priceUsd <= 150 || p.priceUsd > 350))
+      if (!p.fabric || !filters.fabrics.some((f) => p.fabric.toLowerCase().includes(f.toLowerCase()))) {
         return false;
-      if (filters.priceTier === "Premium" && (p.priceUsd <= 350 || p.priceUsd > 600)) return false;
-      if (filters.priceTier === "Luxury" && p.priceUsd <= 600) return false;
+      }
     }
 
-    // Stock check
+    // 3. Color check (Multi-color support with canonical taxonomy)
+    if (filters.colors.length > 0) {
+      const prodColors = Array.isArray(p.colors) && p.colors.length > 0
+        ? p.colors
+        : normalizeColor(p.color || p.colorCombination);
+      if (!matchesSelectedColors(prodColors, filters.colors)) return false;
+    }
+
+    // 4. Price tier check
+    if (filters.priceTier) {
+      if (!matchesPriceTier(p, filters.priceTier)) return false;
+    }
+
+    // 5. Stock check
     const isProductInStock =
       p.inStock ?? (p.availability !== "Out of Stock" && (p.stockQuantity ?? 1) > 0);
     if (filters.inStockOnly && !isProductInStock) return false;
@@ -221,7 +222,106 @@ function Home() {
                     </div>
 
                     {/* Product Cards Grid */}
-                    <div>
+                    <div className="space-y-4">
+                      {/* Active Filter Pills */}
+                      {(filters.categories.length > 0 ||
+                        filters.fabrics.length > 0 ||
+                        filters.colors.length > 0 ||
+                        filters.priceTier) && (
+                        <div className="flex flex-wrap items-center gap-2 p-3 bg-white rounded-sm border border-border shadow-2xs text-xs">
+                          <span className="font-bold text-muted-foreground uppercase tracking-wider text-[10px]">
+                            Active Filters:
+                          </span>
+                          {filters.colors.map((col) => (
+                            <span
+                              key={col}
+                              className="inline-flex items-center gap-1.5 bg-[var(--wine)]/10 text-[var(--wine-deep)] font-semibold px-2.5 py-1 rounded-full border border-[var(--wine)]/30"
+                            >
+                              <span
+                                className="h-2 w-2 rounded-full border border-black/20"
+                                style={{ backgroundColor: getColorHex(col) }}
+                              />
+                              <span>{col}</span>
+                              <button
+                                type="button"
+                                aria-label={`Remove color filter ${col}`}
+                                onClick={() =>
+                                  setFilters({
+                                    ...filters,
+                                    colors: filters.colors.filter((c) => c !== col),
+                                  })
+                                }
+                                className="hover:text-red-600 transition-colors"
+                              >
+                                <X className="h-3 w-3" />
+                              </button>
+                            </span>
+                          ))}
+                          {filters.categories.map((cat) => (
+                            <span
+                              key={cat}
+                              className="inline-flex items-center gap-1.5 bg-secondary text-foreground font-semibold px-2.5 py-1 rounded-full border border-border"
+                            >
+                              <span>{cat}</span>
+                              <button
+                                type="button"
+                                aria-label={`Remove category filter ${cat}`}
+                                onClick={() =>
+                                  setFilters({
+                                    ...filters,
+                                    categories: filters.categories.filter((c) => c !== cat),
+                                  })
+                                }
+                                className="hover:text-red-600 transition-colors"
+                              >
+                                <X className="h-3 w-3" />
+                              </button>
+                            </span>
+                          ))}
+                          {filters.fabrics.map((fab) => (
+                            <span
+                              key={fab}
+                              className="inline-flex items-center gap-1.5 bg-secondary text-foreground font-semibold px-2.5 py-1 rounded-full border border-border"
+                            >
+                              <span>{fab}</span>
+                              <button
+                                type="button"
+                                aria-label={`Remove fabric filter ${fab}`}
+                                onClick={() =>
+                                  setFilters({
+                                    ...filters,
+                                    fabrics: filters.fabrics.filter((f) => f !== fab),
+                                  })
+                                }
+                                className="hover:text-red-600 transition-colors"
+                              >
+                                <X className="h-3 w-3" />
+                              </button>
+                            </span>
+                          ))}
+                          {filters.priceTier && (
+                            <span className="inline-flex items-center gap-1.5 bg-[var(--gold)]/20 text-[var(--wine-deep)] font-semibold px-2.5 py-1 rounded-full border border-[var(--gold)]/50">
+                              <span>Tier: {filters.priceTier}</span>
+                              <button
+                                type="button"
+                                aria-label="Remove price tier filter"
+                                onClick={() => setFilters({ ...filters, priceTier: null })}
+                                className="hover:text-red-600 transition-colors"
+                              >
+                                <X className="h-3 w-3" />
+                              </button>
+                            </span>
+                          )}
+                          <button
+                            type="button"
+                            onClick={resetAllFilters}
+                            className="text-[11px] text-[var(--wine)] hover:underline font-bold ml-auto"
+                          >
+                            Clear All
+                          </button>
+                        </div>
+                      )}
+
                       {filteredProducts.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
                           {filteredProducts.map((product) => (

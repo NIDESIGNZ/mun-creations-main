@@ -320,11 +320,11 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
               {/* Pricing Display */}
               <div className="product-showcase__price-box">
                 <span className="product-showcase__price-current">
-                  {formatPrice(displayedProduct.priceUsd)}
+                  {formatPrice(displayedProduct)}
                 </span>
                 {displayedProduct.compareAtUsd && (
                   <span className="product-showcase__price-original">
-                    {formatPrice(displayedProduct.compareAtUsd)}
+                    {formatPrice(displayedProduct.compareAtUsd, "USD")}
                   </span>
                 )}
                 {discountPercent !== null && (
@@ -413,7 +413,7 @@ export const ProductShowcase: React.FC<ProductShowcaseProps> = ({
                     )}
                     {isActive && (
                       <span className="product-showcase__card-price-tag">
-                        {formatPrice(prod.priceUsd)}
+                        {formatPrice(prod)}
                       </span>
                     )}
                   </>

@@ -1,12 +1,8 @@
 import { useState } from "react";
 import { Search, X, Check, Filter, RotateCcw, ChevronDown } from "lucide-react";
-import {
-  CATEGORY_FILTERS,
-  FABRIC_FILTERS,
-  COLOR_FILTERS,
-  PRICE_TIERS,
-  ColorFilter,
-} from "@/lib/catalog";
+import { CATEGORY_FILTERS, FABRIC_FILTERS } from "@/lib/catalog";
+import { CANONICAL_COLORS } from "@/lib/colors";
+import { CATALOG_PRICE_TIERS } from "@/lib/pricing-config";
 
 export type FilterState = {
   categories: string[];
@@ -60,11 +56,10 @@ export function CatalogFilterSidebar({
     onFilterChange({ ...filters, colors: updated });
   };
 
-  const handlePriceTierClick = (label: string, max: number) => {
+  const handlePriceTierClick = (tierId: string) => {
     onFilterChange({
       ...filters,
-      priceTier: filters.priceTier === label ? null : label,
-      maxPrice: max,
+      priceTier: filters.priceTier === tierId ? null : tierId,
     });
   };
 
@@ -105,6 +100,7 @@ export function CatalogFilterSidebar({
         <span className="text-xs font-semibold text-foreground tracking-wide">In Stock Only</span>
         <button
           onClick={() => onFilterChange({ ...filters, inStockOnly: !filters.inStockOnly })}
+          aria-label="Toggle in-stock items only"
           className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
             filters.inStockOnly ? "bg-[var(--wine)]" : "bg-gray-200"
           }`}
@@ -211,45 +207,47 @@ export function CatalogFilterSidebar({
         )}
       </div>
 
-      {/* Color Filter */}
+      {/* Color Filter Swatches - Clean, Non-Truncated & Accessible */}
       <div className="border-b border-border/60 pb-5">
         <button
           onClick={() => setColorExpanded(!colorExpanded)}
           className="w-full flex items-center justify-between text-xs font-bold uppercase tracking-wider text-[var(--wine-deep)] py-1"
         >
-          <span>Color Swatches</span>
+          <span>Color Swatches ({CANONICAL_COLORS.length})</span>
           <ChevronDown
             className={`h-4 w-4 transition-transform ${colorExpanded ? "rotate-180" : ""}`}
           />
         </button>
 
         {colorExpanded && (
-          <div className="mt-3 grid grid-cols-4 sm:grid-cols-5 gap-2">
-            {COLOR_FILTERS.map((c) => {
+          <div className="mt-3 grid grid-cols-2 gap-2 max-h-64 overflow-y-auto pr-1 custom-scrollbar">
+            {CANONICAL_COLORS.map((c) => {
               const selected = filters.colors.includes(c.name);
               return (
                 <button
                   key={c.name}
+                  type="button"
                   onClick={() => toggleColor(c.name)}
+                  aria-label={`Color swatch ${c.name}`}
                   title={c.name}
-                  className={`group relative flex flex-col items-center gap-1 p-1.5 rounded-sm border transition-all ${
+                  className={`flex items-center gap-2 px-2.5 py-1.5 rounded-sm border text-left transition-all ${
                     selected
-                      ? "border-[var(--wine)] bg-[var(--wine)]/10"
-                      : "border-border hover:border-gray-400"
+                      ? "border-[var(--wine)] bg-[var(--wine)]/10 text-[var(--wine-deep)] font-bold shadow-xs"
+                      : "border-border hover:border-gray-400 bg-secondary/15 text-foreground/80"
                   }`}
                 >
                   <span
-                    className="h-5 w-5 rounded-full border border-black/20 shadow-xs flex items-center justify-center"
+                    className="h-4 w-4 shrink-0 rounded-full border border-black/25 shadow-2xs flex items-center justify-center"
                     style={{ backgroundColor: c.hex }}
                   >
                     {selected && (
                       <Check
-                        className={`h-3 w-3 ${c.name === "White" || c.name === "Off White" ? "text-black" : "text-white"}`}
+                        className={`h-2.5 w-2.5 stroke-[3] ${c.contrastText === "dark" ? "text-black" : "text-white"}`}
                       />
                     )}
                   </span>
-                  <span className="text-[9px] font-medium text-foreground/80 group-hover:text-black truncate w-full text-center">
-                    {c.name}
+                  <span className="text-xs font-medium leading-none whitespace-normal select-none">
+                    {c.display}
                   </span>
                 </button>
               );
@@ -258,55 +256,40 @@ export function CatalogFilterSidebar({
         )}
       </div>
 
-      {/* Price Slider & Tiers */}
+      {/* Price Tiers Filter */}
       <div>
         <button
           onClick={() => setPriceExpanded(!priceExpanded)}
           className="w-full flex items-center justify-between text-xs font-bold uppercase tracking-wider text-[var(--wine-deep)] py-1"
         >
-          <span>Price Range (Up to ${filters.maxPrice})</span>
+          <span>Price Collection</span>
           <ChevronDown
             className={`h-4 w-4 transition-transform ${priceExpanded ? "rotate-180" : ""}`}
           />
         </button>
 
         {priceExpanded && (
-          <div className="mt-3 space-y-3">
-            <input
-              type="range"
-              min={50}
-              max={2000}
-              step={25}
-              value={filters.maxPrice}
-              onChange={(e) =>
-                onFilterChange({ ...filters, maxPrice: Number(e.target.value), priceTier: null })
-              }
-              className="w-full accent-[var(--wine)] cursor-pointer"
-            />
-            <div className="flex justify-between text-[11px] text-muted-foreground font-medium">
-              <span>$50</span>
-              <span>${filters.maxPrice}</span>
-              <span>$2,000</span>
-            </div>
-
-            <div className="grid grid-cols-2 gap-1.5 pt-1">
-              {PRICE_TIERS.map((tier) => {
-                const selected = filters.priceTier === tier.label;
-                return (
-                  <button
-                    key={tier.label}
-                    onClick={() => handlePriceTierClick(tier.label, tier.max)}
-                    className={`text-[11px] py-1.5 px-2 rounded-sm border text-center font-medium transition-all ${
-                      selected
-                        ? "bg-[var(--gold)] text-[var(--wine-deep)] border-[var(--gold)] font-bold"
-                        : "bg-secondary/30 text-foreground/80 border-border hover:border-[var(--gold)]"
-                    }`}
-                  >
-                    {tier.label}
-                  </button>
-                );
-              })}
-            </div>
+          <div className="mt-3 space-y-2">
+            {CATALOG_PRICE_TIERS.map((tier) => {
+              const selected = filters.priceTier === tier.id || filters.priceTier === tier.label;
+              return (
+                <button
+                  key={tier.id}
+                  type="button"
+                  onClick={() => handlePriceTierClick(tier.id)}
+                  className={`w-full text-left p-2.5 rounded-sm border transition-all ${
+                    selected
+                      ? "bg-[var(--wine)] text-white border-[var(--wine)] font-bold shadow-xs"
+                      : "bg-secondary/30 text-foreground/80 border-border hover:border-[var(--gold)]"
+                  }`}
+                >
+                  <div className="text-xs font-semibold">{tier.label}</div>
+                  <div className={`text-[10px] mt-0.5 ${selected ? "text-white/80" : "text-muted-foreground"}`}>
+                    {tier.description}
+                  </div>
+                </button>
+              );
+            })}
           </div>
         )}
       </div>

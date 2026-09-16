@@ -263,13 +263,17 @@ export const TRANSLATIONS: Record<LangCode, Dict> = {
   },
 };
 
+import {
+  type PriceInput,
+} from "@/services/currencyService";
+
 type Ctx = {
   currency: CurrencyCode;
   setCurrency: (c: CurrencyCode) => void;
   lang: LangCode;
   setLang: (l: LangCode) => void;
   t: (key: string) => string;
-  formatPrice: (usdAmount: number) => string;
+  formatPrice: (input: PriceInput, sourceCurrency?: "INR" | "USD") => string;
   rates: Record<string, number>;
   isRatesLoading: boolean;
 };
@@ -277,7 +281,14 @@ type Ctx = {
 const I18nContext = createContext<Ctx | null>(null);
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [currency, setCurrency] = useState<CurrencyCode>("USD");
+  // Graceful non-blocking initial currency: default to INR for authentic Indian luxury saree storefront
+  const [currency, setCurrency] = useState<CurrencyCode>(() => {
+    try {
+      return detectUserCurrency();
+    } catch {
+      return "INR";
+    }
+  });
   const [lang, setLang] = useState<LangCode>("en");
   const [rates, setRates] = useState<Record<string, number>>(DEFAULT_FALLBACK_RATES);
   const [isRatesLoading, setIsRatesLoading] = useState<boolean>(true);
@@ -286,13 +297,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let isMounted = true;
 
-    // Detect user currency on client
-    const detected = detectUserCurrency();
-    if (detected && SUPPORTED_CURRENCIES[detected]) {
-      setCurrency(detected);
-    }
-
-    // Load Live Exchange Rates
+    // Load Live Exchange Rates in background
     getExchangeRates()
       .then((fetchedRates) => {
         if (isMounted) {
@@ -314,7 +319,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       if (savedCur && SUPPORTED_CURRENCIES[savedCur]) {
         setCurrency(savedCur);
       } else {
-        // Asynchronously attempt IP detection if no saved preference
+        // Asynchronously attempt IP detection if no saved preference (non-blocking)
         detectCountryFromIP().then((ipCur) => {
           if (
             isMounted &&
@@ -358,7 +363,8 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       lang,
       setLang,
       t: (key) => TRANSLATIONS[lang]?.[key] ?? TRANSLATIONS.en[key] ?? key,
-      formatPrice: (usdAmount: number) => formatCurrency(usdAmount, currency, rates),
+      formatPrice: (input: PriceInput, sourceCurrency?: "INR" | "USD") =>
+        formatCurrency(input, currency, rates, sourceCurrency),
       rates,
       isRatesLoading,
     }),

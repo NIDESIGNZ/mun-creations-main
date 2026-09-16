@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import type { Product } from "@/lib/products";
 import { invalidateCatalogCache } from "@/lib/catalog-client";
+import { getColorHex } from "@/lib/colors";
 import {
   getAdminProducts,
   publishAdminProduct,
@@ -582,17 +583,37 @@ export function ProductCatalogTable({
                         </div>
                       </td>
 
-                      {/* Category & Fabric */}
+                      {/* Category, Fabric & Colors */}
                       <td className="p-3.5">
                         <div className="font-medium text-slate-200">{product.category}</div>
                         <div className="text-[11px] text-slate-400">{product.fabric || "—"}</div>
+                        {((product.colors && product.colors.length > 0) || product.color) && (
+                          <div className="flex items-center gap-1 mt-1">
+                            {(product.colors && product.colors.length > 0
+                              ? product.colors
+                              : [product.color || "Red"]
+                            ).map((c: string) => (
+                              <span
+                                key={c}
+                                className="h-2.5 w-2.5 rounded-full border border-slate-700 inline-block shrink-0"
+                                style={{ backgroundColor: getColorHex(c) }}
+                                title={c}
+                              />
+                            ))}
+                            <span className="text-[10px] text-slate-400 truncate max-w-[100px] ml-0.5">
+                              {product.colorCombination || product.color}
+                            </span>
+                          </div>
+                        )}
                       </td>
 
-                      {/* Price */}
+                      {/* Price: Canonical INR Base */}
                       <td className="p-3.5 font-mono">
-                        <div className="font-bold text-white">${product.priceUsd}</div>
+                        <div className="font-bold text-emerald-400">
+                          ₹{(product.priceInr || product.basePriceINR || Math.round(product.priceUsd * 83.5)).toLocaleString("en-IN")}
+                        </div>
                         <div className="text-[11px] text-slate-400">
-                          ₹{product.priceInr || Math.round(product.priceUsd * 83.5)}
+                          ${product.priceUsd} USD
                         </div>
                       </td>
 

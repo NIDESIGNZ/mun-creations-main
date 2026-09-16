@@ -3,6 +3,8 @@ import path from "path";
 import crypto from "crypto";
 import type { Product, ProductFAQ } from "../products";
 import { PRODUCTS } from "../products";
+import { normalizeColor, matchesSelectedColors } from "../colors";
+import { matchesPriceTier, getProductBasePriceInr, matchesPriceRange } from "../pricing-config";
 
 export interface Category {
   id: string;
@@ -48,6 +50,10 @@ export interface MasterProduct extends Product {
   bestSeller?: boolean;
   seoDescription?: string;
   colors?: string[];
+  colorCombination?: string;
+  primaryColor?: string;
+  priceInr?: number;
+  basePriceINR?: number;
   weaveType?: string;
   pattern?: string;
   blouseIncluded?: boolean;
@@ -440,7 +446,10 @@ class ProductDatabaseService {
     subcategory?: string;
     fabric?: string;
     color?: string;
+    colors?: string[] | string;
     tier?: string;
+    minPrice?: number;
+    maxPrice?: number;
     search?: string;
     sort?: string;
     limit?: number;
@@ -456,8 +465,9 @@ class ProductDatabaseService {
         p.status !== "draft"
     );
 
+    // 1. Category filter
     if (query?.category) {
-      const cat = query.category.toLowerCase();
+      const cat = query.category.toLowerCase().trim();
       list = list.filter(
         (p) =>
           p.category.toLowerCase() === cat ||
@@ -467,30 +477,46 @@ class ProductDatabaseService {
       );
     }
 
+    // 2. Subcategory filter
     if (query?.subcategory) {
-      const sub = query.subcategory.toLowerCase();
+      const sub = query.subcategory.toLowerCase().trim();
       list = list.filter((p) => p.subcategory?.toLowerCase() === sub);
     }
 
+    // 3. Fabric filter
     if (query?.fabric) {
-      const fab = query.fabric.toLowerCase();
-      list = list.filter((p) => p.fabric && p.fabric.toLowerCase() === fab);
+      const fab = query.fabric.toLowerCase().trim();
+      list = list.filter((p) => p.fabric && p.fabric.toLowerCase().includes(fab));
     }
 
-    if (query?.color) {
-      const col = query.color.toLowerCase();
-      list = list.filter(
-        (p) =>
-          (p.color && p.color.toLowerCase() === col) ||
-          (p.colors && p.colors.some((c) => c.toLowerCase() === col))
-      );
+    // 4. Color filter (Canonical & Multi-Color Matching)
+    const rawColors = query?.colors ?? query?.color;
+    if (rawColors) {
+      const selectedColorList = Array.isArray(rawColors)
+        ? rawColors
+        : rawColors.split(",").map((c) => c.trim()).filter(Boolean);
+
+      if (selectedColorList.length > 0) {
+        list = list.filter((p) => {
+          const productColors = Array.isArray(p.colors) && p.colors.length > 0
+            ? p.colors
+            : normalizeColor(p.color || p.colorCombination);
+          return matchesSelectedColors(productColors, selectedColorList);
+        });
+      }
     }
 
+    // 5. Price Tier filter
     if (query?.tier) {
-      const tier = query.tier.toLowerCase();
-      list = list.filter((p) => p.priceTier && p.priceTier.toLowerCase() === tier);
+      list = list.filter((p) => matchesPriceTier(p, query.tier));
     }
 
+    // 6. Min/Max Price filter (evaluated against canonical INR price)
+    if (query?.minPrice !== undefined || query?.maxPrice !== undefined) {
+      list = list.filter((p) => matchesPriceRange(p, query.minPrice, query.maxPrice));
+    }
+
+    // 7. Search query
     if (query?.search) {
       const q = query.search.toLowerCase().trim();
       list = list.filter(
@@ -499,22 +525,30 @@ class ProductDatabaseService {
           p.sku?.toLowerCase().includes(q) ||
           p.fabric.toLowerCase().includes(q) ||
           p.category.toLowerCase().includes(q) ||
+          (p.colorCombination && p.colorCombination.toLowerCase().includes(q)) ||
           p.tags?.some((t) => t.toLowerCase().includes(q))
       );
     }
 
-    // Sort
+    // 8. Sorting
     const sort = query?.sort || "featured";
-    if (sort === "price-low") {
-      list.sort((a, b) => (a.priceUsd ?? a.price ?? 0) - (b.priceUsd ?? b.price ?? 0));
-    } else if (sort === "price-high") {
-      list.sort((a, b) => (b.priceUsd ?? b.price ?? 0) - (a.priceUsd ?? a.price ?? 0));
+    if (sort === "price-low" || sort === "price-asc") {
+      list.sort((a, b) => getProductBasePriceInr(a) - getProductBasePriceInr(b));
+    } else if (sort === "price-high" || sort === "price-desc") {
+      list.sort((a, b) => getProductBasePriceInr(b) - getProductBasePriceInr(a));
     } else if (sort === "newest") {
       list.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+    } else if (sort === "oldest") {
+      list.sort((a, b) => new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime());
     } else if (sort === "name-asc") {
       list.sort((a, b) => a.name.localeCompare(b.name));
     } else if (sort === "name-desc") {
       list.sort((a, b) => b.name.localeCompare(a.name));
+    } else if (sort === "bestseller") {
+      list.sort((a, b) => (b.bestseller || b.bestSeller ? 1 : 0) - (a.bestseller || a.bestSeller ? 1 : 0));
+    } else {
+      // featured
+      list.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
     }
 
     const total = list.length;
@@ -684,8 +718,18 @@ class ProductDatabaseService {
 
     const slug = input.slug?.trim() ? this.generateSlug(input.slug, id) : this.generateSlug(name, id);
     const stock = typeof input.stock === "number" ? Math.max(0, input.stock) : typeof input.stockQuantity === "number" ? Math.max(0, input.stockQuantity) : 5;
-    const price = typeof input.price === "number" ? Math.max(0, input.price) : typeof input.priceUsd === "number" ? Math.max(0, input.priceUsd) : 250;
+    const priceInr = typeof input.priceInr === "number" && input.priceInr > 0
+      ? input.priceInr
+      : typeof input.basePriceINR === "number" && input.basePriceINR > 0
+        ? input.basePriceINR
+        : (input.price && input.price > 1500 ? input.price : (input.priceUsd ? Math.round(input.priceUsd * 83.5) : 25000));
+    const priceUsd = typeof input.priceUsd === "number" && input.priceUsd > 0
+      ? input.priceUsd
+      : Math.round(priceInr / 83.5);
     const compareAtPrice = input.compareAtPrice ?? input.compareAtUsd;
+    const rawColor = input.color || "Multicolor";
+    const colors = Array.isArray(input.colors) && input.colors.length > 0 ? input.colors : normalizeColor(rawColor);
+    const colorCombination = input.colorCombination || rawColor;
 
     const images = Array.isArray(input.images) && input.images.length > 0 ? input.images : [input.image || input.thumbnail || "/images/cat-silk.jpg"];
     const primaryImage = images[0];
@@ -698,8 +742,10 @@ class ProductDatabaseService {
       slug,
       category,
       subcategory: input.subcategory?.trim() || category,
-      price,
-      priceUsd: price,
+      price: priceInr,
+      priceInr,
+      basePriceINR: priceInr,
+      priceUsd,
       compareAtPrice,
       compareAtUsd: compareAtPrice,
       currency: input.currency || "USD",
@@ -715,8 +761,9 @@ class ProductDatabaseService {
       thumbnail: input.thumbnail || primaryImage,
       images,
       fabric: input.fabric || "Silk",
-      color: input.color || "Multicolor",
-      colors: Array.isArray(input.colors) ? input.colors : (input.color ? [input.color] : ["Multicolor"]),
+      color: rawColor,
+      colors,
+      colorCombination,
       occasion: Array.isArray(input.occasion) ? input.occasion : ["Wedding", "Festive"],
       workType: input.workType || "Zari Work",
       weaveType: input.weaveType || input.weave || "Handloom",
@@ -801,12 +848,38 @@ class ProductDatabaseService {
     }
 
     // Price updates
-    if (typeof updates.price === "number") {
+    if (typeof updates.priceInr === "number") {
+      updates.priceInr = Math.max(0, updates.priceInr);
+      updates.basePriceINR = updates.priceInr;
+      updates.price = updates.priceInr;
+      if (!updates.priceUsd) updates.priceUsd = Math.round(updates.priceInr / 83.5);
+    } else if (typeof updates.price === "number") {
       updates.price = Math.max(0, updates.price);
-      updates.priceUsd = updates.price;
+      if (updates.price > 1500) {
+        updates.priceInr = updates.price;
+        updates.basePriceINR = updates.price;
+        if (!updates.priceUsd) updates.priceUsd = Math.round(updates.price / 83.5);
+      } else {
+        updates.priceUsd = updates.price;
+        updates.priceInr = Math.round(updates.price * 83.5);
+        updates.basePriceINR = updates.priceInr;
+      }
     } else if (typeof updates.priceUsd === "number") {
       updates.priceUsd = Math.max(0, updates.priceUsd);
-      updates.price = updates.priceUsd;
+      updates.priceInr = Math.round(updates.priceUsd * 83.5);
+      updates.basePriceINR = updates.priceInr;
+      updates.price = updates.priceInr;
+    }
+
+    // Color updates
+    if (Array.isArray(updates.colors) && updates.colors.length > 0) {
+      updates.colors = updates.colors;
+      if (!updates.color) updates.color = updates.colors[0];
+    } else if (typeof updates.color === "string") {
+      updates.colors = normalizeColor(updates.color);
+    }
+    if (updates.colorCombination) {
+      updates.colorCombination = updates.colorCombination;
     }
 
     // Images sync

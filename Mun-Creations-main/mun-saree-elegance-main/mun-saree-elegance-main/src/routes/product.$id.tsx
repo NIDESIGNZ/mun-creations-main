@@ -203,11 +203,11 @@ function ProductDetailContent({ product }: { product: Product }) {
 
             <div className="flex items-baseline gap-3 pt-1">
               <span className="text-2xl sm:text-3xl font-bold text-[var(--wine)] font-serif">
-                {formatPrice(product.priceUsd)}
+                {formatPrice(product)}
               </span>
               {product.compareAtUsd && product.compareAtUsd > product.priceUsd && (
                 <span className="text-sm text-muted-foreground line-through">
-                  {formatPrice(product.compareAtUsd)}
+                  {formatPrice(product.compareAtUsd, "USD")}
                 </span>
               )}
               <span className="text-xs text-green-700 bg-green-50 border border-green-200 px-2.5 py-0.5 rounded font-semibold ml-2">

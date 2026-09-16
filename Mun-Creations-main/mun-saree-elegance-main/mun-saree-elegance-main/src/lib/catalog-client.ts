@@ -6,7 +6,10 @@ export interface CatalogFilterParams {
   subcategory?: string;
   fabric?: string;
   color?: string;
+  colors?: string[] | string;
   tier?: string;
+  minPrice?: number;
+  maxPrice?: number;
   search?: string;
   sort?: string;
 }
@@ -31,7 +34,13 @@ export async function fetchCatalogProducts(params?: CatalogFilterParams): Promis
   if (params?.subcategory) query.set("subcategory", params.subcategory);
   if (params?.fabric) query.set("fabric", params.fabric);
   if (params?.color) query.set("color", params.color);
+  if (params?.colors) {
+    const colStr = Array.isArray(params.colors) ? params.colors.join(",") : params.colors;
+    query.set("colors", colStr);
+  }
   if (params?.tier) query.set("tier", params.tier);
+  if (params?.minPrice !== undefined) query.set("minPrice", String(params.minPrice));
+  if (params?.maxPrice !== undefined) query.set("maxPrice", String(params.maxPrice));
   if (params?.search) query.set("search", params.search);
   if (params?.sort) query.set("sort", params.sort);
 
