@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Play, Pause, Volume2, VolumeX } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { heroSaree } from "@/lib/products";
+import { useSectionContent } from "@/lib/content-client";
 
 export function Hero() {
   const { t } = useI18n();
@@ -96,27 +97,37 @@ export function Hero() {
     setIsMuted(video.muted);
   };
 
+  const { data: homepageCms } = useSectionContent("homepage");
+  const heroData = homepageCms?.hero || {
+    title: "Timeless Sarees. Authentic Craftsmanship.",
+    subtitle: "Discover the beauty of Indian textiles through a thoughtfully curated collection of sarees crafted with tradition, artistry and contemporary elegance.",
+    description: "From timeless Banarasi and Kanjivaram sarees to exquisite Tussar, handloom and designer collections, Mun Creations brings India's rich textile heritage closer to you.",
+    ctaText: "Explore the Collection",
+    ctaLink: "#collection-section",
+    cta2Text: "Shop Sarees",
+    cta2Link: "/shop",
+  };
+
   return (
     <section className="relative w-full overflow-hidden bg-[var(--wine-deep)] min-h-[85vh] sm:min-h-[90vh] lg:min-h-screen flex flex-col justify-end items-center">
-      {/* Full-screen perfectly centered edge-to-edge video background */}
-      <div className="absolute inset-0 w-full h-full overflow-hidden">
-        <video
-          ref={videoRef}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          poster={heroSaree}
-          className="absolute inset-0 w-full h-full object-cover object-center"
-        >
-          <source src="/hero-video.mp4" type="video/mp4" />
-        </video>
-        {/* Soft luxury vignette & bottom gradient for text contrast */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[var(--wine-deep)] via-[var(--wine-deep)]/50 to-black/35 pointer-events-none" />
-      </div>
+      {/* Background Video */}
+      <video
+        ref={videoRef}
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="auto"
+        className="absolute inset-0 w-full h-full object-cover z-0 filter brightness-[0.62] contrast-[1.08] pointer-events-none"
+        poster={heroSaree?.images?.[0] || "/images/products/saree-teal-1.jpg"}
+      >
+        <source src="/hero.mp4" type="video/mp4" />
+      </video>
 
-      {/* Discreet luxury video playback controls */}
+      {/* Decorative gradient scrim for legibility */}
+      <div className="absolute inset-0 bg-gradient-to-t from-[var(--wine-deep)] via-black/40 to-black/30 z-0 pointer-events-none" />
+
+      {/* Controls Overlay: Pause/Play & Mute/Unmute */}
       <div className="absolute bottom-6 right-6 z-20 hidden sm:flex items-center gap-2">
         <button
           type="button"
@@ -140,24 +151,24 @@ export function Hero() {
       <div className="relative z-10 container-boutique pt-28 sm:pt-36 md:pt-48 lg:pt-56 pb-10 sm:pb-14 md:pb-20 text-[var(--ivory)] flex flex-col items-center text-center">
         <div className="max-w-3xl mx-auto space-y-4 sm:space-y-6">
           <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.08] drop-shadow-[0_4px_14px_rgba(0,0,0,0.8)] text-white">
-            {t("hero.title")}
+            {heroData.title}
           </h1>
           <p className="text-xs sm:text-base md:text-lg text-[var(--ivory)]/90 max-w-xl mx-auto leading-relaxed drop-shadow-[0_2px_4px_rgba(0,0,0,0.7)] font-light px-2 sm:px-0">
-            {t("hero.sub")}
+            {heroData.subtitle}
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 pt-1 sm:pt-2 w-full max-w-md sm:max-w-none mx-auto">
             <a
-              href="#collection-section"
+              href={heroData.ctaLink || "#collection-section"}
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[var(--gold)] text-[var(--wine-deep)] px-6 sm:px-8 py-3.5 sm:py-4 text-[11px] tracking-[0.22em] uppercase font-bold hover:bg-[var(--ivory)] transition-all shadow-xl hover:scale-105 active:scale-95 cursor-pointer"
             >
-              {t("hero.cta")}
+              {heroData.ctaText}
             </a>
             <a
-              href="#bridal"
+              href={heroData.cta2Link || "/shop"}
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 border border-[var(--ivory)]/80 text-[var(--ivory)] px-6 sm:px-8 py-3.5 sm:py-4 text-[11px] tracking-[0.22em] uppercase font-semibold hover:bg-[var(--ivory)]/20 backdrop-blur-md transition-all shadow-xl hover:scale-105 active:scale-95 cursor-pointer"
             >
-              {t("hero.cta2")}
+              {heroData.cta2Text}
             </a>
           </div>
         </div>

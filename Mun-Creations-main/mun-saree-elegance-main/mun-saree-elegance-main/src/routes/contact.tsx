@@ -17,14 +17,22 @@ import {
   CheckCircle2,
 } from "lucide-react";
 
+import { useSectionContent } from "@/lib/content-client";
+
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact Client Concierge & Flagship Atelier — Mun Creations" },
+      { title: "Contact Mun Creations | Saree & Ethnic Wear Customer Support" },
       {
         name: "description",
         content:
-          "Connect with Mun Creations luxury saree specialists. Book virtual styling sessions, bridal consultations, and inquiries.",
+          "Contact Mun Creations for product enquiries, order assistance, saree information and customer support through WhatsApp and online channels.",
+      },
+      { property: "og:title", content: "Contact Mun Creations | Saree & Ethnic Wear Customer Support" },
+      {
+        property: "og:description",
+        content:
+          "Contact Mun Creations for product enquiries, order assistance, saree information and customer support through WhatsApp and online channels.",
       },
     ],
   }),
@@ -49,6 +57,7 @@ function ContactPage() {
 }
 
 function ContactContent() {
+  const { data: contactCms } = useSectionContent("contact");
   const [submitted, setSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -63,19 +72,24 @@ function ContactContent() {
     setSubmitted(true);
   };
 
+  const whatsappNumber = contactCms.whatsappNumber || "+91 98745 72846";
+  const whatsappUrl =
+    contactCms.whatsappUrl || "https://wa.me/919874572846?text=Hello%20Mun%20Creations%2C%20I%20have%20an%20enquiry.";
+
   return (
     <div className="container-boutique space-y-10 sm:space-y-14">
       {/* Header Banner */}
       <div className="bg-white p-6 sm:p-12 rounded-sm border border-border shadow-xs text-center space-y-3">
         <div className="eyebrow flex items-center justify-center gap-2">
           <Sparkles className="h-3.5 w-3.5 text-[var(--gold)]" />
-          <span>Client Concierge</span>
+          <span>{contactCms.subtitle || "We're Here to Help"}</span>
         </div>
         <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-[var(--wine-deep)]">
-          Atelier & Bridal Inquiries
+          {contactCms.title || "Contact Mun Creations"}
         </h1>
         <p className="text-xs sm:text-sm text-muted-foreground max-w-xl mx-auto leading-relaxed">
-          Whether you seek bespoke bridal weaving, virtual saree drape styling, or order assistance, our master stylists are at your service.
+          {contactCms.body ||
+            "Have a question about a saree, your order, shipping or our collections? Our Customer Service team is available to assist you."}
         </p>
       </div>
 
@@ -89,6 +103,26 @@ function ContactContent() {
             </h2>
 
             <div className="space-y-5 text-xs">
+              <div className="flex items-start gap-3.5">
+                <div className="h-9 w-9 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0 border border-emerald-200">
+                  <MessageCircle className="h-4 w-4" />
+                </div>
+                <div>
+                  <div className="font-bold text-foreground">WhatsApp Customer Support</div>
+                  <a
+                    href={whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-emerald-700 font-bold hover:underline font-mono"
+                  >
+                    {whatsappNumber} (Direct Chat)
+                  </a>
+                  <div className="text-[10px] text-muted-foreground mt-0.5">
+                    Fastest assistance for orders, drapes & product questions
+                  </div>
+                </div>
+              </div>
+
               <div className="flex items-start gap-3.5">
                 <div className="h-9 w-9 rounded-full bg-[var(--wine)]/10 text-[var(--wine)] flex items-center justify-center shrink-0">
                   <Mail className="h-4 w-4" />
@@ -108,43 +142,35 @@ function ContactContent() {
                 </div>
                 <div>
                   <div className="font-bold text-foreground">Telephone & Concierge</div>
-                  <a href="tel:+919876543210" className="text-muted-foreground hover:text-[var(--wine)] font-mono">
-                    +91 (0) 98765 43210
+                  <a href="tel:+919874572846" className="text-muted-foreground hover:text-[var(--wine)] font-mono">
+                    {whatsappNumber}
                   </a>
                   <div className="text-[10px] text-muted-foreground mt-0.5">Mon–Sat: 10:00 AM – 7:00 PM IST</div>
                 </div>
               </div>
+            </div>
+          </div>
 
-              <div className="flex items-start gap-3.5">
-                <div className="h-9 w-9 rounded-full bg-green-50 text-green-700 flex items-center justify-center shrink-0 border border-green-200">
-                  <MessageCircle className="h-4 w-4" />
-                </div>
-                <div>
-                  <div className="font-bold text-foreground">WhatsApp Styling Desk</div>
-                  <a
-                    href="https://wa.me/919876543210"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-muted-foreground hover:text-green-700 font-mono"
-                  >
-                    +91 98765 43210 (Live Chat)
-                  </a>
-                  <div className="text-[10px] text-muted-foreground mt-0.5">Instant drape video consultations</div>
-                </div>
+          {/* Enquiry Guidance Cards (Specification 13) */}
+          <div className="space-y-4">
+            <div className="bg-white p-5 rounded-sm border border-border space-y-1.5 shadow-xs">
+              <div className="font-serif font-bold text-sm text-[var(--wine-deep)]">
+                {contactCms.productEnquiriesTitle || "Product Enquiries"}
               </div>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                {contactCms.productEnquiriesBody ||
+                  "For product-related enquiries, please mention the product name or SKU when contacting us."}
+              </p>
+            </div>
 
-              <div className="flex items-start gap-3.5">
-                <div className="h-9 w-9 rounded-full bg-[var(--wine)]/10 text-[var(--wine)] flex items-center justify-center shrink-0">
-                  <MapPin className="h-4 w-4" />
-                </div>
-                <div>
-                  <div className="font-bold text-foreground">Flagship Atelier & Archives</div>
-                  <p className="text-muted-foreground leading-relaxed">
-                    Heritage Handloom Quarter, Weavers Boulevard,
-                    Bengaluru, Karnataka 560001, India
-                  </p>
-                </div>
+            <div className="bg-white p-5 rounded-sm border border-border space-y-1.5 shadow-xs">
+              <div className="font-serif font-bold text-sm text-[var(--wine-deep)]">
+                {contactCms.orderAssistanceTitle || "Order Assistance"}
               </div>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                {contactCms.orderAssistanceBody ||
+                  "For order-related assistance, please provide your order number so our team can locate your order quickly."}
+              </p>
             </div>
           </div>
 

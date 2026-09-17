@@ -5,16 +5,23 @@ import { CartProvider } from "@/lib/cart";
 import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/footer";
 import { CartDrawer } from "@/components/site/cart-drawer";
-import { HelpCircle, ChevronDown, Sparkles } from "lucide-react";
+import { useSectionContent } from "@/lib/content-client";
+import { ChevronDown, HelpCircle, MessageCircle } from "lucide-react";
 
 export const Route = createFileRoute("/faqs")({
   head: () => ({
     meta: [
-      { title: "Frequently Asked Questions — Shipping, Care & Returns | Mun Creations" },
+      { title: "Frequently Asked Questions | Mun Creations Sarees & Orders" },
       {
         name: "description",
         content:
-          "Find answers regarding handloom silk mark certification, shipping timelines, returns, and care guidance.",
+          "Find answers to common questions regarding Mun Creations sarees, online orders, international shipping, payments and customer support.",
+      },
+      { property: "og:title", content: "Frequently Asked Questions | Mun Creations Sarees & Orders" },
+      {
+        property: "og:description",
+        content:
+          "Find answers to common questions regarding Mun Creations sarees, online orders, international shipping, payments and customer support.",
       },
     ],
   }),
@@ -27,7 +34,7 @@ function FaqsPage() {
       <CartProvider>
         <div className="min-h-screen bg-background text-foreground flex flex-col">
           <Header />
-          <main className="flex-1 pt-28 sm:pt-36 md:pt-48 lg:pt-56 pb-14 sm:pb-20 md:pb-24 bg-secondary/20">
+          <main className="flex-1 pt-28 sm:pt-36 md:pt-48 pb-16 md:pb-24 bg-gradient-to-b from-secondary/30 via-background to-secondary/20">
             <FaqsContent />
           </main>
           <Footer />
@@ -38,64 +45,62 @@ function FaqsPage() {
   );
 }
 
-const FAQS_DATA = [
-  {
-    q: "Are all products 100% authentic pure silk with Silk Mark certification?",
-    a: "Yes. Every pure Katan Banarasi, Kanjivaram, and Tussar silk saree from Ethnic Boutique comes tagged with official Silk Mark Certification issuing government authority approval.",
-  },
-  {
-    q: "What is your international shipping timeline?",
-    a: "We ship worldwide via DHL Express & FedEx. Orders are dispatched within 24-48 hours and arrive in 3-5 business days across USA, UK, Canada, UAE, and Australia.",
-  },
-  {
-    q: "What payment methods do you accept?",
-    a: "We accept 100% prepaid secure payments via Razorpay (UPI, Google Pay, PhonePe, Paytm, Credit/Debit Cards, and NetBanking across 50+ banks).",
-  },
-  {
-    q: "What is your store return policy?",
-    a: "All sales are final. Each handwoven saree undergoes 3-point quality inspection prior to insured dispatch.",
-  },
-  {
-    q: "How should I store and maintain pure Banarasi & Kanjivaram sarees?",
-    a: "Dry clean only. Store sarees wrapped in a soft white muslin or cotton cloth. Refold sarees every 3 months along different fold lines to prevent zari creasing.",
-  },
-];
-
 function FaqsContent() {
+  const { data: faqs = [] } = useSectionContent("faqs");
   const [openIdx, setOpenIdx] = useState<number | null>(0);
 
   return (
     <div className="container-boutique max-w-3xl space-y-8">
-      <div className="bg-white p-8 md:p-12 rounded-sm border border-border shadow-md text-center space-y-4">
-        <div className="eyebrow text-[var(--gold)]">Customer Service & Assistance</div>
+      <div className="bg-white p-8 md:p-12 rounded-sm border border-border shadow-xs text-center space-y-3">
+        <div className="eyebrow text-[var(--gold)]">Everything You Need to Know</div>
         <h1 className="font-serif text-3xl md:text-5xl font-bold text-[var(--wine-deep)]">
           Frequently Asked Questions
         </h1>
-        <p className="text-xs text-muted-foreground max-w-md mx-auto">
-          Everything you need to know about our handloom heritage sarees, international delivery,
-          and silk care.
+        <p className="text-xs md:text-sm text-muted-foreground max-w-md mx-auto leading-relaxed">
+          Common questions regarding our saree collections, online orders, international shipping, and customer service.
         </p>
       </div>
 
-      <div className="bg-white p-6 md:p-8 rounded-sm border border-border shadow-sm space-y-4">
-        {FAQS_DATA.map((item, idx) => (
-          <div key={idx} className="border-b border-border/70 last:border-0 pb-4">
-            <button
-              onClick={() => setOpenIdx(openIdx === idx ? null : idx)}
-              className="w-full text-left flex items-center justify-between gap-4 py-2 font-serif text-lg font-bold text-[var(--wine-deep)] hover:text-[var(--wine)] transition-colors"
-            >
-              <span>{item.q}</span>
-              <ChevronDown
-                className={`h-5 w-5 shrink-0 transition-transform ${openIdx === idx ? "rotate-180 text-[var(--wine)]" : "text-muted-foreground"}`}
-              />
-            </button>
-            {openIdx === idx && (
-              <div className="text-xs text-muted-foreground leading-relaxed pt-2 animate-in fade-in">
-                {item.a}
-              </div>
-            )}
-          </div>
-        ))}
+      <div className="bg-white p-6 md:p-8 rounded-sm border border-border shadow-xs space-y-3 divide-y divide-border/60">
+        {faqs.map((item, idx) => {
+          const isOpen = openIdx === idx;
+          const isWhatsApp = item.answer.toLowerCase().includes("whatsapp");
+
+          return (
+            <div key={item.id || idx} className="pt-4 first:pt-0">
+              <button
+                type="button"
+                onClick={() => setOpenIdx(isOpen ? null : idx)}
+                className="w-full text-left flex items-center justify-between gap-4 py-2 font-serif text-base md:text-lg font-bold text-[var(--wine-deep)] hover:text-[var(--wine)] transition-colors cursor-pointer"
+              >
+                <span>{item.question}</span>
+                <ChevronDown
+                  className={`h-4 w-4 shrink-0 transition-transform duration-200 ${
+                    isOpen ? "rotate-180 text-[var(--wine)]" : "text-muted-foreground"
+                  }`}
+                />
+              </button>
+              {isOpen && (
+                <div className="text-xs md:text-sm text-muted-foreground leading-relaxed pt-2 pb-2 animate-in fade-in space-y-2">
+                  <p>{item.answer}</p>
+                  {isWhatsApp && (
+                    <div>
+                      <a
+                        href="https://wa.me/919874572846?text=Hello%20Mun%20Creations%2C%20I%20have%20an%20enquiry."
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 hover:underline"
+                      >
+                        <MessageCircle className="h-3.5 w-3.5" />
+                        <span>Chat directly with Customer Service (+91 98745 72846) &rarr;</span>
+                      </a>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

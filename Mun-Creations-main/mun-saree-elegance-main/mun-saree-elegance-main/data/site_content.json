@@ -1,0 +1,353 @@
+{
+  "homepage": {
+    "seoTitle": "Mun Creations | Premium Sarees, Handloom Sarees & Indian Ethnic Wear",
+    "metaDescription": "Discover premium sarees and Indian ethnic wear at Mun Creations. Shop Banarasi, Tussar, Kanjivaram, handloom, designer and festive sarees with worldwide shipping.",
+    "hero": {
+      "title": "Timeless Sarees. Authentic Craftsmanship.",
+      "subtitle": "Discover the beauty of Indian textiles through a thoughtfully curated collection of sarees crafted with tradition, artistry and contemporary elegance.",
+      "description": "From timeless Banarasi and Kanjivaram sarees to exquisite Tussar, handloom and designer collections, Mun Creations brings India's rich textile heritage closer to you.",
+      "ctaText": "Explore the Collection",
+      "ctaLink": "#collection-section",
+      "cta2Text": "Shop Sarees",
+      "cta2Link": "/shop"
+    },
+    "brandIntro": {
+      "title": "The Art of Indian Draping",
+      "p1": "At Mun Creations, every saree represents more than fabric. It represents generations of craftsmanship, cultural heritage and the timeless elegance of Indian fashion.",
+      "p2": "Our collection brings together traditional weaves, intricate craftsmanship and contemporary designs for weddings, festivals, celebrations and everyday elegance.",
+      "p3": "Whether you are searching for a classic Banarasi silk saree, an elegant Tussar saree or a statement designer drape, explore a collection created for moments that deserve to be remembered."
+    },
+    "categorySection": {
+      "title": "Explore Our Collections",
+      "subtitle": "Curated weaves inspired by generations of Indian textile artistry",
+      "items": [
+        {
+          "slug": "banarasi",
+          "name": "Banarasi Sarees",
+          "description": "Experience the richness of Banarasi weaving through luxurious silk sarees featuring intricate motifs and timeless zari craftsmanship."
+        },
+        {
+          "slug": "kanjivaram",
+          "name": "Kanjivaram Sarees",
+          "description": "Discover the iconic elegance of South Indian silk with traditional Kanjivaram-inspired designs, rich colors and distinctive borders."
+        },
+        {
+          "slug": "tussar",
+          "name": "Tussar Sarees",
+          "description": "Explore the natural beauty and distinctive texture of Tussar silk, from traditional handloom styles to contemporary interpretations."
+        },
+        {
+          "slug": "designer",
+          "name": "Designer Sarees",
+          "description": "Make a statement with carefully selected designer sarees created for celebrations, special occasions and modern wardrobes."
+        },
+        {
+          "slug": "handloom",
+          "name": "Handloom Sarees",
+          "description": "Celebrate India's weaving traditions with handloom sarees that showcase distinctive textures, patterns and artisanal craftsmanship."
+        },
+        {
+          "slug": "wedding-festive",
+          "name": "Festive & Wedding Sarees",
+          "description": "Find elegant sarees for weddings, festivals, receptions and other memorable occasions."
+        }
+      ]
+    },
+    "brandStory": {
+      "eyebrow": "Heritage & Craftsmanship",
+      "title": "Where Heritage Meets Contemporary Elegance",
+      "body": "Mun Creations celebrates the diversity of Indian textiles by bringing traditional craftsmanship together with contemporary styling. Our collections are curated for women who appreciate authentic craftsmanship, refined details and timeless Indian fashion. From intricate zari work to distinctive handloom textures, every collection is selected with an appreciation for the artistry behind the saree."
+    },
+    "trustSection": {
+      "title": "Crafted with Care",
+      "items": [
+        "Authentic Indian craftsmanship",
+        "Thoughtfully curated collections",
+        "Secure online shopping",
+        "Worldwide shipping",
+        "Customer assistance through WhatsApp"
+      ]
+    },
+    "cta": {
+      "title": "Find Your Signature Drape",
+      "description": "Explore our collection of sarees and discover a style that becomes part of your story.",
+      "buttonText": "Shop the Collection",
+      "buttonLink": "/shop"
+    }
+  },
+  "about": {
+    "seoTitle": "About Mun Creations | Indian Sarees & Traditional Craftsmanship",
+    "metaDescription": "Learn about Mun Creations, a curated destination for Banarasi, Tussar, Kanjivaram, handloom and designer sarees inspired by India's rich textile heritage.",
+    "eyebrow": "About Mun Creations",
+    "title": "Celebrating India's Textile Heritage",
+    "introP1": "Mun Creations is a curated destination for sarees and Indian ethnic wear inspired by the richness and diversity of India's textile traditions.",
+    "introP2": "We believe that a saree is more than an item of clothing. It is a piece of culture, craftsmanship and personal expression.",
+    "introP3": "Our collection brings together traditional handloom aesthetics, luxurious silk weaves, intricate embellishments and contemporary designs to create a selection suitable for today's woman.",
+    "philosophy": {
+      "title": "Our Philosophy",
+      "subtitle": "Tradition. Craftsmanship. Elegance.",
+      "description": "We look beyond trends to discover sarees that have character, craftsmanship and timeless appeal. Our collections are selected across a variety of styles, including:",
+      "styles": [
+        "Banarasi sarees",
+        "Kanjivaram sarees",
+        "Tussar sarees",
+        "Handloom sarees",
+        "Designer sarees",
+        "Festive sarees",
+        "Wedding sarees",
+        "Embroidered sarees",
+        "Silk sarees",
+        "Contemporary Indian ethnic wear"
+      ]
+    },
+    "promise": {
+      "title": "Our Promise",
+      "description": "We aim to make discovering beautiful Indian sarees a simple and enjoyable experience while respecting the craftsmanship and traditions behind every collection."
+    }
+  },
+  "categories": {
+    "sarees": {
+      "seoTitle": "Buy Sarees Online | Banarasi, Tussar, Kanjivaram & Designer Sarees | Mun Creations",
+      "metaDescription": "Shop sarees online at Mun Creations. Explore Banarasi, Tussar, Kanjivaram, handloom, silk, designer and festive sarees for weddings, celebrations and everyday elegance.",
+      "title": "Sarees",
+      "subtitle": "Discover Timeless Indian Sarees",
+      "description": "Explore a curated collection of Indian sarees created for every occasion. From luxurious silk sarees and intricate Banarasi weaves to elegant Tussar and handloom sarees, discover designs that celebrate India's diverse textile heritage.",
+      "shopByList": [
+        "Banarasi Sarees",
+        "Kanjivaram Sarees",
+        "Tussar Sarees",
+        "Handloom Sarees",
+        "Designer Sarees",
+        "Silk Sarees",
+        "Festive Sarees",
+        "Wedding Sarees",
+        "Embroidered Sarees"
+      ]
+    },
+    "banarasi": {
+      "seoTitle": "Banarasi Sarees Online | Traditional Banarasi Silk Sarees | Mun Creations",
+      "metaDescription": "Explore Banarasi sarees featuring luxurious silk, traditional motifs and intricate zari craftsmanship. Discover elegant Banarasi sarees at Mun Creations.",
+      "title": "Banarasi Sarees",
+      "subtitle": "The Timeless Grandeur of Banaras",
+      "description": "Banarasi sarees are celebrated for their luxurious appearance, intricate weaving and distinctive zari craftsmanship. Our Banarasi collection features elegant designs inspired by the traditional weaving heritage of Varanasi, including classic silk sarees, intricate motifs, rich borders and contemporary interpretations.",
+      "perfectFor": [
+        "Weddings",
+        "Receptions",
+        "Festivals",
+        "Traditional celebrations",
+        "Special occasions"
+      ],
+      "closing": "Discover the timeless elegance of Banarasi silk."
+    },
+    "tussar": {
+      "seoTitle": "Tussar Sarees Online | Handloom Tussar Silk Sarees | Mun Creations",
+      "metaDescription": "Shop Tussar sarees at Mun Creations. Explore elegant handloom Tussar silk sarees featuring natural textures, traditional craftsmanship and contemporary designs.",
+      "title": "Tussar Sarees",
+      "subtitle": "Natural Texture. Distinctive Character.",
+      "description": "Tussar silk is admired for its distinctive texture, natural appearance and elegant drape. Our Tussar collection brings together traditional handloom aesthetics and contemporary designs, making these sarees suitable for festive occasions, cultural celebrations and refined everyday dressing. Explore Tussar sarees in a range of colors, patterns and handcrafted styles."
+    },
+    "kanjivaram": {
+      "seoTitle": "Kanjivaram Sarees Online | Traditional South Indian Silk Sarees | Mun Creations",
+      "metaDescription": "Discover Kanjivaram-inspired silk sarees with rich colors, traditional borders and elegant designs at Mun Creations.",
+      "title": "Kanjivaram Sarees",
+      "subtitle": "A Heritage of South Indian Silk",
+      "description": "Kanjivaram sarees are renowned for their rich silk appearance, striking borders and traditional motifs. Explore elegant designs inspired by the heritage of South Indian silk weaving, curated for weddings, festivals and important celebrations."
+    },
+    "designer": {
+      "seoTitle": "Designer Sarees Online | Luxury & Contemporary Sarees | Mun Creations",
+      "metaDescription": "Explore designer sarees at Mun Creations, featuring contemporary styling, intricate details and elegant designs for weddings, parties and special occasions.",
+      "title": "Designer Sarees",
+      "subtitle": "Contemporary Expressions of Indian Elegance",
+      "description": "Our designer saree collection combines the timeless silhouette of the saree with contemporary aesthetics. Discover statement pieces featuring distinctive colors, embellishments, embroidery, modern drapes and sophisticated detailing.",
+      "designedFor": [
+        "Weddings",
+        "Receptions",
+        "Parties",
+        "Festive celebrations",
+        "Special occasions"
+      ]
+    },
+    "handloom": {
+      "seoTitle": "Handloom Sarees Online | Authentic Indian Handloom Sarees | Mun Creations",
+      "metaDescription": "Discover handloom sarees inspired by India's rich weaving traditions. Shop distinctive textures, traditional patterns and elegant handcrafted sarees.",
+      "title": "Handloom Sarees",
+      "subtitle": "Woven with Tradition",
+      "description": "Handloom sarees celebrate the skill, patience and artistry of India's weaving communities. Our collection highlights distinctive textures, traditional techniques and elegant patterns that make every handloom saree unique. Explore handloom styles created for women who appreciate craftsmanship and authentic Indian textiles."
+    },
+    "wedding-festive": {
+      "seoTitle": "Wedding Sarees & Festive Sarees Online | Mun Creations",
+      "metaDescription": "Shop wedding and festive sarees at Mun Creations. Discover elegant silk, Banarasi, Tussar and designer sarees for weddings and celebrations.",
+      "title": "Wedding & Festive Sarees",
+      "subtitle": "For Moments That Matter",
+      "description": "Weddings and festivals deserve something special. Explore an elegant selection of sarees suitable for bridal celebrations, wedding guests, receptions, festivals and traditional occasions. From rich silk and Banarasi weaves to intricate embroidery and statement designs, discover sarees created for memorable celebrations."
+    }
+  },
+  "shipping": {
+    "seoTitle": "Shipping Information | Mun Creations",
+    "metaDescription": "Learn about Mun Creations shipping, order processing and worldwide delivery options for sarees and Indian ethnic wear.",
+    "title": "Shipping & Delivery",
+    "subtitle": "Bringing Indian Elegance to You",
+    "intro": "We carefully prepare every order before dispatch to ensure your saree reaches you safely and securely. Mun Creations offers shipping services to customers in India and selected international destinations.",
+    "orderProcessingTitle": "Order Processing",
+    "orderProcessingBody": "Orders are carefully checked, packed and prepared for dispatch after confirmation. Processing and delivery timelines may vary depending on product availability, destination and shipping service.",
+    "internationalShippingTitle": "International Shipping",
+    "internationalShippingBody": "We serve customers looking to discover Indian sarees and ethnic wear around the world. International orders may be subject to customs duties, taxes or other charges imposed by the destination country. These charges, where applicable, are the responsibility of the customer.",
+    "importantTitle": "Important",
+    "importantBody": "Please ensure that your shipping address, phone number and email address are accurate before completing your order. For shipping-related questions, contact our Customer Service team through WhatsApp.",
+    "whatsappNumber": "+91 98745 72846",
+    "whatsappUrl": "https://wa.me/919874572846?text=Hello%20Mun%20Creations%2C%20I%20have%20a%20question%20regarding%20shipping%20and%20delivery."
+  },
+  "returns": {
+    "seoTitle": "Returns & Customer Service | Mun Creations",
+    "metaDescription": "Need assistance with your Mun Creations order or return? Contact our Customer Service team directly through WhatsApp for assistance.",
+    "title": "Returns & Customer Service",
+    "subtitle": "Need Help With Your Order?",
+    "body": "If you have any questions regarding your order, product, return or other customer-service matter, please contact our Customer Service team directly through WhatsApp. Our team will review your query and assist you with the appropriate next steps.",
+    "buttonText": "Contact Customer Service on WhatsApp",
+    "whatsappNumber": "+91 98745 72846",
+    "whatsappUrl": "https://wa.me/919874572846?text=Hello%20Mun%20Creations%2C%20I%20need%20assistance%20with%20my%20order%20or%20return.",
+    "note": "For faster assistance, please keep your order number available when contacting us."
+  },
+  "contact": {
+    "seoTitle": "Contact Mun Creations | Saree & Ethnic Wear Customer Support",
+    "metaDescription": "Contact Mun Creations for product enquiries, order assistance, saree information and customer support through WhatsApp and online channels.",
+    "title": "Contact Mun Creations",
+    "subtitle": "We're Here to Help",
+    "body": "Have a question about a saree, your order, shipping or our collections? Our Customer Service team is available to assist you.",
+    "whatsappNumber": "+91 98745 72846",
+    "whatsappUrl": "https://wa.me/919874572846?text=Hello%20Mun%20Creations%2C%20I%20have%20an%20enquiry.",
+    "productEnquiriesTitle": "Product Enquiries",
+    "productEnquiriesBody": "For product-related enquiries, please mention the product name or SKU when contacting us.",
+    "orderAssistanceTitle": "Order Assistance",
+    "orderAssistanceBody": "For order-related assistance, please provide your order number so our team can locate your order quickly."
+  },
+  "faqs": [
+    {
+      "id": "faq_1",
+      "question": "What types of sarees does Mun Creations offer?",
+      "answer": "Mun Creations offers a curated selection of Banarasi, Tussar, Kanjivaram, handloom, silk, designer, embroidered, wedding and festive sarees."
+    },
+    {
+      "id": "faq_2",
+      "question": "Can I order sarees online?",
+      "answer": "Yes. You can browse the collection, select your preferred product and complete your purchase securely through the online checkout."
+    },
+    {
+      "id": "faq_3",
+      "question": "Do you ship internationally?",
+      "answer": "Mun Creations offers shipping to customers in selected international destinations. Shipping availability may depend on the destination."
+    },
+    {
+      "id": "faq_4",
+      "question": "How can I check my order?",
+      "answer": "Use the order information provided after purchase or contact Customer Service through WhatsApp for assistance."
+    },
+    {
+      "id": "faq_5",
+      "question": "How can I ask about a product before purchasing?",
+      "answer": "Contact Customer Service through WhatsApp and mention the product name or SKU."
+    },
+    {
+      "id": "faq_6",
+      "question": "How do I contact customer service regarding a return?",
+      "answer": "For any return-related query, contact Mun Creations Customer Service directly through WhatsApp at +91 98745 72846."
+    },
+    {
+      "id": "faq_7",
+      "question": "What payment method is available?",
+      "answer": "Online payments are processed securely through Razorpay supporting UPI, Cards, NetBanking, and Wallets."
+    },
+    {
+      "id": "faq_8",
+      "question": "Are international customers able to purchase?",
+      "answer": "Customers from supported international destinations can shop available products online. Currency display and payment availability may depend on location and the configured payment service."
+    }
+  ],
+  "privacy": {
+    "seoTitle": "Privacy Policy | Mun Creations",
+    "metaDescription": "Mun Creations respects your privacy and is committed to protecting your personal information. Read our complete privacy policy.",
+    "title": "Privacy Policy",
+    "subtitle": "Your Privacy Matters",
+    "intro": "Mun Creations respects your privacy and is committed to protecting the personal information you provide while using our website.",
+    "collectionIntro": "Information may be collected when you:",
+    "collectionPoints": [
+      "Create an account",
+      "Place an order",
+      "Contact Customer Service",
+      "Subscribe to communications",
+      "Submit information through website forms"
+    ],
+    "typesIntro": "Information may include:",
+    "typesPoints": [
+      "Name",
+      "Email address",
+      "Phone number",
+      "Shipping address",
+      "Billing information",
+      "Order information"
+    ],
+    "paymentNote": "Payment information is processed through our payment service provider and is handled according to the provider's applicable security and privacy practices.",
+    "usageIntro": "Your information may be used to:",
+    "usagePoints": [
+      "Process orders",
+      "Provide customer support",
+      "Communicate regarding orders",
+      "Improve website functionality",
+      "Prevent fraud",
+      "Provide relevant service communications"
+    ],
+    "legalReviewNote": "The final legal policy should be reviewed against the actual data collection, cookies, analytics, payment processor and hosting infrastructure used by the website."
+  },
+  "terms": {
+    "seoTitle": "Terms & Conditions | Mun Creations",
+    "metaDescription": "Review the terms and conditions governing the use of the Mun Creations website, orders, products and services.",
+    "title": "Terms & Conditions",
+    "points": [
+      "By accessing and using the Mun Creations website, you agree to comply with these Terms & Conditions.",
+      "The website provides information about our products, collections and services and allows customers to place orders online.",
+      "Product images are provided to represent the products as accurately as possible. Due to photography, screen settings and the nature of textiles, slight variations in color and appearance may occur.",
+      "Product availability may change without prior notice.",
+      "Prices, product information and availability may be updated from time to time.",
+      "Orders are subject to successful payment confirmation and product availability.",
+      "Mun Creations reserves the right to correct pricing, product information or availability errors where necessary.",
+      "For questions regarding an order or product, contact Customer Service through WhatsApp at +91 98745 72846."
+    ]
+  },
+  "footer": {
+    "brandName": "Mun Creations",
+    "tagline": "Timeless Indian Craftsmanship. Contemporary Elegance.",
+    "description": "Discover curated sarees and Indian ethnic wear inspired by India's rich textile heritage.",
+    "whatsappNumber": "+91 98745 72846",
+    "whatsappUrl": "https://wa.me/919874572846",
+    "copyright": "© 2026 Mun Creations. All Rights Reserved."
+  },
+  "seo": {
+    "primaryKeywords": [
+      "sarees online",
+      "buy sarees online",
+      "Indian sarees",
+      "saree online",
+      "silk sarees",
+      "designer sarees",
+      "handloom sarees",
+      "Banarasi sarees",
+      "Tussar sarees",
+      "Kanjivaram sarees",
+      "wedding sarees",
+      "festive sarees",
+      "Indian ethnic wear"
+    ],
+    "secondaryKeywords": [
+      "Banarasi silk saree",
+      "Tussar silk saree",
+      "handloom silk saree",
+      "traditional Indian sarees",
+      "luxury sarees",
+      "sarees for weddings",
+      "sarees for festivals",
+      "designer Indian sarees",
+      "traditional silk sarees",
+      "Indian saree collection"
+    ]
+  }
+}

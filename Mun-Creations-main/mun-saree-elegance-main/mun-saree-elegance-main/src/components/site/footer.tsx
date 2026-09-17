@@ -8,6 +8,7 @@ import {
   Key,
   X,
   ArrowRightLeft,
+  MessageCircle,
 } from "lucide-react";
 import {
   useI18n,
@@ -17,16 +18,18 @@ import {
   type CurrencyCode,
   type LangCode,
 } from "@/lib/i18n";
+import { useSectionContent } from "@/lib/content-client";
 
 const COLS = [
   {
-    title: "Boutique",
+    title: "Collections",
     links: [
-      { name: "All Handloom Sarees", href: "/products" },
-      { name: "Tussar Heritage", href: "/sarees" },
-      { name: "Curated Collections", href: "/collections" },
-      { name: "Shopping Bag", href: "/cart" },
-      { name: "Client Concierge", href: "/contact" },
+      { name: "Shop Sarees", href: "/shop" },
+      { name: "Banarasi Sarees", href: "/shop?category=Banarasi" },
+      { name: "Tussar Sarees", href: "/shop?category=Tussar" },
+      { name: "Kanjivaram Sarees", href: "/shop?category=Kanjivaram" },
+      { name: "Designer Sarees", href: "/shop?category=Designer" },
+      { name: "Handloom Sarees", href: "/shop?category=Handloom" },
     ],
   },
   {
@@ -35,17 +38,17 @@ const COLS = [
       { name: "Our Story", href: "/about" },
       { name: "Artisan Craftsmanship", href: "/sarees" },
       { name: "FAQs", href: "/faqs" },
+      { name: "Contact Concierge", href: "/contact" },
       { name: "Currency Converter", href: "/currency-converter" },
     ],
   },
   {
     title: "Policies",
     links: [
-      { name: "Shipping Policy", href: "/shipping-policy" },
-      { name: "Final Sale Policy", href: "/return-policy" },
-      { name: "Refund Terms", href: "/refund-policy" },
+      { name: "Shipping Information", href: "/shipping-policy" },
+      { name: "Returns & WhatsApp Support", href: "/return-policy" },
       { name: "Privacy Policy", href: "/privacy-policy" },
-      { name: "Terms of Service", href: "/terms" },
+      { name: "Terms & Conditions", href: "/terms" },
     ],
   },
 ];
@@ -53,6 +56,7 @@ const COLS = [
 export function Footer() {
   const { currency, setCurrency, lang, setLang } = useI18n();
   const { openConverter } = useCurrencyModal();
+  const { data: footerCms } = useSectionContent("footer");
 
   // Password Protection Modal State
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -92,17 +96,31 @@ export function Footer() {
     <footer className="bg-[var(--wine-deep)] text-[var(--ivory)] relative">
       <div className="container-boutique py-12 sm:py-16 md:py-20 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 sm:gap-10">
         <div className="sm:col-span-2 max-w-sm">
-          <div className="mb-4 sm:mb-6">
+          <div className="mb-3 sm:mb-4">
             <img
               src="/logo-light.png"
               alt="MUN Creations Logo"
               className="h-12 sm:h-14 md:h-16 w-auto object-contain"
             />
           </div>
-          <p className="text-xs sm:text-sm text-[var(--ivory)]/70 leading-relaxed mb-5 sm:mb-6">
-            Handwoven sarees & festive wear, crafted in India by families of master artisans.
-            Shipped with love to 42 countries.
+          <div className="font-serif text-sm font-semibold text-[var(--gold)] mb-1.5">
+            {footerCms.tagline || "Timeless Indian Craftsmanship. Contemporary Elegance."}
+          </div>
+          <p className="text-xs text-[var(--ivory)]/70 leading-relaxed mb-4">
+            {footerCms.description ||
+              "Discover curated sarees and Indian ethnic wear inspired by India's rich textile heritage."}
           </p>
+          <div className="mb-5">
+            <a
+              href={footerCms.whatsappUrl || "https://wa.me/919874572846"}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 bg-emerald-700/90 hover:bg-emerald-600 text-white font-bold px-3 py-1.5 rounded text-xs transition-colors border border-emerald-500/50"
+            >
+              <MessageCircle className="h-3.5 w-3.5" />
+              <span>WhatsApp: {footerCms.whatsappNumber || "+91 98745 72846"}</span>
+            </a>
+          </div>
           <div className="flex gap-3">
             {[Instagram, Facebook, Youtube].map((Icon, i) => (
               <a
@@ -140,7 +158,7 @@ export function Footer() {
       <div className="border-t border-[var(--ivory)]/15">
         <div className="container-boutique py-5 sm:py-6 flex flex-col md:flex-row items-center gap-4 md:justify-between text-xs text-[var(--ivory)]/60 text-center md:text-left">
           <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 sm:gap-3 text-[11px] sm:text-xs">
-            <span>© {new Date().getFullYear()} Mun Creations. All rights reserved.</span>
+            <span>{footerCms.copyright || `© ${new Date().getFullYear()} Mun Creations. All Rights Reserved.`}</span>
             <span>·</span>
 
             {/* Discrete Password Protected Footer Links */}

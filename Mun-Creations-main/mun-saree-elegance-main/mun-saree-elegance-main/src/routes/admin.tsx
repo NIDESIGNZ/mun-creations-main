@@ -21,6 +21,7 @@ import { CategoryManager } from "@/components/admin/CategoryManager";
 import { InventoryManager } from "@/components/admin/InventoryManager";
 import { BulkCsvManager } from "@/components/admin/BulkCsvManager";
 import { AuditLogViewer } from "@/components/admin/AuditLogViewer";
+import { SiteContentManager } from "@/components/admin/SiteContentManager";
 import {
   LayoutDashboard,
   Package,
@@ -176,6 +177,7 @@ function AdminDashboardContent({ onLogout }: { onLogout: () => void }) {
     | "inventory"
     | "csv-import"
     | "audit-logs"
+    | "cms"
     | "orders"
     | "shipping"
     | "payments"
@@ -412,6 +414,23 @@ function AdminDashboardContent({ onLogout }: { onLogout: () => void }) {
               <History className="h-4 w-4" />
               <span>6. System Audit Trail</span>
             </button>
+
+            <button
+              onClick={() => setActiveTab("cms")}
+              className={`w-full text-left p-2.5 rounded flex items-center gap-2.5 transition-colors ${
+                activeTab === "cms"
+                  ? "bg-[var(--wine)] text-white font-bold"
+                  : "text-slate-400 hover:bg-slate-800 hover:text-white"
+              }`}
+            >
+              <FileText className="h-4 w-4 text-[var(--gold)]" />
+              <div className="flex-1 flex items-center justify-between">
+                <span>7. Website Content CMS</span>
+                <span className="bg-[var(--gold)] text-slate-950 font-bold px-1.5 py-0.2 rounded text-[9px] font-mono uppercase">
+                  Live
+                </span>
+              </div>
+            </button>
           </div>
 
           {/* Section: Store Operations & POS */}
@@ -645,6 +664,9 @@ function AdminDashboardContent({ onLogout }: { onLogout: () => void }) {
 
           {/* TAB 6: AUDIT LOGS */}
           {activeTab === "audit-logs" && <AuditLogViewer />}
+
+          {/* TAB 7: WEBSITE CONTENT CMS & SEO */}
+          {activeTab === "cms" && <SiteContentManager />}
 
           {/* TAB 7: ORDERS */}
           {activeTab === "orders" && (

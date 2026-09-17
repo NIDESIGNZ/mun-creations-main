@@ -20,6 +20,7 @@ import {
   Check,
   Award,
   ChevronRight,
+  MessageCircle,
 } from "lucide-react";
 
 export const Route = createFileRoute("/product/$id")({
@@ -222,14 +223,68 @@ function ProductDetailContent({ product }: { product: Product }) {
               {product.fullDescription || product.shortDescription}
             </p>
 
-            {/* Specifications Matrix */}
-            <div className="grid grid-cols-2 gap-2.5 pt-3 pb-2 text-xs border-y border-border">
-              <div><span className="text-muted-foreground">Fabric:</span> <strong className="text-foreground">{product.fabric}</strong></div>
-              <div><span className="text-muted-foreground">Color:</span> <strong className="text-foreground">{product.color}</strong></div>
-              <div><span className="text-muted-foreground">Weave:</span> <strong className="text-foreground">{product.weave || "Handloom"}</strong></div>
-              <div><span className="text-muted-foreground">Length:</span> <strong className="text-foreground">{product.sareeLength || "5.5 meters"}</strong></div>
-              <div><span className="text-muted-foreground">Blouse:</span> <strong className="text-foreground">{product.blousePiece !== false ? "Included (Unstitched)" : "Not Included"}</strong></div>
-              <div><span className="text-muted-foreground">Origin:</span> <strong className="text-foreground">{product.originRegion || "Varanasi, India"}</strong></div>
+            {/* Dynamic Attribute Matrix (Specification 10: Strictly only attributes that exist) */}
+            {(() => {
+              const dynamicAttributes = [
+                { label: "Fabric", value: product.fabric },
+                { label: "Color", value: product.color || product.primaryColor },
+                { label: "Work / Embroidery", value: (product as any).workType || (product as any).work },
+                { label: "Occasion", value: product.occasion },
+                { label: "Design / Pattern", value: (product as any).designPattern || (product as any).pattern },
+                { label: "Weave", value: product.weave || (product as any).weaveType },
+                { label: "Border Type", value: (product as any).borderType },
+                { label: "Pallu Type", value: (product as any).palluType },
+                { label: "Saree Length", value: product.sareeLength },
+                { label: "Blouse Length", value: (product as any).blouseLength },
+                {
+                  label: "Blouse Piece Details",
+                  value:
+                    (product as any).blouseDetails ||
+                    (product.blousePiece !== undefined
+                      ? product.blousePiece
+                        ? "Included (Unstitched)"
+                        : "Not Included"
+                      : undefined),
+                },
+                { label: "Care Instructions", value: (product as any).careInstructions || "Dry Clean Only" },
+              ].filter((attr) => Boolean(attr.value && String(attr.value).trim().length > 0));
+
+              if (dynamicAttributes.length === 0) return null;
+
+              return (
+                <div className="pt-3 pb-3 border-y border-border space-y-2">
+                  <div className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground font-semibold">
+                    Product Attributes & Specifications
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 text-xs">
+                    {dynamicAttributes.map((attr) => (
+                      <div key={attr.label}>
+                        <span className="text-muted-foreground">{attr.label}:</span>{" "}
+                        <strong className="text-foreground">{attr.value}</strong>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* Handloom Disclaimer (Specification 10) */}
+            <div className="text-[11px] text-muted-foreground bg-secondary/30 p-3 rounded-xs border border-border/70 leading-relaxed">
+              <strong className="text-foreground block mb-0.5">Handloom Disclaimer:</strong>
+              Due to the authentic handcrafted nature of our weaves and screen calibrations, slight variations in natural fiber texture, zari sheen, and color shade are hallmarks of genuine Indian artisan craftsmanship.
+            </div>
+
+            {/* WhatsApp Enquiry Button */}
+            <div className="pt-1">
+              <a
+                href={`https://wa.me/919874572846?text=Hello%20Mun%20Creations%2C%20I%20have%20an%20enquiry%20regarding%20${encodeURIComponent(product.name)}${product.sku ? `%20(SKU:%20${encodeURIComponent(product.sku)})` : ""}.`}
+                target="_blank"
+                rel="noreferrer"
+                className="w-full inline-flex items-center justify-center gap-2 border border-emerald-600/50 bg-emerald-50/70 hover:bg-emerald-100 text-emerald-800 py-2.5 px-4 rounded-xs text-xs font-bold uppercase tracking-wider transition-colors"
+              >
+                <MessageCircle className="h-4 w-4 text-emerald-600" />
+                <span>Enquire on WhatsApp</span>
+              </a>
             </div>
           </div>
 

@@ -10,6 +10,7 @@ import { useCatalogProducts } from "@/lib/catalog-client";
 import { CATEGORY_FILTERS, FABRIC_FILTERS } from "@/lib/catalog";
 import { CANONICAL_COLORS, getColorHex, matchesSelectedColors } from "@/lib/colors";
 import { CATALOG_PRICE_TIERS, matchesPriceTier, getProductBasePriceInr } from "@/lib/pricing-config";
+import { useSectionContent } from "@/lib/content-client";
 import { SlidersHorizontal, X, Sparkles, Search, Check, Filter } from "lucide-react";
 
 export const Route = createFileRoute("/products")({
@@ -54,6 +55,20 @@ function ProductsContent() {
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   const { data: products = [] } = useCatalogProducts();
+  const { data: categoriesCms } = useSectionContent("categories");
+
+  const activeCategoryMeta = useMemo(() => {
+    if (!selectedCategory) return categoriesCms?.sarees;
+    const catLower = selectedCategory.toLowerCase();
+    if (catLower.includes("banarasi")) return categoriesCms?.banarasi;
+    if (catLower.includes("tussar")) return categoriesCms?.tussar;
+    if (catLower.includes("kanjivaram")) return categoriesCms?.kanjivaram;
+    if (catLower.includes("designer")) return categoriesCms?.designer;
+    if (catLower.includes("handloom")) return categoriesCms?.handloom;
+    if (catLower.includes("wedding") || catLower.includes("festive"))
+      return categoriesCms?.["wedding-festive"];
+    return categoriesCms?.[selectedCategory];
+  }, [selectedCategory, categoriesCms]);
 
   // Color item counts
   const colorCounts = useMemo(() => {
@@ -282,13 +297,13 @@ function ProductsContent() {
       <div className="bg-white p-6 sm:p-10 rounded-sm border border-border shadow-xs text-center space-y-3">
         <div className="eyebrow flex items-center justify-center gap-2">
           <Sparkles className="h-3.5 w-3.5 text-[var(--gold)]" />
-          <span>The Master Collection</span>
+          <span>{activeCategoryMeta?.subtitle || "The Master Collection"}</span>
         </div>
         <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-[var(--wine-deep)]">
-          All Handcrafted Sarees & Ensembles
+          {activeCategoryMeta?.title || (selectedCategory ? `${selectedCategory} Sarees` : "All Handcrafted Sarees & Ensembles")}
         </h1>
-        <p className="text-xs sm:text-sm text-muted-foreground max-w-xl mx-auto">
-          Explore our complete treasury of authenticated Banarasi, Kanjivaram, Tussar, and bridal couture.
+        <p className="text-xs sm:text-sm text-muted-foreground max-w-xl mx-auto leading-relaxed">
+          {activeCategoryMeta?.description || "Explore our complete treasury of authenticated Banarasi, Kanjivaram, Tussar, and bridal couture."}
         </p>
       </div>
 

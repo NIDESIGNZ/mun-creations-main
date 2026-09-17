@@ -3,6 +3,7 @@ import { razorpayService } from "./services/razorpayService";
 import { exchangeRateServerService } from "./services/exchangeRateServerService";
 import { ensureEnvLoaded } from "./lib/envLoader";
 import { productDatabase } from "./lib/server/productDatabase";
+import { contentDatabase } from "./lib/server/contentDatabase";
 import fs from "fs";
 import pathModule from "path";
 
@@ -338,6 +339,18 @@ async function handleApiRequests(request: Request): Promise<Response | null> {
       }
     }
 
+    // --- PUBLIC SITE CONTENT (CMS) API ---
+    if (path === "/api/content" && request.method === "GET") {
+      const content = contentDatabase.getContent();
+      return new Response(JSON.stringify({ success: true, content }), { status: 200, headers });
+    }
+
+    if (path.startsWith("/api/content/") && request.method === "GET") {
+      const section = path.replace("/api/content/", "").trim() as any;
+      const data = contentDatabase.getSection(section);
+      return new Response(JSON.stringify({ success: true, section, data }), { status: 200, headers });
+    }
+
     // --- ADMIN AUTHENTICATION & SESSION API ---
     if (path === "/api/admin/auth/login") {
       if (request.method !== "POST") {
@@ -383,6 +396,32 @@ async function handleApiRequests(request: Request): Promise<Response | null> {
           { status: 401, headers },
         );
       }
+    }
+
+    // --- ADMIN CONTENT (CMS) API ---
+    if (path === "/api/admin/content/reset" && request.method === "POST") {
+      const content = contentDatabase.resetToDefault("admin");
+      productDatabase.logAudit("CMS_RESET", "auth", "Reset all site content to defaults", undefined, "admin");
+      return new Response(JSON.stringify({ success: true, content, message: "Site content reset to specification defaults." }), { status: 200, headers });
+    }
+
+    if (path.startsWith("/api/admin/content/")) {
+      const section = decodeURIComponent(path.replace("/api/admin/content/", "")).trim() as any;
+      if (request.method === "GET") {
+        const data = contentDatabase.getSection(section);
+        return new Response(JSON.stringify({ success: true, section, data }), { status: 200, headers });
+      }
+      if (request.method === "PUT" || request.method === "PATCH" || request.method === "POST") {
+        const body = await request.json().catch(() => ({}));
+        const updated = contentDatabase.updateSection(section, body, "admin");
+        productDatabase.logAudit("CMS_UPDATE", "auth", `Updated CMS section "${section}"`, undefined, "admin");
+        return new Response(JSON.stringify({ success: true, section, data: updated }), { status: 200, headers });
+      }
+    }
+
+    if (path === "/api/admin/content" && request.method === "GET") {
+      const content = contentDatabase.getContent();
+      return new Response(JSON.stringify({ success: true, content }), { status: 200, headers });
     }
 
     // --- ADMIN PRODUCTS API ---

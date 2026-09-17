@@ -7,16 +7,26 @@ import { CartDrawer } from "@/components/site/cart-drawer";
 import { ProductCard } from "@/components/site/product";
 import { EXPANDED_SAREE_TAXONOMY } from "@/lib/catalog";
 import { useCatalogProducts } from "@/lib/catalog-client";
-import { Layers } from "lucide-react";
+import { useSectionContent } from "@/lib/content-client";
+import { Layers, Sparkle } from "lucide-react";
 
 export const Route = createFileRoute("/sarees")({
   head: () => ({
     meta: [
-      { title: "Authentic Indian Sarees — Banarasi, Kanjivaram, Tussar | Mun Creations" },
+      { title: "Buy Sarees Online | Banarasi, Tussar, Kanjivaram & Designer Sarees | Mun Creations" },
       {
         name: "description",
         content:
-          "Explore 28 saree categories: Banarasi Katan, Kanjivaram, Tussar, Gadwal, Jamdani, Organza, Chikankari & Handloom Sarees.",
+          "Shop sarees online at Mun Creations. Explore Banarasi, Tussar, Kanjivaram, handloom, silk, designer and festive sarees for weddings, celebrations and everyday elegance.",
+      },
+      {
+        property: "og:title",
+        content: "Buy Sarees Online | Banarasi, Tussar, Kanjivaram & Designer Sarees | Mun Creations",
+      },
+      {
+        property: "og:description",
+        content:
+          "Shop sarees online at Mun Creations. Explore Banarasi, Tussar, Kanjivaram, handloom, silk, designer and festive sarees for weddings, celebrations and everyday elegance.",
       },
     ],
   }),
@@ -29,7 +39,7 @@ function SareesPage() {
       <CartProvider>
         <div className="min-h-screen bg-background text-foreground flex flex-col">
           <Header />
-          <main className="flex-1 pt-28 sm:pt-36 md:pt-48 lg:pt-56 pb-14 sm:pb-20 md:pb-24 bg-secondary/20">
+          <main className="flex-1 pt-28 sm:pt-36 md:pt-48 pb-14 sm:pb-20 md:pb-24 bg-secondary/20">
             <SareesContent />
           </main>
           <Footer />
@@ -42,20 +52,55 @@ function SareesPage() {
 
 function SareesContent() {
   const { data: allProducts = [] } = useCatalogProducts();
+  const { data: categoriesCms } = useSectionContent("categories");
+  const sareesMeta = categoriesCms?.sarees || {
+    title: "Sarees",
+    subtitle: "Discover Timeless Indian Sarees",
+    description:
+      "Explore a curated collection of Indian sarees created for every occasion. From luxurious silk sarees and intricate Banarasi weaves to elegant Tussar and handloom sarees, discover designs that celebrate India's diverse textile heritage.",
+    shopByList: [
+      "Banarasi Sarees",
+      "Kanjivaram Sarees",
+      "Tussar Sarees",
+      "Handloom Sarees",
+      "Designer Sarees",
+      "Silk Sarees",
+      "Festive Sarees",
+      "Wedding Sarees",
+      "Embroidered Sarees",
+    ],
+  };
+
   const sareeProducts = allProducts.filter((p) => p.mainCategory === "sarees" || p.category);
 
   return (
     <div className="container-boutique space-y-8 sm:space-y-12">
       {/* Hero Header */}
-      <div className="bg-white p-5 sm:p-8 md:p-12 rounded-sm border border-border shadow-md text-center space-y-3 sm:space-y-4">
-        <div className="eyebrow text-[var(--gold)]">The Royal Saree Treasury</div>
-        <h1 className="font-serif text-2xl sm:text-3xl md:text-5xl font-bold text-[var(--wine-deep)] max-w-3xl mx-auto">
-          Handwoven Indian Sarees & Heritage Craftsmanship
+      <div className="bg-white p-6 sm:p-10 md:p-14 rounded-sm border border-border shadow-xs text-center space-y-3 sm:space-y-4">
+        <div className="eyebrow text-[var(--wine)]">{sareesMeta.subtitle}</div>
+        <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-[var(--wine-deep)] max-w-3xl mx-auto">
+          {sareesMeta.title}
         </h1>
         <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl mx-auto leading-relaxed px-2 sm:px-0">
-          From the sacred looms of Varanasi to the temple workshops of Kanchipuram and artisan
-          clusters of West Bengal, discover 28 authentic weaving taxonomies.
+          {sareesMeta.description}
         </p>
+
+        {/* Shop By List Tags */}
+        {sareesMeta.shopByList && sareesMeta.shopByList.length > 0 && (
+          <div className="pt-3 flex flex-wrap justify-center gap-2 max-w-3xl mx-auto">
+            {sareesMeta.shopByList.map((tag) => (
+              <Link
+                key={tag}
+                to="/shop"
+                search={{ category: tag.replace(/\s+sarees/i, "") }}
+                className="text-xs bg-[var(--secondary)] hover:bg-[var(--wine)] hover:text-white px-3 py-1.5 rounded-full transition-colors font-medium border border-border/70 flex items-center gap-1.5"
+              >
+                <Sparkle className="h-3 w-3 text-[var(--gold)]" />
+                <span>{tag}</span>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* 28 Saree Taxonomy Grid */}
@@ -100,13 +145,13 @@ function SareesContent() {
         </div>
       </div>
 
-      {/* Handloom Sarees Showcase */}
+      {/* Featured Sarees Showcase */}
       <div className="space-y-4 sm:space-y-6 pt-4 sm:pt-6">
         <h2 className="font-serif text-xl sm:text-2xl font-bold text-[var(--wine-deep)] border-b border-border pb-3">
           Featured Sarees Collection
         </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
-          {sareeProducts.slice(0, 4).map((p) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+          {sareeProducts.slice(0, 8).map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}
         </div>

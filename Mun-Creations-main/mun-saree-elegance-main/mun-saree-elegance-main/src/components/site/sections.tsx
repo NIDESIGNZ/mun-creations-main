@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from "react";
-import { Sparkles, RotateCcw, Plane, Award, Sparkle, Gem, ShoppingBag, Play, Pause, Volume2, VolumeX } from "lucide-react";
+import { Sparkles, RotateCcw, Plane, Award, Sparkle, Gem, ShoppingBag, Play, Pause, Volume2, VolumeX, ShieldCheck, MessageCircle, ArrowRight } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useCart } from "@/lib/cart";
+import { useSectionContent } from "@/lib/content-client";
 import {
   catSilk,
   catBridal,
@@ -21,25 +22,152 @@ import {
   TUSSAR_MERCHANDISING_BLOCK,
 } from "@/lib/catalog";
 
+export function BrandIntroBlock() {
+  const { data: cms } = useSectionContent("homepage");
+  const intro = cms?.brandIntro || {
+    title: "The Art of Indian Draping",
+    p1: "At Mun Creations, every saree represents more than fabric. It represents generations of craftsmanship, cultural heritage and the timeless elegance of Indian fashion.",
+    p2: "Our collection brings together traditional weaves, intricate craftsmanship and contemporary designs for weddings, festivals, celebrations and everyday elegance.",
+    p3: "Whether you are searching for a classic Banarasi silk saree, an elegant Tussar saree or a statement designer drape, explore a collection created for moments that deserve to be remembered.",
+  };
+
+  return (
+    <section className="py-14 sm:py-20 bg-gradient-to-b from-background via-[var(--secondary)]/25 to-background border-b border-border">
+      <div className="container-boutique max-w-4xl text-center space-y-5">
+        <div className="eyebrow text-[var(--wine)]">Heritage Introduction</div>
+        <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-[var(--wine-deep)] font-bold tracking-tight">
+          {intro.title}
+        </h2>
+        <div className="space-y-4 text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed max-w-3xl mx-auto">
+          <p>{intro.p1}</p>
+          <p>{intro.p2}</p>
+          <p className="font-medium text-foreground">{intro.p3}</p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function CuratedCollectionsGrid({ onSelectFilter }: FilterCallbackProps) {
+  const { data: cms } = useSectionContent("homepage");
+  const section = cms?.categorySection || {
+    title: "Explore Our Collections",
+    subtitle: "Curated weaves inspired by generations of Indian textile artistry",
+    items: [
+      {
+        slug: "banarasi",
+        name: "Banarasi Sarees",
+        description: "Experience the richness of Banarasi weaving through luxurious silk sarees featuring intricate motifs and timeless zari craftsmanship.",
+      },
+      {
+        slug: "kanjivaram",
+        name: "Kanjivaram Sarees",
+        description: "Discover the iconic elegance of South Indian silk with traditional Kanjivaram-inspired designs, rich colors and distinctive borders.",
+      },
+      {
+        slug: "tussar",
+        name: "Tussar Sarees",
+        description: "Explore the natural beauty and distinctive texture of Tussar silk, from traditional handloom styles to contemporary interpretations.",
+      },
+      {
+        slug: "designer",
+        name: "Designer Sarees",
+        description: "Make a statement with carefully selected designer sarees created for celebrations, special occasions and modern wardrobes.",
+      },
+      {
+        slug: "handloom",
+        name: "Handloom Sarees",
+        description: "Celebrate India's weaving traditions with handloom sarees that showcase distinctive textures, patterns and artisanal craftsmanship.",
+      },
+      {
+        slug: "wedding-festive",
+        name: "Festive & Wedding Sarees",
+        description: "Find elegant sarees for weddings, festivals, receptions and other memorable occasions.",
+      },
+    ],
+  };
+
+  return (
+    <section className="py-14 sm:py-20 bg-[var(--secondary)]/30 border-b border-border">
+      <div className="container-boutique">
+        <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-12 space-y-2">
+          <div className="eyebrow text-[var(--wine)]">Master Collections</div>
+          <h2 className="font-serif text-3xl sm:text-4xl text-[var(--wine-deep)] font-bold">
+            {section.title}
+          </h2>
+          <p className="text-xs sm:text-sm text-muted-foreground">
+            {section.subtitle}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {section.items.map((it) => (
+            <div
+              key={it.slug}
+              onClick={() => onSelectFilter?.(it.name)}
+              className="p-6 bg-white rounded-sm border border-border/80 shadow-xs hover:border-[var(--gold)] hover:shadow-lg transition-all flex flex-col justify-between cursor-pointer group"
+            >
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="font-serif text-xl text-[var(--wine-deep)] font-bold group-hover:text-[var(--gold)] transition-colors">
+                    {it.name}
+                  </span>
+                  <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-[var(--gold)] group-hover:translate-x-1 transition-transform" />
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {it.description}
+                </p>
+              </div>
+              <div className="pt-4 mt-4 border-t border-border/40 text-[10px] uppercase font-bold tracking-wider text-[var(--wine)] flex items-center justify-between">
+                <span>Explore Weave</span>
+                <span>&rarr;</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export function TrustStrip() {
-  const { t } = useI18n();
-  const items = [
-    { icon: Sparkles, label: t("trust.handcrafted") },
-    { icon: RotateCcw, label: t("trust.returns") },
-    { icon: Plane, label: t("trust.shipping") },
-    { icon: Award, label: t("trust.authentic") },
+  const { data: cms } = useSectionContent("homepage");
+  const trustItems = cms?.trustSection?.items || [
+    "Authentic Indian craftsmanship",
+    "Thoughtfully curated collections",
+    "Secure online shopping",
+    "Worldwide shipping",
+    "Customer assistance through WhatsApp",
   ];
+
+  const icons = [Award, Sparkles, ShieldCheck, Plane, MessageCircle];
+
   return (
     <section className="border-y border-border bg-[var(--secondary)]/60">
-      <div className="container-boutique grid grid-cols-2 md:grid-cols-4 gap-y-6 sm:gap-y-8 py-8 sm:py-10 md:py-12">
-        {items.map((it) => (
-          <div key={it.label} className="flex flex-col items-center text-center gap-2 px-2">
-            <it.icon className="h-5 w-5 sm:h-6 sm:w-6 text-[var(--wine)]" strokeWidth={1.2} />
-            <div className="text-[10px] sm:text-[11px] tracking-[0.18em] sm:tracking-[0.22em] uppercase text-foreground/80 font-medium">
-              {it.label}
+      <div className="container-boutique grid grid-cols-2 md:grid-cols-5 gap-y-6 sm:gap-y-8 py-8 sm:py-10 md:py-12">
+        {trustItems.map((label, idx) => {
+          const IconComponent = icons[idx % icons.length];
+          const isWhatsApp = label.toLowerCase().includes("whatsapp");
+          return (
+            <div key={label} className="flex flex-col items-center text-center gap-2 px-2">
+              <IconComponent className="h-5 w-5 sm:h-6 sm:w-6 text-[var(--wine)]" strokeWidth={1.3} />
+              {isWhatsApp ? (
+                <a
+                  href="https://wa.me/919874572846?text=Hello%20Mun%20Creations%2C%20I%20need%20customer%20assistance."
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-[10px] sm:text-[11px] tracking-[0.15em] uppercase text-[var(--wine)] font-semibold hover:underline"
+                >
+                  {label}
+                </a>
+              ) : (
+                <div className="text-[10px] sm:text-[11px] tracking-[0.15em] uppercase text-foreground/80 font-medium">
+                  {label}
+                </div>
+              )}
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </section>
   );
@@ -441,6 +569,13 @@ export function StoryBanner() {
     setIsMuted(video.muted);
   };
 
+  const { data: homepageCms } = useSectionContent("homepage");
+  const storyData = homepageCms?.brandStory || {
+    eyebrow: "Heritage & Craftsmanship",
+    title: "Where Heritage Meets Contemporary Elegance",
+    body: "Mun Creations celebrates the diversity of Indian textiles by bringing traditional craftsmanship together with contemporary styling. Our collections are curated for women who appreciate authentic craftsmanship, refined details and timeless Indian fashion. From intricate zari work to distinctive handloom textures, every collection is selected with an appreciation for the artistry behind the saree.",
+  };
+
   return (
     <section className="py-14 sm:py-20 md:py-24 bg-[var(--secondary)]/40">
       <div className="container-boutique grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 items-center">
@@ -491,12 +626,12 @@ export function StoryBanner() {
           </div>
         </div>
         <div>
-          <div className="eyebrow mb-3 sm:mb-4">{t("section.story.eyebrow")}</div>
+          <div className="eyebrow mb-3 sm:mb-4">{storyData.eyebrow}</div>
           <h2 className="font-serif text-2xl sm:text-4xl md:text-5xl leading-[1.1] text-[var(--wine-deep)] mb-4 sm:mb-6">
-            {t("section.story.title")}
+            {storyData.title}
           </h2>
           <p className="text-sm sm:text-base leading-relaxed text-foreground/75 mb-6 sm:mb-8 max-w-xl">
-            {t("section.story.body")}
+            {storyData.body}
           </p>
           <div className="grid grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-10 border-y border-border py-4 sm:py-6 max-w-md">
             <div>
@@ -523,6 +658,38 @@ export function StoryBanner() {
             className="inline-flex items-center justify-center gap-2 bg-[var(--wine)] text-[var(--ivory)] px-6 sm:px-8 py-3.5 text-[11px] tracking-[0.22em] uppercase font-medium hover:bg-[var(--wine-deep)] transition-colors min-h-[44px]"
           >
             {t("section.story.cta")}
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function CtaSection() {
+  const { data: homepageCms } = useSectionContent("homepage");
+  const cta = homepageCms?.cta || {
+    title: "Find Your Signature Drape",
+    description: "Explore our collection of sarees and discover a style that becomes part of your story.",
+    buttonText: "Shop the Collection",
+    buttonLink: "/shop",
+  };
+
+  return (
+    <section className="py-16 md:py-24 bg-[var(--wine-deep)] text-white text-center">
+      <div className="container-boutique max-w-2xl space-y-6">
+        <h2 className="font-serif text-3xl md:text-5xl font-bold tracking-tight text-white">
+          {cta.title}
+        </h2>
+        <p className="text-sm md:text-base text-white/80 leading-relaxed max-w-xl mx-auto">
+          {cta.description}
+        </p>
+        <div className="pt-2">
+          <a
+            href={cta.buttonLink || "/shop"}
+            className="inline-flex items-center gap-2 bg-[var(--gold)] hover:bg-white text-slate-950 font-bold px-8 py-4 text-xs uppercase tracking-widest rounded-sm transition-all shadow-xl hover:scale-105"
+          >
+            <span>{cta.buttonText}</span>
+            <ArrowRight className="h-4 w-4" />
           </a>
         </div>
       </div>

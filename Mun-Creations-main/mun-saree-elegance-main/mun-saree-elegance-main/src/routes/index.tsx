@@ -12,6 +12,9 @@ import {
   PressStrip,
   StoryBanner,
   Newsletter,
+  BrandIntroBlock,
+  CuratedCollectionsGrid,
+  CtaSection,
 } from "@/components/site/sections";
 import { CatalogFilterSidebar, FilterState } from "@/components/site/catalog-filter-sidebar";
 import { Footer } from "@/components/site/footer";
@@ -25,17 +28,17 @@ import { Sparkle, X, SlidersHorizontal } from "lucide-react";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Mun Creations — Handwoven Indian Sarees, Kurtis & Couture" },
+      { title: "Mun Creations | Premium Sarees, Handloom Sarees & Indian Ethnic Wear" },
       {
         name: "description",
         content:
-          "Handcrafted Indian sarees (Banarasi, Kanjivaram, Tussar, Jamdani), Kurtis, Blouses and bridal couture. Woven by master artisans. Ships worldwide.",
+          "Discover premium sarees and Indian ethnic wear at Mun Creations. Shop Banarasi, Tussar, Kanjivaram, handloom, designer and festive sarees with worldwide shipping.",
       },
-      { property: "og:title", content: "Mun Creations — Handwoven Indian Sarees & Ethnic Wear" },
+      { property: "og:title", content: "Mun Creations | Premium Sarees, Handloom Sarees & Indian Ethnic Wear" },
       {
         property: "og:description",
         content:
-          "Timeless sarees, handwoven heritage. Shop Banarasi, Kanjivaram, Tussar, Kurtis, Blouses, and Occasionwear.",
+          "Discover premium sarees and Indian ethnic wear at Mun Creations. Shop Banarasi, Tussar, Kanjivaram, handloom, designer and festive sarees with worldwide shipping.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -158,6 +161,14 @@ function Home() {
           <main className="space-y-4 md:space-y-8">
             <WavySection>
               <Hero />
+            </WavySection>
+
+            <WavySection>
+              <BrandIntroBlock />
+            </WavySection>
+
+            <WavySection>
+              <CuratedCollectionsGrid onSelectFilter={handleNavFilterSelect} />
             </WavySection>
 
             <WavySection>
@@ -365,6 +376,10 @@ function Home() {
 
             <WavySection>
               <StoryBanner />
+            </WavySection>
+
+            <WavySection>
+              <CtaSection />
             </WavySection>
 
             <WavySection>

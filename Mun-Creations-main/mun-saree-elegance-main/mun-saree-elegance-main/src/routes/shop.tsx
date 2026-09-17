@@ -10,6 +10,7 @@ import { useCatalogProducts, useCatalogCategories } from "@/lib/catalog-client";
 import { CATEGORY_FILTERS, FABRIC_FILTERS } from "@/lib/catalog";
 import { CANONICAL_COLORS, getColorHex, matchesSelectedColors } from "@/lib/colors";
 import { CATALOG_PRICE_TIERS, matchesPriceTier, getProductBasePriceInr } from "@/lib/pricing-config";
+import { useSectionContent } from "@/lib/content-client";
 import { Filter, SlidersHorizontal, X, Sparkles, Search, Check } from "lucide-react";
 
 type ShopSearch = {
@@ -66,6 +67,7 @@ function ShopContent() {
   const { formatPrice } = useI18n();
   const searchParams = useSearch({ from: "/shop" }) as ShopSearch;
   const navigate = useNavigate();
+  const { data: categoriesCms } = useSectionContent("categories");
 
   // Filter States initialized from URL params
   const [selectedCategory, setSelectedCategory] = useState<string>(searchParams?.category || "");
@@ -75,6 +77,35 @@ function ShopContent() {
   const [selectedSort, setSelectedSort] = useState<string>(searchParams?.sort || "featured");
   const [searchQuery, setSearchQuery] = useState<string>(searchParams?.q || "");
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+
+  // Resolve active category specification details dynamically
+  const activeCategoryMeta = useMemo(() => {
+    if (!selectedCategory || selectedCategory === "All") {
+      return (
+        categoriesCms?.sarees || {
+          title: "Explore All Collections",
+          subtitle: "Handwoven Luxury Catalog",
+          description:
+            "Explore a curated collection of Indian sarees created for every occasion. From luxurious silk sarees and intricate Banarasi weaves to elegant Tussar and handloom sarees.",
+        }
+      );
+    }
+    const catLower = selectedCategory.toLowerCase();
+    if (catLower.includes("banarasi")) return categoriesCms?.banarasi;
+    if (catLower.includes("tussar")) return categoriesCms?.tussar;
+    if (catLower.includes("kanjivaram")) return categoriesCms?.kanjivaram;
+    if (catLower.includes("designer")) return categoriesCms?.designer;
+    if (catLower.includes("handloom")) return categoriesCms?.handloom;
+    if (catLower.includes("wedding") || catLower.includes("festive"))
+      return categoriesCms?.["wedding-festive"];
+    return (
+      categoriesCms?.[selectedCategory] || {
+        title: `${selectedCategory} Sarees`,
+        subtitle: "Curated Master Weaves",
+        description: `Explore authentic handcrafted ${selectedCategory} sarees curated for weddings, celebrations and timeless elegance.`,
+      }
+    );
+  }, [selectedCategory, categoriesCms]);
 
   // Sync state when URL params change externally (e.g. back/forward navigation)
   useEffect(() => {
@@ -383,11 +414,18 @@ function ShopContent() {
     <div className="container-boutique space-y-6">
       {/* Page Title & Search Bar */}
       <div className="bg-white p-5 sm:p-6 rounded-sm border border-border shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <div className="eyebrow text-[var(--gold)]">Handwoven Luxury Catalog</div>
+        <div className="space-y-1 max-w-2xl">
+          <div className="eyebrow text-[var(--gold)]">
+            {activeCategoryMeta?.subtitle || "Handwoven Luxury Catalog"}
+          </div>
           <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[var(--wine-deep)]">
-            Explore All Collections ({filteredProducts.length} Items)
+            {activeCategoryMeta?.title || (selectedCategory ? `${selectedCategory} Sarees` : "Explore All Collections")} ({filteredProducts.length} Items)
           </h1>
+          {activeCategoryMeta?.description && (
+            <p className="text-xs text-muted-foreground leading-relaxed pt-1">
+              {activeCategoryMeta.description}
+            </p>
+          )}
         </div>
 
         <div className="flex items-center gap-3 w-full md:w-auto">
