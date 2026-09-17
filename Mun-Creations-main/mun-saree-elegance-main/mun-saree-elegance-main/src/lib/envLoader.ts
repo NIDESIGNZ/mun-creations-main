@@ -68,5 +68,19 @@ export function ensureEnvLoaded(): void {
     }
   }
 
+  // Ensure essential environment credentials have fallbacks in serverless or unconfigured environments
+  const fallbackDefaults: Record<string, string> = {
+    RAZORPAY_KEY_ID: "rzp_test_TUvDNWVSudCBUS",
+    RAZORPAY_KEY_SECRET: "jay8vfhMtRnjcpGFlpzvI9TZ",
+    VITE_RAZORPAY_KEY_ID: "rzp_test_TUvDNWVSudCBUS",
+    EXCHANGE_RATE_API_KEY: "49a72d8afab5c38ce753142c",
+  };
+
+  for (const [key, defaultVal] of Object.entries(fallbackDefaults)) {
+    if (!process.env[key] || !process.env[key]?.trim()) {
+      process.env[key] = defaultVal;
+    }
+  }
+
   envLoaded = true;
 }

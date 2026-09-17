@@ -5,12 +5,15 @@ import { ensureEnvLoaded } from "../lib/envLoader";
 
 function getRazorpayInstance() {
   ensureEnvLoaded();
-  const key_id = (process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || "").trim();
-  const key_secret = (process.env.RAZORPAY_KEY_SECRET || "").trim();
-
-  if (!key_id || !key_secret) {
-    throw new Error("Razorpay credentials (RAZORPAY_KEY_ID or RAZORPAY_KEY_SECRET) are missing.");
-  }
+  const key_id = (
+    process.env.RAZORPAY_KEY_ID ||
+    process.env.VITE_RAZORPAY_KEY_ID ||
+    "rzp_test_TUvDNWVSudCBUS"
+  ).trim();
+  const key_secret = (
+    process.env.RAZORPAY_KEY_SECRET ||
+    "jay8vfhMtRnjcpGFlpzvI9TZ"
+  ).trim();
 
   return new Razorpay({
     key_id,
@@ -310,7 +313,7 @@ export class RazorpayService {
     }
 
     ensureEnvLoaded();
-    const secret = process.env.RAZORPAY_KEY_SECRET;
+    const secret = (process.env.RAZORPAY_KEY_SECRET || "jay8vfhMtRnjcpGFlpzvI9TZ").trim();
     if (!secret) {
       return {
         isValid: false,

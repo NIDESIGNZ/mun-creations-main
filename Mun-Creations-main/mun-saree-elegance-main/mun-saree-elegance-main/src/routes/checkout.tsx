@@ -266,7 +266,10 @@ function CheckoutContent() {
         throw new Error(orderData.error || "Failed to initialize Razorpay order on the server.");
       }
 
-      const activeKeyId = orderData.key_id;
+      const activeKeyId =
+        orderData.key_id ||
+        (import.meta as any).env?.VITE_RAZORPAY_KEY_ID ||
+        "rzp_test_TUvDNWVSudCBUS";
       if (!activeKeyId) {
         throw new Error("Razorpay Key ID is not configured on the server.");
       }

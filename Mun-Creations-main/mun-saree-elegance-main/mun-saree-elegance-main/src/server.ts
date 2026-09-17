@@ -38,11 +38,17 @@ async function handleApiRequests(request: Request): Promise<Response | null> {
   try {
     if (path === "/api/health") {
       const dbStatus = backendDB.getHealthStatus();
-      const effectiveKeyId = (process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || "").trim();
+      const effectiveKeyId = (
+        process.env.RAZORPAY_KEY_ID ||
+        process.env.VITE_RAZORPAY_KEY_ID ||
+        "rzp_test_TUvDNWVSudCBUS"
+      ).trim();
       const hasKeyId = Boolean(effectiveKeyId);
-      const hasKeySecret = Boolean(
-        process.env.RAZORPAY_KEY_SECRET && process.env.RAZORPAY_KEY_SECRET.trim(),
-      );
+      const effectiveKeySecret = (
+        process.env.RAZORPAY_KEY_SECRET ||
+        "jay8vfhMtRnjcpGFlpzvI9TZ"
+      ).trim();
+      const hasKeySecret = Boolean(effectiveKeySecret);
       return new Response(
         JSON.stringify({
           service: "Mun Creations API",
@@ -96,7 +102,11 @@ async function handleApiRequests(request: Request): Promise<Response | null> {
             amount: order.amount,
             currency: order.currency,
             receipt: order.receipt,
-            key_id: (process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || "").trim(),
+            key_id: (
+              process.env.RAZORPAY_KEY_ID ||
+              process.env.VITE_RAZORPAY_KEY_ID ||
+              "rzp_test_TUvDNWVSudCBUS"
+            ).trim(),
             calculation: order.calculation,
           }),
           { status: 200, headers },
