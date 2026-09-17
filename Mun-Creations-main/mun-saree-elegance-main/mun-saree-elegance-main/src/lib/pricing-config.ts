@@ -6,10 +6,12 @@
 
 export interface PriceTierConfig {
   id: string;
+  key: string;
   label: string;
   shortLabel: string;
   minInr: number;
   maxInr: number;
+  rangeInr: string;
   description: string;
 }
 
@@ -22,26 +24,32 @@ export interface PriceTierConfig {
 export const CATALOG_PRICE_TIERS: PriceTierConfig[] = [
   {
     id: "low",
+    key: "low",
     label: "Budget Collection (Under ₹20,000)",
     shortLabel: "Under ₹20K",
     minInr: 0,
     maxInr: 20000,
+    rangeInr: "< ₹20,000",
     description: "Accessible handloom weaves & daily festive drapes",
   },
   {
     id: "mid",
+    key: "mid",
     label: "Mid Range (₹20,000 – ₹45,000)",
     shortLabel: "₹20K – ₹45K",
     minInr: 20000,
     maxInr: 45000,
+    rangeInr: "₹20K – ₹45K",
     description: "Pure silk Banarasi, Kanjivaram & Paithani classics",
   },
   {
     id: "high",
+    key: "high",
     label: "Premium & Luxury (Above ₹45,000)",
     shortLabel: "Above ₹45K",
     minInr: 45000,
     maxInr: 500000,
+    rangeInr: "> ₹45,000",
     description: "Heirloom bridal ensembles, pure zari & couture handlooms",
   },
 ];

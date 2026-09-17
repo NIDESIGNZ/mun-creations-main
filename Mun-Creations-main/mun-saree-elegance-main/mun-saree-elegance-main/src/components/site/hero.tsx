@@ -119,7 +119,7 @@ export function Hero() {
         playsInline
         preload="auto"
         className="absolute inset-0 w-full h-full object-cover z-0 filter brightness-[0.62] contrast-[1.08] pointer-events-none"
-        poster={heroSaree?.images?.[0] || "/images/products/saree-teal-1.jpg"}
+        poster={heroSaree || "/images/products/saree-teal-1.jpg"}
       >
         <source src="/hero.mp4" type="video/mp4" />
       </video>

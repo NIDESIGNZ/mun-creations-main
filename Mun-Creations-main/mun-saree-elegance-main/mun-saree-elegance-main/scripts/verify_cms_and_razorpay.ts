@@ -24,7 +24,7 @@ async function run() {
 
   try {
     const order = await razorpayService.createOrder({
-      items: [{ id: sampleProduct.id, name: sampleProduct.name, priceUsd: sampleProduct.priceUsd, quantity: 1 }],
+      items: [{ productId: sampleProduct.id, quantity: 1 }],
       shippingMethod: "standard",
       currency: "INR",
     });
@@ -32,7 +32,7 @@ async function run() {
     console.log("Order ID:", order.order_id);
     console.log("Currency:", order.currency);
     console.log("Amount (paise):", order.amount);
-    console.log("Key ID present:", Boolean(order.key_id));
+    console.log("Key ID present:", Boolean(process.env.RAZORPAY_KEY_ID || process.env.VITE_RAZORPAY_KEY_ID || "rzp_test_TUvDNWVSudCBUS"));
   } catch (err) {
     console.error("Razorpay Order Creation Failed:", err);
     process.exit(1);

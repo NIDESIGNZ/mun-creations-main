@@ -122,7 +122,6 @@ export type Product = {
   published?: boolean;
   status?: string;
   bestSeller?: boolean;
-  priceInr?: number;
   originalPriceUsd?: number;
   costPriceUsd?: number;
   barcode?: string;
