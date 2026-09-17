@@ -160,6 +160,10 @@ export function Footer() {
           <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 sm:gap-3 text-[11px] sm:text-xs">
             <span>{footerCms.copyright || `© ${new Date().getFullYear()} Mun Creations. All Rights Reserved.`}</span>
             <span>·</span>
+            <span className="text-[var(--gold)] font-medium tracking-wide">
+              {footerCms.developerCredit || "Designed and Developed By NIDESIGNZ"}
+            </span>
+            <span>·</span>
 
             {/* Discrete Password Protected Footer Links */}
             <button

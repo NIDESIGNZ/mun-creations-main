@@ -1306,19 +1306,36 @@ export function SiteContentManager() {
                   </div>
                 </div>
 
-                <div>
-                  <label className="font-bold block mb-1 text-slate-300">Copyright Line</label>
-                  <input
-                    type="text"
-                    value={localContent.footer.copyright || ""}
-                    onChange={(e) =>
-                      setLocalContent({
-                        ...localContent,
-                        footer: { ...localContent.footer, copyright: e.target.value },
-                      })
-                    }
-                    className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded text-white focus:border-[var(--gold)] outline-none"
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="font-bold block mb-1 text-slate-300">Copyright Line</label>
+                    <input
+                      type="text"
+                      value={localContent.footer.copyright || ""}
+                      onChange={(e) =>
+                        setLocalContent({
+                          ...localContent,
+                          footer: { ...localContent.footer, copyright: e.target.value },
+                        })
+                      }
+                      className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded text-white focus:border-[var(--gold)] outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="font-bold block mb-1 text-slate-300">Developer / Agency Credit</label>
+                    <input
+                      type="text"
+                      value={localContent.footer.developerCredit || ""}
+                      onChange={(e) =>
+                        setLocalContent({
+                          ...localContent,
+                          footer: { ...localContent.footer, developerCredit: e.target.value },
+                        })
+                      }
+                      placeholder="Designed and Developed By NIDESIGNZ"
+                      className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded text-white focus:border-[var(--gold)] outline-none"
+                    />
+                  </div>
                 </div>
               </div>
             </div>

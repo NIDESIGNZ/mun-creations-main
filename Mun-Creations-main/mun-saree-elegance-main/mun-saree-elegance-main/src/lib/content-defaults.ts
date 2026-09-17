@@ -165,6 +165,7 @@ export interface FooterContent {
   whatsappNumber: string;
   whatsappUrl: string;
   copyright: string;
+  developerCredit?: string;
 }
 
 export interface SEOContent {
@@ -516,7 +517,8 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
     description: "Discover curated sarees and Indian ethnic wear inspired by India's rich textile heritage.",
     whatsappNumber: "+91 98745 72846",
     whatsappUrl: "https://wa.me/919874572846",
-    copyright: "© 2026 Mun Creations. All Rights Reserved."
+    copyright: "© 2026 Mun Creations. All Rights Reserved.",
+    developerCredit: "Designed and Developed By NIDESIGNZ"
   },
   seo: {
     primaryKeywords: [
