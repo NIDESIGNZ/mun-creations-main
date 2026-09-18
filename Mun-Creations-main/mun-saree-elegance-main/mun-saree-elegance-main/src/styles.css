@@ -167,7 +167,7 @@
   }
 }
 
-.touch-target {
+@utility touch-target {
   min-width: 44px;
   min-height: 44px;
   display: inline-flex;

@@ -109,7 +109,7 @@ export function Hero() {
   };
 
   return (
-    <section className="relative w-full overflow-hidden bg-[var(--wine-deep)] min-h-[85vh] sm:min-h-[90vh] lg:min-h-screen flex flex-col justify-end items-center">
+    <section className="relative w-full overflow-hidden bg-[var(--wine-deep)] min-h-[85vh] sm:min-h-[90vh] lg:min-h-screen flex flex-col justify-start items-center">
       {/* Background Video */}
       <video
         ref={videoRef}
@@ -148,9 +148,9 @@ export function Hero() {
       </div>
 
       {/* Hero content overlay - Positioned cleanly below header */}
-      <div className="relative z-10 container-boutique pt-28 sm:pt-36 md:pt-48 lg:pt-56 pb-10 sm:pb-14 md:pb-20 text-[var(--ivory)] flex flex-col items-center text-center">
+      <div className="relative z-10 container-boutique text-[var(--ivory)] flex flex-col items-center text-center pt-48 sm:pt-56 md:pt-64 lg:pt-72 pb-14 sm:pb-20">
         <div className="max-w-3xl mx-auto space-y-4 sm:space-y-6">
-          <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.08] drop-shadow-[0_4px_14px_rgba(0,0,0,0.8)] text-white">
+          <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl leading-[1.1] drop-shadow-[0_4px_14px_rgba(0,0,0,0.8)] text-white">
             {heroData.title}
           </h1>
           <p className="text-xs sm:text-base md:text-lg text-[var(--ivory)]/90 max-w-xl mx-auto leading-relaxed drop-shadow-[0_2px_4px_rgba(0,0,0,0.7)] font-light px-2 sm:px-0">
@@ -174,7 +174,7 @@ export function Hero() {
         </div>
 
         {/* Trust badges centered */}
-        <div className="mt-8 sm:mt-12 md:mt-16 flex flex-wrap justify-center items-center gap-x-4 sm:gap-x-8 gap-y-2 text-[10px] sm:text-[11px] tracking-[0.2em] uppercase text-[var(--ivory)]/85 drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">
+        <div className="mt-6 sm:mt-8 md:mt-10 flex flex-wrap justify-center items-center gap-x-4 sm:gap-x-8 gap-y-2 text-[10px] sm:text-[11px] tracking-[0.2em] uppercase text-[var(--ivory)]/85 drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">
           <span>Authentic Handloom</span>
           <span className="h-1 w-1 sm:h-1.5 sm:w-1.5 rounded-full bg-[var(--gold)]" />
           <span>Ships Worldwide</span>

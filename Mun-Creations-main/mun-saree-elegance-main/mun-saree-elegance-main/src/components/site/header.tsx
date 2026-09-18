@@ -197,7 +197,7 @@ export function Header({ onSelectCategoryFilter }: HeaderProps) {
       } ${
         scrolled || activeMenuId
           ? "bg-[var(--wine-deep)]/95 backdrop-blur-md border-b border-[var(--gold)]/30 shadow-[0_8px_32px_rgba(0,0,0,0.4)] text-white"
-          : "bg-transparent text-white border-b border-white/15 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]"
+          : "bg-gradient-to-b from-black/75 via-black/30 to-transparent text-white border-b border-white/15 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]"
       }`}
       onMouseLeave={handleMouseLeave}
     >
@@ -246,7 +246,7 @@ export function Header({ onSelectCategoryFilter }: HeaderProps) {
         <div className="container-boutique flex items-center justify-between gap-3 sm:gap-6 py-2.5 sm:py-3.5 md:py-5">
           <div className="flex items-center gap-2">
             <button
-              className="md:hidden -ml-2 p-2.5 touch-target text-white hover:text-[var(--gold)] drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)] cursor-pointer"
+              className="md:!hidden -ml-2 p-2.5 touch-target text-white hover:text-[var(--gold)] drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)] cursor-pointer"
               onClick={() => setMobileOpen(true)}
               aria-label="Open navigation menu"
             >
@@ -281,14 +281,14 @@ export function Header({ onSelectCategoryFilter }: HeaderProps) {
             <Link
               to="/account"
               aria-label="My Account"
-              className="hidden sm:inline-flex p-2 touch-target hover:text-[var(--gold)] transition-colors"
+              className="!hidden sm:!inline-flex p-2 touch-target hover:text-[var(--gold)] transition-colors"
             >
               <User className="h-5 w-5 md:h-[18px] md:w-[18px]" />
             </Link>
             <Link
               to="/account"
               aria-label="Wishlist"
-              className="hidden sm:inline-flex p-2 touch-target hover:text-[var(--gold)] transition-colors"
+              className="!hidden sm:!inline-flex p-2 touch-target hover:text-[var(--gold)] transition-colors"
             >
               <Heart className="h-5 w-5 md:h-[18px] md:w-[18px]" />
             </Link>
@@ -309,7 +309,7 @@ export function Header({ onSelectCategoryFilter }: HeaderProps) {
 
         {/* Desktop Main Navigation Bar */}
         <nav className="hidden md:block border-t border-white/10 relative">
-          <div className="container-boutique flex items-center justify-start gap-6 lg:gap-8 py-3 overflow-x-auto no-scrollbar">
+          <div className="container-boutique flex items-center justify-center gap-6 lg:gap-8 py-3 overflow-x-auto no-scrollbar">
             {MAIN_NAV_ITEMS.map((item) => (
               <div
                 key={item.id}
@@ -333,12 +333,85 @@ export function Header({ onSelectCategoryFilter }: HeaderProps) {
                     />
                   )}
                 </button>
+
+                {/* KURTI Dropdown - positioned directly beneath Kurti item */}
+                {activeMenuId === item.id && item.id === "kurti" && (
+                  <div
+                    className="absolute left-0 top-full mt-2 bg-[var(--wine-deep)]/98 backdrop-blur-xl border border-[var(--gold)]/30 rounded-sm shadow-2xl text-white py-4 px-6 min-w-[240px] z-50 animate-in fade-in slide-in-from-top-1"
+                    onMouseEnter={() => handleMouseEnter("kurti")}
+                    onMouseLeave={handleMouseLeave}
+                  >
+                    <div className="space-y-2">
+                      <span className="text-[10px] tracking-widest uppercase text-[var(--gold)] font-bold block pb-1 border-b border-white/10">
+                        Kurti Categories
+                      </span>
+                      {KURTI_CATEGORIES.map((k) => (
+                        <button
+                          key={k.slug}
+                          onClick={() => handleNavClick(k.name, "kurti")}
+                          className="block w-full text-left text-xs py-1 text-white/80 hover:text-[var(--gold)] transition-colors"
+                        >
+                          {k.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* BLOUSES Dropdown - positioned directly beneath Blouses item */}
+                {activeMenuId === item.id && item.id === "blouses" && (
+                  <div
+                    className="absolute left-0 top-full mt-2 bg-[var(--wine-deep)]/98 backdrop-blur-xl border border-[var(--gold)]/30 rounded-sm shadow-2xl text-white py-4 px-6 min-w-[240px] z-50 animate-in fade-in slide-in-from-top-1"
+                    onMouseEnter={() => handleMouseEnter("blouses")}
+                    onMouseLeave={handleMouseLeave}
+                  >
+                    <div className="space-y-2">
+                      <span className="text-[10px] tracking-widest uppercase text-[var(--gold)] font-bold block pb-1 border-b border-white/10">
+                        Blouses & Couture
+                      </span>
+                      {BLOUSE_CATEGORIES.map((b) => (
+                        <button
+                          key={b.slug}
+                          onClick={() => handleNavClick(b.name, "blouse")}
+                          className="block w-full text-left text-xs py-1 text-white/80 hover:text-[var(--gold)] transition-colors"
+                        >
+                          {b.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* COLLECTIONS Dropdown - centered beneath Collections item */}
+                {activeMenuId === item.id && item.id === "collections" && (
+                  <div
+                    className="absolute left-1/2 -translate-x-1/2 top-full mt-2 bg-[var(--wine-deep)]/98 backdrop-blur-xl border border-[var(--gold)]/30 rounded-sm shadow-2xl text-white py-6 px-8 min-w-[480px] z-50 animate-in fade-in slide-in-from-top-1"
+                    onMouseEnter={() => handleMouseEnter("collections")}
+                    onMouseLeave={handleMouseLeave}
+                  >
+                    <span className="text-[10px] tracking-widest uppercase text-[var(--gold)] font-bold block pb-2 mb-3 border-b border-white/10">
+                      Merchandising Collections
+                    </span>
+                    <div className="grid grid-cols-2 gap-x-8 gap-y-2">
+                      {COLLECTION_HIERARCHY.map((c) => (
+                        <button
+                          key={c.slug}
+                          onClick={() => handleNavClick(c.name, "collection")}
+                          className="text-left text-xs py-1 text-white/80 hover:text-[var(--gold)] transition-colors font-medium flex items-center justify-between"
+                        >
+                          <span>{c.name}</span>
+                          <ChevronRight className="h-3 w-3 text-[var(--gold)]/50" />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>
 
-          {/* Desktop Mega Menu Dropdowns */}
-          {/* SAREES Mega Menu */}
+          {/* Desktop Mega Menu Dropdown */}
+          {/* SAREES Mega Menu (full-width banner) */}
           {activeMenuId === "sarees" && (
             <div
               className="absolute left-0 right-0 top-full bg-[var(--wine-deep)]/98 backdrop-blur-xl border-b border-[var(--gold)]/30 shadow-[0_25px_60px_rgba(0,0,0,0.8)] text-white py-8 px-6 transition-all duration-300 z-50 animate-in fade-in slide-in-from-top-2"
@@ -389,79 +462,6 @@ export function Header({ onSelectCategoryFilter }: HeaderProps) {
                     </div>
                   ))}
                 </div>
-              </div>
-            </div>
-          )}
-
-          {/* KURTI Dropdown */}
-          {activeMenuId === "kurti" && (
-            <div
-              className="absolute left-1/4 top-full bg-[var(--wine-deep)]/98 backdrop-blur-xl border border-[var(--gold)]/30 rounded-sm shadow-2xl text-white py-4 px-6 min-w-[240px] z-50"
-              onMouseEnter={() => handleMouseEnter("kurti")}
-              onMouseLeave={handleMouseLeave}
-            >
-              <div className="space-y-2">
-                <span className="text-[10px] tracking-widest uppercase text-[var(--gold)] font-bold block pb-1 border-b border-white/10">
-                  Kurti Categories
-                </span>
-                {KURTI_CATEGORIES.map((k) => (
-                  <button
-                    key={k.slug}
-                    onClick={() => handleNavClick(k.name, "kurti")}
-                    className="block w-full text-left text-xs py-1 text-white/80 hover:text-[var(--gold)] transition-colors"
-                  >
-                    {k.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* BLOUSES Dropdown */}
-          {activeMenuId === "blouses" && (
-            <div
-              className="absolute left-1/3 top-full bg-[var(--wine-deep)]/98 backdrop-blur-xl border border-[var(--gold)]/30 rounded-sm shadow-2xl text-white py-4 px-6 min-w-[240px] z-50"
-              onMouseEnter={() => handleMouseEnter("blouses")}
-              onMouseLeave={handleMouseLeave}
-            >
-              <div className="space-y-2">
-                <span className="text-[10px] tracking-widest uppercase text-[var(--gold)] font-bold block pb-1 border-b border-white/10">
-                  Blouses & Couture
-                </span>
-                {BLOUSE_CATEGORIES.map((b) => (
-                  <button
-                    key={b.slug}
-                    onClick={() => handleNavClick(b.name, "blouse")}
-                    className="block w-full text-left text-xs py-1 text-white/80 hover:text-[var(--gold)] transition-colors"
-                  >
-                    {b.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* COLLECTIONS Dropdown */}
-          {activeMenuId === "collections" && (
-            <div
-              className="absolute left-1/2 -translate-x-1/2 top-full bg-[var(--wine-deep)]/98 backdrop-blur-xl border border-[var(--gold)]/30 rounded-sm shadow-2xl text-white py-6 px-8 min-w-[480px] z-50"
-              onMouseEnter={() => handleMouseEnter("collections")}
-              onMouseLeave={handleMouseLeave}
-            >
-              <span className="text-[10px] tracking-widest uppercase text-[var(--gold)] font-bold block pb-2 mb-3 border-b border-white/10">
-                Merchandising Collections
-              </span>
-              <div className="grid grid-cols-2 gap-x-8 gap-y-2">
-                {COLLECTION_HIERARCHY.map((c) => (
-                  <button
-                    key={c.slug}
-                    onClick={() => handleNavClick(c.name, "collection")}
-                    className="text-left text-xs py-1 text-white/80 hover:text-[var(--gold)] transition-colors font-medium flex items-center justify-between"
-                  >
-                    <span>{c.name}</span>
-                    <ChevronRight className="h-3 w-3 text-[var(--gold)]/50" />
-                  </button>
-                ))}
               </div>
             </div>
           )}
